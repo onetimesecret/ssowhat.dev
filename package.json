@@ -2,6 +2,12 @@
 	"name": "ssowhat.dev",
 	"private": true,
 	"version": "0.1.0",
+	"description": "Interactive SSO protocol demos — visualize SAML, OIDC, OAuth2, and more",
+	"license": "MIT",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/onetimesecret/ssowhat.dev"
+	},
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev --host",
