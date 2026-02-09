@@ -25,7 +25,7 @@ pnpm install
 pnpm dev
 ```
 
-Open [localhost:5173](http://localhost:5173).
+Open [localhost:5184](http://localhost:5184).
 
 ## Building
 
