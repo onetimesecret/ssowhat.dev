@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@import '$lib/sso-demos/shared/sso-demo-theme.css';
 
 @layer base {
 	body {
