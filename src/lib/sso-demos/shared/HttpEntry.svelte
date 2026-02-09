@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { HttpMessage } from './types.js';
+  import type { HttpMessage } from '../types.js';
 
   /**
    * Renders a single HTTP message in the authentication flow.
