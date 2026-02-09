@@ -39,17 +39,21 @@
 		content="Interactive visualizations of enterprise SSO authentication patterns, protocol bridging, and identity federation"
 	/>
 	<meta property="og:title" content="ssowhat.dev — SSO Demos" />
-	<meta property="og:description" content="Interactive visualizations of enterprise SSO authentication patterns, protocol bridging, and identity federation" />
+	<meta
+		property="og:description"
+		content="Interactive visualizations of enterprise SSO authentication patterns, protocol bridging, and identity federation"
+	/>
 	<meta property="og:type" content="website" />
 	<meta property="og:url" content="https://ssowhat.dev/" />
 	<meta property="og:site_name" content="ssowhat.dev" />
 	{@html `<script type="application/ld+json">${JSON.stringify({
-		"@context": "https://schema.org",
-		"@type": "WebSite",
-		"name": "ssowhat.dev",
-		"description": "Interactive visualizations of enterprise SSO authentication patterns, protocol bridging, and identity federation",
-		"url": "https://ssowhat.dev/",
-		"author": { "@type": "Organization", "name": "Onetime Secret", "url": "https://onetimesecret.com" }
+		'@context': 'https://schema.org',
+		'@type': 'WebSite',
+		name: 'ssowhat.dev',
+		description:
+			'Interactive visualizations of enterprise SSO authentication patterns, protocol bridging, and identity federation',
+		url: 'https://ssowhat.dev/',
+		author: { '@type': 'Organization', name: 'Onetime Secret', url: 'https://onetimesecret.com' },
 	})}</script>`}
 </svelte:head>
 
@@ -113,7 +117,7 @@
 			<p class="mt-3 text-base text-ink-secondary">Interactive visualizations.</p>
 			<p class="mt-4 max-w-2xl text-sm leading-relaxed text-ink-tertiary">
 				Each demo walks through a complete authentication flow step by step, showing what the user sees alongside the
-				HTTP exchanges happening behind the scenes. Built for engineers, analysts, and SSO enthusiasts.
+				HTTP exchanges happening behind the scenes. Built for engineers, analysts, and Megadeth the band.
 			</p>
 		</header>
 
@@ -171,7 +175,7 @@
 		<!-- Footer -->
 		<footer class="mt-auto pt-14">
 			<div class="border-t border-edge pt-6">
-				<p class="text-sm text-ink-muted">Built for technical analysis of SSO integration patterns.</p>
+				<p class="text-sm text-ink-muted">Built by authn enthusiasts, for authn enthusiasts.</p>
 				<p class="mt-2">
 					<a
 						href="https://onetimesecret.com"
