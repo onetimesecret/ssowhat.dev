@@ -149,10 +149,13 @@
 			loadingProgress = 0;
 			return;
 		}
-		// Reset to 0, then animate to 100 after brief delay for render
+		// Reset to 0, then animate to 100 after brief delay for render.
+		// Read currentStep and autoplayInterval so Svelte tracks them as
+		// dependencies — the animation must restart when the step advances
+		// or when the user changes playback speed.
 		loadingProgress = 0;
-		// Read currentStep to track it as a dependency
 		void currentStep;
+		void autoplayInterval;
 		const timer = setTimeout(() => {
 			loadingProgress = 100;
 		}, 50);

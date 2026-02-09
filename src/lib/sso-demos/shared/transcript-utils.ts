@@ -10,6 +10,8 @@ export interface ActorColorInfo {
 	bgMutedClass: string;
 	borderClass: string;
 	ringClass: string;
+	/** Ring class with reduced opacity, for highlight overlays (e.g. ring-actor-browser/60) */
+	ringHighlightClass: string;
 	textClass: string;
 	dotClass: string;
 }
@@ -26,6 +28,7 @@ export function getActorColorInfo(activeColor?: string): ActorColorInfo {
 		bgMutedClass: 'bg-gray-800/50',
 		borderClass: 'border-gray-500',
 		ringClass: 'ring-gray-500',
+		ringHighlightClass: 'ring-gray-500/60',
 		textClass: 'text-gray-200',
 		dotClass: 'bg-gray-500'
 	};
@@ -41,6 +44,7 @@ export function getActorColorInfo(activeColor?: string): ActorColorInfo {
 		bgMutedClass: `bg-${token}/10`,
 		borderClass: `border-${token}`,
 		ringClass: `ring-${token}`,
+		ringHighlightClass: `ring-${token}/60`,
 		textClass: `text-${token}`,
 		dotClass: `bg-${token}`
 	};

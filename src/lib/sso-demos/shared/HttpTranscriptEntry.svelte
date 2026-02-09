@@ -36,7 +36,7 @@
 
 	let highlightRingClass = $derived.by(() => {
 		if (isHighlighted && highlightColor) {
-			return `${highlightColor.bgClass} ring-2 ${highlightColor.ringClass}/60 ring-offset-1 ring-offset-gray-900`;
+			return `${highlightColor.bgClass} ring-2 ${highlightColor.ringHighlightClass} ring-offset-1 ring-offset-gray-900`;
 		}
 		return '';
 	});
