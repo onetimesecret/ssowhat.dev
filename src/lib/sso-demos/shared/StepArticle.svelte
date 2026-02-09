@@ -102,7 +102,7 @@
 <article
 	id="step-{step.id}"
 	aria-labelledby="step-{step.id}-title"
-	class="scroll-mt-4 border-l-4 border-blue-500 bg-gray-800/50 p-6 print:break-inside-avoid print:border-blue-600 print:bg-white print:shadow-sm"
+	class="scroll-mt-4 border-l-4 border-blue-500 bg-surface/50 p-6 print:break-inside-avoid print:border-blue-600 print:bg-white print:shadow-sm"
 >
 	<!-- Step header -->
 	<header class="mb-4">
@@ -115,20 +115,20 @@
 				</span>
 				<h2
 					id="step-{step.id}-title"
-					class="text-xl font-bold text-gray-100 print:text-black"
+					class="text-xl font-bold text-ink print:text-black"
 				>
 					{step.title}
 				</h2>
 			</div>
 			<button
 				onclick={handleCopyStep}
-				class="rounded-md bg-gray-700 px-3 py-1.5 text-xs font-medium text-gray-300 transition-colors hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-400 print:hidden"
+				class="rounded-md bg-surface-raised px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-surface-raised/80 focus:outline-none focus:ring-2 focus:ring-ink-tertiary print:hidden"
 				aria-label="Copy step {step.id} to clipboard"
 			>
 				{copied ? '\u2713 Copied' : 'Copy Step'}
 			</button>
 		</div>
-		<p class="mt-2 text-sm leading-relaxed text-gray-300 print:text-gray-800">
+		<p class="mt-2 text-sm leading-relaxed text-ink-secondary print:text-gray-800">
 			{step.description}
 		</p>
 	</header>
@@ -136,16 +136,16 @@
 	<!-- What the user sees -->
 	<section class="mb-4">
 		<h3
-			class="mb-2 text-sm font-semibold uppercase tracking-wider text-gray-400 print:text-gray-700"
+			class="mb-2 text-sm font-semibold uppercase tracking-wider text-ink-tertiary print:text-gray-700"
 		>
 			Location
 		</h3>
-		<div class="rounded-md bg-gray-900 p-3 print:bg-gray-100">
-			<p class="mb-1 text-xs text-gray-500 print:text-gray-600">Browser URL:</p>
+		<div class="rounded-md bg-canvas p-3 print:bg-gray-100">
+			<p class="mb-1 text-xs text-ink-muted print:text-gray-600">Browser URL:</p>
 			<code class="block break-all font-mono text-sm text-blue-300 print:text-blue-800">
 				{step.urlBar}
 			</code>
-			<p class="mt-2 text-xs text-gray-400 print:text-gray-700">
+			<p class="mt-2 text-xs text-ink-tertiary print:text-gray-700">
 				Screen: <span class="font-mono">{step.userSees}</span>
 			</p>
 		</div>
@@ -154,10 +154,10 @@
 	<!-- Active actors -->
 	<section class="mb-4">
 		<h3
-			class="mb-2 text-sm font-semibold uppercase tracking-wider text-gray-400 print:text-gray-700"
+			class="mb-2 text-sm font-semibold uppercase tracking-wider text-ink-tertiary print:text-gray-700"
 		>
 			Active Components
-			<span class="ml-2 text-xs font-normal normal-case text-gray-500 print:hidden">
+			<span class="ml-2 text-xs font-normal normal-case text-ink-muted print:hidden">
 				(hover to highlight requests)
 			</span>
 		</h3>
@@ -190,7 +190,7 @@
 	<!-- HTTP exchanges -->
 	<section class="mb-4">
 		<h3
-			class="mb-3 text-sm font-semibold uppercase tracking-wider text-gray-400 print:text-gray-700"
+			class="mb-3 text-sm font-semibold uppercase tracking-wider text-ink-tertiary print:text-gray-700"
 		>
 			HTTP Exchanges
 		</h3>
@@ -233,7 +233,7 @@
 				</svg>
 				Security Note
 			</h3>
-			<p class="text-xs leading-relaxed text-gray-300 print:text-gray-800">
+			<p class="text-xs leading-relaxed text-ink-secondary print:text-gray-800">
 				{step.securityNote}
 			</p>
 		</section>
@@ -243,7 +243,7 @@
 	{#if index < totalSteps - 1 && nextStepId}
 		<a
 			href="#step-{nextStepId}"
-			class="mt-4 inline-block text-xs text-blue-400 hover:underline print:hidden"
+			class="mt-4 inline-block text-xs text-accent hover:underline print:hidden"
 		>
 			Skip to next step &rarr;
 		</a>

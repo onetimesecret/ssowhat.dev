@@ -178,7 +178,7 @@
 	Main shell component for SSO demos.
 	Handles navigation, keyboard controls, autoplay, and layout.
 -->
-<div class="min-h-screen bg-gray-900 p-4 font-sans text-gray-100">
+<div class="min-h-screen bg-canvas p-4 font-sans text-ink">
 	<!-- Skip link for keyboard users -->
 	<a
 		href="#main-content"
@@ -190,31 +190,31 @@
 	<div class="mx-auto max-w-6xl space-y-5">
 		<!-- Header -->
 		<div class="text-center">
-			<h1 class="mb-2 text-3xl font-bold tracking-tight text-amber-200">
+			<h1 class="mb-2 text-3xl font-bold tracking-tight text-ink">
 				{config.title}
 			</h1>
-			<p class="text-base text-gray-400">{config.subtitle}</p>
-			<p class="mt-2 text-xs text-gray-500">
+			<p class="text-base text-ink-tertiary">{config.subtitle}</p>
+			<p class="mt-2 text-xs text-ink-muted">
 				This is a static, self-contained demo for educational purposes. It does not connect to any live systems and is not intended as a reference implementation.
 			</p>
 		</div>
 
 		<!-- Controls and Progress -->
-		<nav aria-label="Demo navigation" class="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-gray-800/50 p-3">
+		<nav aria-label="Demo navigation" class="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-surface p-3">
 			<div class="flex items-center gap-2">
 				<!-- Navigation controls - only shown in interactive mode -->
 				{#if viewMode === 'interactive'}
 					<button
 						onclick={goBack}
 						disabled={currentStep === 0}
-						class="rounded-md border border-gray-600 bg-transparent px-4 py-2 text-sm font-medium text-gray-300 transition-colors motion-reduce:transition-none hover:border-gray-500 hover:bg-gray-700 hover:text-gray-100 disabled:cursor-not-allowed disabled:border-gray-700 disabled:text-gray-600"
+						class="rounded-md border border-edge bg-transparent px-4 py-2 text-sm font-medium text-ink-secondary transition-colors motion-reduce:transition-none hover:border-edge-emphasis hover:bg-surface-raised hover:text-ink disabled:cursor-not-allowed disabled:border-edge disabled:text-ink-muted"
 					>
 						&larr; Previous
 					</button>
 					<button
 						onclick={goForward}
 						disabled={currentStep === steps.length - 1}
-						class="rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-colors motion-reduce:transition-none hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-gray-700 disabled:text-gray-500 disabled:shadow-none"
+						class="rounded-md bg-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-colors motion-reduce:transition-none hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-surface-raised disabled:text-ink-muted disabled:shadow-none"
 					>
 						Next &rarr;
 					</button>
@@ -224,21 +224,21 @@
 						aria-label={autoPlay ? 'Stop autoplay' : 'Start autoplay'}
 						class="rounded-md border px-3 py-2 text-xs font-medium transition-colors motion-reduce:transition-none {autoPlay
 							? 'border-red-500/50 bg-red-900/30 text-red-400 hover:bg-red-900/50'
-							: 'border-gray-600 bg-transparent text-gray-400 hover:border-gray-500 hover:text-gray-300'}"
+							: 'border-edge bg-transparent text-ink-tertiary hover:border-edge-emphasis hover:text-ink-secondary'}"
 					>
 						{autoPlay ? '\u23F9 Stop' : '\u25B6 Auto'}
 					</button>
-					<span class="mx-1 text-gray-600">|</span>
+					<span class="mx-1 text-ink-muted">|</span>
 
 					<!-- Replay controls -->
 					<button
 						onclick={restartDemo}
 						aria-label="Restart demo from beginning"
-						class="rounded-md border border-gray-600 bg-transparent px-3 py-2 text-xs font-medium text-gray-400 transition-colors motion-reduce:transition-none hover:border-gray-500 hover:bg-gray-700 hover:text-gray-300"
+						class="rounded-md border border-edge bg-transparent px-3 py-2 text-xs font-medium text-ink-tertiary transition-colors motion-reduce:transition-none hover:border-edge-emphasis hover:bg-surface-raised hover:text-ink-secondary"
 					>
 						\u23EE Restart
 					</button>
-					<span class="mx-1 text-gray-600">|</span>
+					<span class="mx-1 text-ink-muted">|</span>
 
 					<!-- Speed controls -->
 					<div class="flex items-center gap-1" role="group" aria-label="Playback speed">
@@ -249,13 +249,13 @@
 								aria-label={label}
 								class="rounded-md border px-2 py-2 text-xs font-medium transition-colors motion-reduce:transition-none {playbackSpeed === speed
 									? 'border-blue-500/50 bg-blue-900/30 text-blue-400'
-									: 'border-gray-600 bg-transparent text-gray-400 hover:border-gray-500 hover:text-gray-300'}"
+									: 'border-edge bg-transparent text-ink-tertiary hover:border-edge-emphasis hover:text-ink-secondary'}"
 							>
 								{emoji}
 							</button>
 						{/each}
 					</div>
-					<span class="mx-1 text-gray-600">|</span>
+					<span class="mx-1 text-ink-muted">|</span>
 				{/if}
 				<!-- View mode toggle - always visible -->
 				<button
@@ -264,7 +264,7 @@
 					aria-label={viewMode === 'interactive' ? 'Switch to transcript view' : 'Switch to interactive view'}
 					class="rounded-md border px-3 py-2 text-xs font-medium transition-colors motion-reduce:transition-none {viewMode === 'transcript'
 						? 'border-amber-500/50 bg-amber-900/30 text-amber-400 hover:bg-amber-900/50'
-						: 'border-gray-600 bg-transparent text-gray-400 hover:border-gray-500 hover:text-gray-300'}"
+						: 'border-edge bg-transparent text-ink-tertiary hover:border-edge-emphasis hover:text-ink-secondary'}"
 				>
 					{viewMode === 'transcript' ? '\u25C0 Interactive' : '\u{1F4C4} Transcript'}
 				</button>
@@ -280,11 +280,11 @@
 							<button
 								onclick={() => currentStep = i}
 								aria-label="{isCompleted ? 'Completed' : isCurrent ? 'Current' : 'Pending'} step {i + 1}: {s.title}"
-								class="flex flex-shrink-0 items-center justify-center rounded-full p-0.5 transition-all motion-reduce:transition-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 sm:p-1 {isCurrent
-									? 'h-5 w-6 bg-blue-500 ring-2 ring-blue-300 ring-offset-2 ring-offset-gray-800 sm:h-6 sm:w-8'
+								class="flex flex-shrink-0 items-center justify-center rounded-full p-0.5 transition-all motion-reduce:transition-none hover:opacity-80 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas sm:p-1 {isCurrent
+									? 'h-5 w-6 bg-blue-500 ring-2 ring-blue-300 ring-offset-2 ring-offset-surface sm:h-6 sm:w-8'
 									: isCompleted
 										? 'h-5 w-5 bg-emerald-500 sm:h-6 sm:w-6'
-										: 'h-5 w-5 border-2 border-dashed border-gray-500 bg-gray-700 sm:h-6 sm:w-6'}"
+										: 'h-5 w-5 border-2 border-dashed border-edge-emphasis bg-surface-raised sm:h-6 sm:w-6'}"
 							>
 								{#if isCompleted}
 									<svg class="h-2.5 w-2.5 text-white sm:h-3 sm:w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -292,14 +292,14 @@
 									</svg>
 								{/if}
 								{#if isPending}
-									<svg class="h-1.5 w-1.5 text-gray-400 sm:h-2 sm:w-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+									<svg class="h-1.5 w-1.5 text-ink-tertiary sm:h-2 sm:w-2" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
 										<circle cx="12" cy="12" r="3" />
 									</svg>
 								{/if}
 							</button>
 						{/each}
 					</div>
-					<span class="flex-shrink-0 text-xs font-medium text-gray-300 sm:text-sm">
+					<span class="flex-shrink-0 text-xs font-medium text-ink-secondary sm:text-sm">
 						Step {currentStep + 1} of {steps.length}
 					</span>
 				</div>
@@ -313,14 +313,14 @@
 
 		<!-- Keyboard shortcuts help -->
 		{#if viewMode === 'interactive'}
-			<div class="rounded-lg border border-gray-700/50 bg-gray-800/50 p-3 text-xs text-gray-400">
-				<div class="font-semibold text-gray-300 mb-2 sm:mb-0 sm:inline">Keyboard: </div>
+			<div class="rounded-lg border border-edge bg-surface p-3 text-xs text-ink-tertiary">
+				<div class="font-semibold text-ink-secondary mb-2 sm:mb-0 sm:inline">Keyboard: </div>
 				<div class="grid grid-cols-2 gap-x-4 gap-y-1.5 sm:inline-flex sm:flex-wrap sm:gap-x-4 sm:gap-y-2">
-					<span><kbd class="rounded bg-gray-700 px-1.5 py-0.5 font-mono">&larr;</kbd><kbd class="rounded bg-gray-700 px-1.5 py-0.5 font-mono ml-0.5">&rarr;</kbd> Navigate</span>
-					<span><kbd class="rounded bg-gray-700 px-1.5 py-0.5 font-mono">Space</kbd> Autoplay</span>
-					<span><kbd class="rounded bg-gray-700 px-1.5 py-0.5 font-mono">R</kbd> Restart</span>
-					<span><kbd class="rounded bg-gray-700 px-1.5 py-0.5 font-mono">1</kbd><kbd class="rounded bg-gray-700 px-1.5 py-0.5 font-mono ml-0.5">2</kbd><kbd class="rounded bg-gray-700 px-1.5 py-0.5 font-mono ml-0.5">3</kbd> Speed</span>
-					<span><kbd class="rounded bg-gray-700 px-1.5 py-0.5 font-mono">T</kbd> Transcript</span>
+					<span><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono">&larr;</kbd><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono ml-0.5">&rarr;</kbd> Navigate</span>
+					<span><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono">Space</kbd> Autoplay</span>
+					<span><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono">R</kbd> Restart</span>
+					<span><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono">1</kbd><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono ml-0.5">2</kbd><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono ml-0.5">3</kbd> Speed</span>
+					<span><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono">T</kbd> Transcript</span>
 				</div>
 			</div>
 		{/if}
@@ -330,17 +330,17 @@
 			<TranscriptView {steps} {config} />
 		{:else}
 			<!-- Step description -->
-			<div class="grid min-h-32 grid-cols-1 items-center gap-6 rounded-lg border border-gray-700/50 bg-gray-800 px-5 py-4 lg:grid-cols-[1fr_auto]">
+			<div class="grid min-h-32 grid-cols-1 items-center gap-6 rounded-lg border border-edge bg-surface px-5 py-4 lg:grid-cols-[1fr_auto]">
 				<!-- Left: Step info -->
 				<div class="flex items-center gap-4">
 					<div class="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-lg font-bold shadow-lg shadow-blue-500/20">
 						{step.id}
 					</div>
 					<div class="flex-1">
-						<h3 class="text-lg font-semibold text-gray-100">
+						<h3 class="text-lg font-semibold text-ink">
 							{step.title}
 						</h3>
-						<p class="mt-1 text-sm leading-relaxed text-gray-400">
+						<p class="mt-1 text-sm leading-relaxed text-ink-tertiary">
 							{step.description}
 						</p>
 					</div>
@@ -348,7 +348,7 @@
 
 				<!-- Right: Security note (if available) -->
 				{#if step.securityNote}
-					<div class="flex max-w-md items-start gap-3 self-center border-t border-gray-700 pt-4 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
+					<div class="flex max-w-md items-start gap-3 self-center border-t border-edge pt-4 lg:border-l lg:border-t-0 lg:pl-6 lg:pt-0">
 						<svg
 							class="mt-0.5 h-5 w-5 flex-shrink-0 text-amber-500"
 							fill="none"
@@ -363,7 +363,7 @@
 								d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
 							/>
 						</svg>
-						<p class="text-xs leading-relaxed text-gray-500">
+						<p class="text-xs leading-relaxed text-ink-muted">
 							{step.securityNote}
 						</p>
 					</div>
@@ -376,7 +376,7 @@
 				<div class="flex flex-col gap-3">
 					<h2 class="flex items-center gap-2.5 text-base font-semibold">
 						<svg
-							class="h-5 w-5 text-blue-400"
+							class="h-5 w-5 text-accent"
 							fill="none"
 							viewBox="0 0 24 24"
 							stroke="currentColor"
@@ -427,7 +427,7 @@
 						</svg>
 						What's happening (HTTP)
 					</h2>
-					<div class="flex flex-1 flex-col rounded-lg border border-gray-700/50 bg-gray-800 p-4">
+					<div class="flex flex-1 flex-col rounded-lg border border-edge bg-surface p-4">
 						<ActorDiagram
 							actors={step.actors}
 							actorConfig={config.actorConfig}
@@ -438,26 +438,26 @@
 							{/each}
 						</div>
 						<!-- Legend - colors from sso-demo-theme.css -->
-						<div class="mt-auto border-t border-gray-700 pt-4">
-							<h3 class="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-500">
+						<div class="mt-auto border-t border-edge pt-4">
+							<h3 class="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-muted">
 								Legend
 							</h3>
 							<div class="grid grid-cols-2 gap-x-4 gap-y-2 text-xs">
 								<div class="flex items-center gap-2">
 									<div class="h-3 w-3 rounded-sm border-l-4 border-http-request bg-http-request-dim"></div>
-									<span class="text-gray-400">Browser request</span>
+									<span class="text-ink-tertiary">Browser request</span>
 								</div>
 								<div class="flex items-center gap-2">
 									<div class="h-3 w-3 rounded-sm border-l-4 border-http-response bg-http-response-dim"></div>
-									<span class="text-gray-400">Server response</span>
+									<span class="text-ink-tertiary">Server response</span>
 								</div>
 								<div class="flex items-center gap-2">
 									<div class="h-3 w-3 rounded-sm border-l-4 border-http-server bg-http-server-dim"></div>
-									<span class="text-gray-400">Server-to-server</span>
+									<span class="text-ink-tertiary">Server-to-server</span>
 								</div>
 								<div class="flex items-center gap-2">
-									<div class="h-3 w-3 rounded-sm border-l-4 border-http-internal bg-gray-700/50"></div>
-									<span class="text-gray-400">Internal process</span>
+									<div class="h-3 w-3 rounded-sm border-l-4 border-http-internal bg-surface-raised/50"></div>
+									<span class="text-ink-tertiary">Internal process</span>
 								</div>
 							</div>
 						</div>
@@ -469,16 +469,16 @@
 			<ProtocolStack actors={step.actors} config={config.protocolStack} />
 
 			<!-- Footer -->
-			<div class="flex items-center justify-between pt-4 text-xs text-gray-600">
+			<div class="flex items-center justify-between pt-4 text-xs text-ink-muted">
 				<a
 					href={config.backLink.href}
-					class="flex items-center gap-1 text-gray-500 transition-colors hover:text-gray-300"
+					class="flex items-center gap-1 text-ink-muted transition-colors hover:text-ink-secondary"
 				>
 					&larr; {config.backLink.label}
 				</a>
 				<div class="flex items-center gap-2">
 					<span>An Authentication Flow Demo</span>
-					<span class="rounded bg-gray-800 px-1.5 py-0.5 font-mono text-gray-500">
+					<span class="rounded bg-surface px-1.5 py-0.5 font-mono text-ink-muted">
 						v{config.version}
 					</span>
 				</div>

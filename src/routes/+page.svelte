@@ -7,10 +7,10 @@
 			title: 'Enterprise SAML for Modern Apps',
 			subtitle: 'Caddy + Logto bridge OIDC\u2194SAML to Entra',
 			description:
-				"The gateway handles enterprise SSO; the application just receives authenticated requests. Step through every redirect, cookie, and token exchange in the complete flow.",
+				'The gateway handles enterprise SSO; the application just receives authenticated requests. Step through every redirect, cookie, and token exchange in the complete flow.',
 			tags: ['OIDC', 'SAML', 'Forward Auth', 'Protocol Bridging'],
-			path: '/oidc-saml-bridge/'
-		}
+			path: '/oidc-saml-bridge/',
+		},
 	];
 </script>
 
@@ -33,19 +33,15 @@
 				Interactive visualizations of enterprise SSO authentication patterns.
 			</p>
 			<p class="mt-4 max-w-2xl text-sm leading-relaxed text-ink-tertiary">
-				Each demo walks through a complete authentication flow step by step, showing what
-				the user sees alongside the HTTP exchanges happening behind the scenes. Built for
-				engineers evaluating SSO integration patterns.
+				Each demo walks through a complete authentication flow step by step, showing what the user sees alongside the
+				HTTP exchanges happening behind the scenes. Built for engineers evaluating SSO integration patterns.
 			</p>
-			<p
-				class="mt-5 rounded-lg border border-edge bg-surface px-4 py-3 text-sm leading-relaxed text-ink-tertiary"
-			>
-				The example application is <a
-					href="https://onetimesecret.com"
-					class="text-accent hover:underline">Onetime Secret</a
+			<p class="mt-5 rounded-lg border border-edge bg-surface px-4 py-3 text-sm leading-relaxed text-ink-tertiary">
+				The example application is <a href="https://onetimesecret.com" class="text-accent hover:underline"
+					>Onetime Secret</a
 				>
-				(OTS) &mdash; an open-source tool for sharing sensitive information via self-destructing
-				links. It serves as a realistic stand-in for any web application adding SSO support.
+				(OTS) &mdash; an open-source tool for sharing sensitive information via self-destructing links. It serves as a realistic
+				stand-in for any web application adding SSO support.
 			</p>
 		</header>
 
@@ -57,14 +53,10 @@
 					class="group block rounded-lg border border-edge bg-surface p-6 transition-colors hover:border-edge-emphasis hover:bg-surface-raised"
 				>
 					<div class="flex items-baseline justify-between gap-4">
-						<h2
-							class="text-lg font-semibold text-ink transition-colors group-hover:text-accent"
-						>
+						<h2 class="text-lg font-semibold text-ink transition-colors group-hover:text-accent">
 							{demo.title}
 						</h2>
-						<span class="shrink-0 text-sm text-ink-muted transition-colors group-hover:text-accent">
-							View &rarr;
-						</span>
+						<span class="shrink-0 text-sm text-ink-muted transition-colors group-hover:text-accent"> View &rarr; </span>
 					</div>
 					<p class="mt-1 text-sm text-ink-tertiary">
 						{demo.subtitle}
@@ -87,21 +79,16 @@
 
 		<!-- Coming Soon -->
 		<div class="mt-8 rounded-lg border border-edge bg-surface px-6 py-5">
-			<h3 class="text-xs font-semibold uppercase tracking-wider text-ink-muted">
-				More Coming Soon
-			</h3>
+			<h3 class="text-xs font-semibold uppercase tracking-wider text-ink-muted">More Coming Soon</h3>
 			<p class="mt-2 text-sm text-ink-tertiary">
-				Planned demos include SP-initiated SAML login, SCIM provisioning flows, and
-				multi-IdP federation patterns.
+				Planned demos include SP-initiated SAML login, SCIM provisioning flows, and multi-IdP federation patterns.
 			</p>
 		</div>
 
 		<!-- Footer -->
 		<footer class="mt-auto pt-14">
 			<div class="border-t border-edge pt-6">
-				<p class="text-sm text-ink-muted">
-					Built for technical analysts evaluating SSO integration patterns.
-				</p>
+				<p class="text-sm text-ink-muted">Built for technical analysis of SSO integration patterns.</p>
 				<p class="mt-2">
 					<a
 						href="https://onetimesecret.com"

@@ -27,7 +27,7 @@
 		<div
 			class="flex items-center gap-1.5 rounded px-3 py-1 text-xs font-medium transition-all {isActive
 				? item.activeColor + ' border-2 border-white/40 text-white shadow-md'
-				: 'border-2 border-dashed border-gray-500 bg-gray-700/50 text-gray-500'}"
+				: 'border-2 border-dashed border-edge-emphasis bg-surface-raised/50 text-ink-muted'}"
 		>
 			{#if isActive}
 				<svg class="h-3 w-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -48,7 +48,7 @@
 			{item.label}
 		</div>
 		{#if i < actorConfig.length - 1}
-			<div class="text-gray-400" aria-hidden="true">→</div>
+			<div class="text-ink-tertiary" aria-hidden="true">→</div>
 		{/if}
 	{/each}
 </div>
