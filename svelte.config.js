@@ -6,10 +6,17 @@ const config = {
 		adapter: adapter({
 			pages: 'build',
 			assets: 'build',
-			fallback: undefined,
+			fallback: '404.html',
 			precompress: false,
 			strict: true
-		})
+		}),
+		prerender: {
+			handleHttpError: ({ path }) => {
+				// Static assets aren't available during prerender crawl
+				if (path === '/favicon.svg') return;
+				throw new Error(`404 ${path}`);
+			}
+		}
 	}
 };
 

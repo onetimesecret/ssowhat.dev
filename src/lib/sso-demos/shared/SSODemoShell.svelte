@@ -77,9 +77,17 @@
 
 	// -- Keyboard handler --
 	function handleKeydown(e: KeyboardEvent) {
-		// Skip keyboard shortcuts when typing in form elements
+		// Skip keyboard shortcuts when focus is on interactive elements.
+		// Without BUTTON and A, pressing Space on a focused button fires both
+		// the native click AND toggleAutoPlay(), causing double-actions.
 		const target = e.target as HTMLElement;
-		if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT') {
+		if (
+			target.tagName === 'INPUT' ||
+			target.tagName === 'TEXTAREA' ||
+			target.tagName === 'SELECT' ||
+			target.tagName === 'BUTTON' ||
+			target.tagName === 'A'
+		) {
 			return;
 		}
 
@@ -117,15 +125,20 @@
 
 	// -- Effects --
 
-	// Autoplay: advance to next step after interval
+	// Autoplay: advance to next step after interval.
+	// currentStep must be read synchronously (outside setTimeout) so Svelte 5
+	// tracks it as a dependency. Without this, the effect never re-runs when
+	// the step advances, causing autoplay to freeze at the last step.
 	$effect(() => {
 		if (!autoPlay) return;
+		const stepIndex = currentStep;
+		const total = steps.length;
+		if (stepIndex >= total - 1) {
+			autoPlay = false;
+			return;
+		}
 		const timer = setTimeout(() => {
-			if (currentStep < steps.length - 1) {
-				currentStep += 1;
-			} else {
-				autoPlay = false;
-			}
+			currentStep = stepIndex + 1;
 		}, autoplayInterval);
 		return () => clearTimeout(timer);
 	});
@@ -136,10 +149,13 @@
 			loadingProgress = 0;
 			return;
 		}
-		// Reset to 0, then animate to 100 after brief delay for render
+		// Reset to 0, then animate to 100 after brief delay for render.
+		// Read currentStep and autoplayInterval so Svelte tracks them as
+		// dependencies — the animation must restart when the step advances
+		// or when the user changes playback speed.
 		loadingProgress = 0;
-		// Read currentStep to track it as a dependency
 		void currentStep;
+		void autoplayInterval;
 		const timer = setTimeout(() => {
 			loadingProgress = 100;
 		}, 50);

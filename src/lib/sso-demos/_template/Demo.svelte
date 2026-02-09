@@ -12,7 +12,7 @@
   // 5. Create a SvelteKit route page to host the demo (see +page.svelte)
 
   import type { Component } from 'svelte';
-  import SSODemoShell from '$lib/sso-demos/SSODemoShell.svelte';
+  import SSODemoShell from '$lib/sso-demos/shared/SSODemoShell.svelte';
   // OTS screens (constant across demos)
   import { Blank, Loading, Dashboard } from '$lib/sso-demos/screens/ots';
   // IdP screens (pick what you need)
