@@ -9,7 +9,6 @@
 			description:
 				"The gateway handles enterprise SSO; the application just receives authenticated requests. Step through every redirect, cookie, and token exchange in the complete flow.",
 			tags: ['OIDC', 'SAML', 'Forward Auth', 'Protocol Bridging'],
-			icon: '\uD83D\uDD10',
 			path: '/oidc-saml-bridge/'
 		}
 	];
@@ -23,141 +22,95 @@
 	/>
 </svelte:head>
 
-<div class="font-sans text-gray-100">
-	<div class="flex min-h-screen flex-col p-8">
-		<div class="mx-auto w-full max-w-4xl flex-1">
-			<!-- Header -->
-			<header class="mb-16 text-center">
-				<h1 class="mb-4 text-4xl font-bold tracking-tight text-amber-200">
-					SSO Authentication Flow Demos
-				</h1>
-				<p class="text-xl text-gray-300">
-					Interactive visualizations of enterprise SSO authentication patterns
-				</p>
-				<p class="mx-auto mt-6 max-w-2xl text-sm leading-relaxed text-gray-400">
-					Each demo walks through a complete authentication flow step by step, showing what
-					the user sees alongside the HTTP exchanges happening behind the scenes. Built for
-					technical analysts and engineers evaluating SSO integration patterns for their own
-					applications.
-				</p>
-				<p
-					class="mx-auto mt-4 max-w-2xl rounded-lg border border-gray-700 bg-gray-800/50 px-4 py-3 text-sm leading-relaxed text-gray-400"
+<div class="flex min-h-screen flex-col px-6 py-12 sm:px-8">
+	<div class="mx-auto w-full max-w-3xl flex-1">
+		<!-- Header -->
+		<header class="mb-14">
+			<h1 class="text-3xl font-semibold tracking-tight text-ink">
+				{pageTitle}
+			</h1>
+			<p class="mt-3 text-base text-ink-secondary">
+				Interactive visualizations of enterprise SSO authentication patterns.
+			</p>
+			<p class="mt-4 max-w-2xl text-sm leading-relaxed text-ink-tertiary">
+				Each demo walks through a complete authentication flow step by step, showing what
+				the user sees alongside the HTTP exchanges happening behind the scenes. Built for
+				engineers evaluating SSO integration patterns.
+			</p>
+			<p
+				class="mt-5 rounded-lg border border-edge bg-surface px-4 py-3 text-sm leading-relaxed text-ink-tertiary"
+			>
+				The example application is <a
+					href="https://onetimesecret.com"
+					class="text-accent hover:underline">Onetime Secret</a
 				>
-					The example application in these demos is <a
-						href="https://onetimesecret.com"
-						class="text-blue-400 hover:text-blue-300">Onetime Secret</a
-					>
-					(OTS) &mdash; an open-source tool for sharing sensitive information via self-destructing
-					links. It serves as a realistic stand-in for any web application adding SSO support.
-				</p>
-			</header>
+				(OTS) &mdash; an open-source tool for sharing sensitive information via self-destructing
+				links. It serves as a realistic stand-in for any web application adding SSO support.
+			</p>
+		</header>
 
-			<!-- Featured Demo -->
-			<div class="mb-10">
-				{#each demos as demo}
-					<a
-						href={demo.path}
-						class="group relative block overflow-hidden rounded-xl border border-gray-600 bg-gradient-to-br from-gray-800 to-gray-900 p-8 shadow-lg transition-all hover:border-blue-500 hover:shadow-2xl hover:shadow-blue-500/20"
-					>
-						<!-- Subtle gradient overlay -->
-						<div
-							class="pointer-events-none absolute inset-0 bg-gradient-to-br from-blue-600/5 to-purple-600/5"
-						></div>
-
-						<!-- Icon and Title -->
-						<div class="relative mb-6 flex items-start gap-5">
-							<div
-								class="flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 text-3xl shadow-lg shadow-purple-500/20"
-							>
-								{demo.icon}
-							</div>
-							<div class="flex-1">
-								<h2
-									class="text-2xl font-bold text-gray-100 transition-colors group-hover:text-blue-400"
-								>
-									{demo.title}
-								</h2>
-								<p class="mt-1.5 text-sm font-medium text-gray-400">
-									{demo.subtitle}
-								</p>
-							</div>
-						</div>
-
-						<!-- Description -->
-						<p class="relative mb-6 text-base leading-relaxed text-gray-300">
-							{demo.description}
-						</p>
-
-						<!-- Tags -->
-						<div class="relative flex flex-wrap gap-2">
-							{#each demo.tags as tag}
-								<span
-									class="rounded-md border border-gray-600 bg-gray-700/50 px-3 py-1.5 text-xs font-medium text-gray-200"
-								>
-									{tag}
-								</span>
-							{/each}
-						</div>
-
-						<!-- Arrow indicator -->
-						<div
-							class="relative mt-6 flex items-center text-sm font-semibold text-blue-400 transition-transform group-hover:translate-x-2"
+		<!-- Demos -->
+		<div class="space-y-4">
+			{#each demos as demo}
+				<a
+					href={demo.path}
+					class="group block rounded-lg border border-edge bg-surface p-6 transition-colors hover:border-edge-emphasis hover:bg-surface-raised"
+				>
+					<div class="flex items-baseline justify-between gap-4">
+						<h2
+							class="text-lg font-semibold text-ink transition-colors group-hover:text-accent"
 						>
-							View Demo
-							<svg
-								class="ml-2 h-4 w-4"
-								fill="none"
-								viewBox="0 0 24 24"
-								stroke="currentColor"
+							{demo.title}
+						</h2>
+						<span class="shrink-0 text-sm text-ink-muted transition-colors group-hover:text-accent">
+							View &rarr;
+						</span>
+					</div>
+					<p class="mt-1 text-sm text-ink-tertiary">
+						{demo.subtitle}
+					</p>
+					<p class="mt-3 text-sm leading-relaxed text-ink-secondary">
+						{demo.description}
+					</p>
+					<div class="mt-4 flex flex-wrap gap-1.5">
+						{#each demo.tags as tag}
+							<span
+								class="rounded border border-edge bg-surface-raised px-2 py-0.5 font-mono text-xs text-ink-tertiary"
 							>
-								<path
-									stroke-linecap="round"
-									stroke-linejoin="round"
-									stroke-width="2"
-									d="M17 8l4 4m0 0l-4 4m4-4H3"
-								/>
-							</svg>
-						</div>
-					</a>
-				{/each}
-			</div>
-
-			<!-- Coming Soon Section -->
-			<div class="rounded-xl border border-gray-700/50 bg-gray-800/30 p-6">
-				<div class="flex items-center gap-3">
-					<div
-						class="h-px flex-1 bg-gradient-to-r from-transparent via-gray-600 to-transparent"
-					></div>
-					<h3 class="text-sm font-semibold uppercase tracking-wider text-gray-400">
-						More Coming Soon
-					</h3>
-					<div
-						class="h-px flex-1 bg-gradient-to-r from-transparent via-gray-600 to-transparent"
-					></div>
-				</div>
-				<p class="mt-4 text-center text-sm text-gray-500">
-					Planned demos include SP-initiated SAML login, SCIM provisioning flows, and
-					multi-IdP federation patterns.
-				</p>
-			</div>
-
-			<!-- Footer -->
-			<footer class="mt-auto pt-16 text-center">
-				<div class="border-t border-gray-800 pt-8">
-					<p class="text-sm text-gray-500">
-						These demonstrations are designed for technical analysts evaluating SSO
-						integration patterns.
-					</p>
-					<p class="mt-3">
-						<a
-							href="https://onetimesecret.com"
-							class="text-sm text-gray-400 transition-colors hover:text-gray-200"
-						>
-							&larr; onetimesecret.com
-						</a>
-					</p>
-				</div>
-			</footer>
+								{tag}
+							</span>
+						{/each}
+					</div>
+				</a>
+			{/each}
 		</div>
+
+		<!-- Coming Soon -->
+		<div class="mt-8 rounded-lg border border-edge bg-surface px-6 py-5">
+			<h3 class="text-xs font-semibold uppercase tracking-wider text-ink-muted">
+				More Coming Soon
+			</h3>
+			<p class="mt-2 text-sm text-ink-tertiary">
+				Planned demos include SP-initiated SAML login, SCIM provisioning flows, and
+				multi-IdP federation patterns.
+			</p>
+		</div>
+
+		<!-- Footer -->
+		<footer class="mt-auto pt-14">
+			<div class="border-t border-edge pt-6">
+				<p class="text-sm text-ink-muted">
+					Built for technical analysts evaluating SSO integration patterns.
+				</p>
+				<p class="mt-2">
+					<a
+						href="https://onetimesecret.com"
+						class="text-sm text-ink-tertiary transition-colors hover:text-ink-secondary"
+					>
+						&larr; onetimesecret.com
+					</a>
+				</p>
+			</div>
+		</footer>
 	</div>
 </div>
