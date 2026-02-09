@@ -11,6 +11,25 @@
  * apply to all components using these semantic class names.
  */
 
+/*
+ * Safelist for dynamically-constructed Tailwind classes.
+ *
+ * transcript-utils.ts and ProtocolStack.svelte derive utility classes from
+ * actor activeColor tokens at runtime (e.g., `bg-${token}/30`). Because these
+ * classes never appear as complete strings in source, the Tailwind JIT scanner
+ * cannot detect them. The @source inline directive below ensures they are
+ * always included in the generated CSS.
+ *
+ * When adding a new actor color token to @theme below, also add the
+ * corresponding derived classes here.
+ */
+@source inline("bg-actor-browser/30 bg-actor-browser/10 border-actor-browser ring-actor-browser text-actor-browser bg-actor-browser border-l-actor-browser border-r-actor-browser");
+@source inline("bg-actor-caddy/30 bg-actor-caddy/10 border-actor-caddy ring-actor-caddy text-actor-caddy bg-actor-caddy border-l-actor-caddy border-r-actor-caddy");
+@source inline("bg-actor-logto/30 bg-actor-logto/10 border-actor-logto ring-actor-logto text-actor-logto bg-actor-logto border-l-actor-logto border-r-actor-logto");
+@source inline("bg-actor-entra/30 bg-actor-entra/10 border-actor-entra ring-actor-entra text-actor-entra bg-actor-entra border-l-actor-entra border-r-actor-entra");
+@source inline("bg-actor-ots/30 bg-actor-ots/10 border-actor-ots ring-actor-ots text-actor-ots bg-actor-ots border-l-actor-ots border-r-actor-ots");
+@source inline("border-l-gray-600 border-r-gray-600 bg-gray-600");
+
 @theme {
   /* HTTP Message Type Colors
    * These generate utilities: bg-http-*, border-http-*, text-http-*, ring-http-*

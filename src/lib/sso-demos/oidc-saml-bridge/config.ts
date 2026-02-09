@@ -67,6 +67,8 @@ export const protocolStack: ProtocolStackConfig = {
       to: "caddy",
       protocol: "HTTP",
       activeColor: "bg-actor-ots",
+      activeBorderLeft: "border-l-actor-ots",
+      activeBorderRight: "border-r-actor-ots",
     },
     {
       from: "caddy",
@@ -74,12 +76,16 @@ export const protocolStack: ProtocolStackConfig = {
       protocol: "OIDC",
       subProtocol: "(via oauth2-proxy)",
       activeColor: "bg-actor-caddy",
+      activeBorderLeft: "border-l-actor-caddy",
+      activeBorderRight: "border-r-actor-caddy",
     },
     {
       from: "logto",
       to: "entra",
       protocol: "SAML",
       activeColor: "bg-actor-logto",
+      activeBorderLeft: "border-l-actor-logto",
+      activeBorderRight: "border-r-actor-logto",
     },
   ],
 };
