@@ -20,6 +20,10 @@
 	/* Interactive accent — blue, unified with HTTP request color */
 	--color-accent: var(--color-blue-400);
 	--color-accent-dim: rgba(96, 165, 250, 0.15);
+
+	/* Code blocks — translucent dark surface for pre/code */
+	--color-code-surface: rgba(0, 0, 0, 0.3);
+	--color-code-surface-deep: rgba(0, 0, 0, 0.4);
 }
 
 @layer base {
