@@ -3,6 +3,24 @@
 
 	const demos = [
 		{
+			id: 'oauth2-google',
+			title: 'OAuth2 Social Login with Google',
+			subtitle: 'OTS authenticates with Google via OAuth 2.0 and OpenID Connect',
+			description:
+				'The simplest common SSO pattern: "Sign in with Google" using the Authorization Code Flow with PKCE. Walk through the redirect to Google, user consent, server-to-server token exchange, and JWT validation.',
+			tags: ['OAuth2', 'OIDC', 'Social Login', 'PKCE'],
+			path: '/oauth2-google/',
+		},
+		{
+			id: 'sp-saml-okta',
+			title: 'SP-Initiated SAML with Okta',
+			subtitle: 'OTS authenticates directly with Okta via SAML 2.0',
+			description:
+				'Direct SAML integration between application and identity provider. Follow the AuthnRequest, Okta login, signed assertion, and ACS validation in a classic enterprise SSO pattern.',
+			tags: ['SAML', 'SP-Initiated', 'Enterprise SSO'],
+			path: '/sp-saml-okta/',
+		},
+		{
 			id: 'oidc-saml-bridge',
 			title: 'Enterprise SAML for Modern Apps',
 			subtitle: 'Caddy + Logto bridge OIDC\u2194SAML to Entra',
@@ -20,6 +38,19 @@
 		name="description"
 		content="Interactive visualizations of enterprise SSO authentication patterns, protocol bridging, and identity federation"
 	/>
+	<meta property="og:title" content="ssowhat.dev — SSO Demos" />
+	<meta property="og:description" content="Interactive visualizations of enterprise SSO authentication patterns, protocol bridging, and identity federation" />
+	<meta property="og:type" content="website" />
+	<meta property="og:url" content="https://ssowhat.dev/" />
+	<meta property="og:site_name" content="ssowhat.dev" />
+	{@html `<script type="application/ld+json">${JSON.stringify({
+		"@context": "https://schema.org",
+		"@type": "WebSite",
+		"name": "ssowhat.dev",
+		"description": "Interactive visualizations of enterprise SSO authentication patterns, protocol bridging, and identity federation",
+		"url": "https://ssowhat.dev/",
+		"author": { "@type": "Organization", "name": "Onetime Secret", "url": "https://onetimesecret.com" }
+	})}</script>`}
 </svelte:head>
 
 <div class="flex min-h-screen flex-col px-6 py-12 sm:px-8">
@@ -122,7 +153,7 @@
 		<div class="mt-8 rounded-lg border border-edge bg-surface px-6 py-5">
 			<h3 class="text-xs font-semibold uppercase tracking-wider text-ink-muted">More Coming Soon</h3>
 			<p class="mt-2 text-sm text-ink-tertiary">
-				Planned demos include SP-initiated SAML login, SCIM provisioning flows, and multi-IdP federation patterns.
+				Planned demos include SCIM provisioning flows, multi-IdP federation patterns, and IdP-initiated SAML login.
 			</p>
 		</div>
 

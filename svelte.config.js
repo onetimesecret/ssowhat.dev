@@ -1,3 +1,7 @@
+// svelte.config.js — must be .js (not .ts). SvelteKit loads this via
+// Node before any TS compilation, so TypeScript syntax is not supported.
+// Use the JSDoc @type annotation below for editor type checking.
+
 import adapter from '@sveltejs/adapter-static';
 
 /** @type {import('@sveltejs/kit').Config} */

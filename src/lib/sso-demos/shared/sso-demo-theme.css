@@ -26,11 +26,13 @@
  * When adding a new actor color token to @theme below, also add the
  * corresponding derived classes here.
  */
-@source inline("bg-actor-browser/30 bg-actor-browser/10 border-actor-browser ring-actor-browser ring-actor-browser/60 text-actor-browser bg-actor-browser border-l-actor-browser border-r-actor-browser");
-@source inline("bg-actor-caddy/30 bg-actor-caddy/10 border-actor-caddy ring-actor-caddy ring-actor-caddy/60 text-actor-caddy bg-actor-caddy border-l-actor-caddy border-r-actor-caddy");
-@source inline("bg-actor-logto/30 bg-actor-logto/10 border-actor-logto ring-actor-logto ring-actor-logto/60 text-actor-logto bg-actor-logto border-l-actor-logto border-r-actor-logto");
-@source inline("bg-actor-entra/30 bg-actor-entra/10 border-actor-entra ring-actor-entra ring-actor-entra/60 text-actor-entra bg-actor-entra border-l-actor-entra border-r-actor-entra");
-@source inline("bg-actor-ots/30 bg-actor-ots/10 border-actor-ots ring-actor-ots ring-actor-ots/60 text-actor-ots bg-actor-ots border-l-actor-ots border-r-actor-ots");
+@source inline("bg-actor-browser/30 bg-actor-browser/10 border-actor-browser ring-actor-browser ring-actor-browser/60 shadow-actor-browser/25 text-actor-browser bg-actor-browser border-l-actor-browser border-r-actor-browser");
+@source inline("bg-actor-caddy/30 bg-actor-caddy/10 border-actor-caddy ring-actor-caddy ring-actor-caddy/60 shadow-actor-caddy/25 text-actor-caddy bg-actor-caddy border-l-actor-caddy border-r-actor-caddy");
+@source inline("bg-actor-logto/30 bg-actor-logto/10 border-actor-logto ring-actor-logto ring-actor-logto/60 shadow-actor-logto/25 text-actor-logto bg-actor-logto border-l-actor-logto border-r-actor-logto");
+@source inline("bg-actor-entra/30 bg-actor-entra/10 border-actor-entra ring-actor-entra ring-actor-entra/60 shadow-actor-entra/25 text-actor-entra bg-actor-entra border-l-actor-entra border-r-actor-entra");
+@source inline("bg-actor-ots/30 bg-actor-ots/10 border-actor-ots ring-actor-ots ring-actor-ots/60 shadow-actor-ots/25 text-actor-ots bg-actor-ots border-l-actor-ots border-r-actor-ots");
+@source inline("bg-actor-okta/30 bg-actor-okta/10 border-actor-okta ring-actor-okta ring-actor-okta/60 shadow-actor-okta/25 text-actor-okta bg-actor-okta border-l-actor-okta border-r-actor-okta");
+@source inline("bg-actor-google/30 bg-actor-google/10 border-actor-google ring-actor-google ring-actor-google/60 shadow-actor-google/25 text-actor-google bg-actor-google border-l-actor-google border-r-actor-google");
 @source inline("border-l-gray-600 border-r-gray-600 bg-gray-600");
 
 @theme {
@@ -61,6 +63,14 @@
   --color-actor-entra: var(--color-cyan-500);
   --color-actor-entra-600: var(--color-cyan-600);
   --color-actor-entra-700: var(--color-cyan-700);
+
+  --color-actor-okta: var(--color-indigo-500);
+  --color-actor-okta-600: var(--color-indigo-600);
+  --color-actor-okta-700: var(--color-indigo-700);
+
+  --color-actor-google: var(--color-rose-500);
+  --color-actor-google-600: var(--color-rose-600);
+  --color-actor-google-700: var(--color-rose-700);
 
   --color-actor-ots: var(--color-red-500);
   --color-actor-ots-600: var(--color-red-600);

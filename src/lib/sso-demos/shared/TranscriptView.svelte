@@ -60,7 +60,7 @@
 				<div class="flex gap-2 print:hidden">
 					<button
 						onclick={handleCopyAll}
-						class="rounded-md bg-emerald-600 px-4 py-2 text-sm font-medium text-white shadow-md transition-colors hover:bg-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:ring-offset-2 focus:ring-offset-canvas"
+						class="rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-md shadow-blue-500/20 transition-colors hover:bg-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 focus:ring-offset-canvas"
 						aria-label="Copy entire transcript to clipboard"
 					>
 						{copiedAll ? '\u2713 Copied' : 'Copy All'}

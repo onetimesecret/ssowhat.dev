@@ -109,7 +109,7 @@
 		<div class="mb-2 flex items-center justify-between">
 			<div class="flex items-center gap-3">
 				<span
-					class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-base font-bold shadow-lg print:bg-blue-600"
+					class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-700 text-base font-bold shadow-lg shadow-blue-500/25 print:bg-blue-600"
 				>
 					{step.id}
 				</span>
@@ -122,7 +122,7 @@
 			</div>
 			<button
 				onclick={handleCopyStep}
-				class="rounded-md bg-surface-raised px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:bg-surface-raised/80 focus:outline-none focus:ring-2 focus:ring-ink-tertiary print:hidden"
+				class="rounded-md border border-edge bg-transparent px-3 py-1.5 text-xs font-medium text-ink-secondary transition-colors hover:border-edge-emphasis hover:bg-surface-raised hover:text-ink focus:outline-none focus:ring-2 focus:ring-ink-tertiary focus:ring-offset-2 focus:ring-offset-surface print:hidden"
 				aria-label="Copy step {step.id} to clipboard"
 			>
 				{copied ? '\u2713 Copied' : 'Copy Step'}
@@ -136,7 +136,7 @@
 	<!-- What the user sees -->
 	<section class="mb-4">
 		<h3
-			class="mb-2 text-sm font-semibold uppercase tracking-wider text-ink-tertiary print:text-gray-700"
+			class="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-muted print:text-gray-700"
 		>
 			Location
 		</h3>
@@ -154,7 +154,7 @@
 	<!-- Active actors -->
 	<section class="mb-4">
 		<h3
-			class="mb-2 text-sm font-semibold uppercase tracking-wider text-ink-tertiary print:text-gray-700"
+			class="mb-2 text-xs font-semibold uppercase tracking-wider text-ink-muted print:text-gray-700"
 		>
 			Active Components
 			<span class="ml-2 text-xs font-normal normal-case text-ink-muted print:hidden">
@@ -172,7 +172,7 @@
 					onfocus={() => (highlightedActor = actorKey)}
 					onblur={() => (highlightedActor = null)}
 					class="cursor-pointer rounded-full border-2 px-3 py-1 text-xs font-semibold transition-all print:border print:bg-gray-100 {isHighlighted
-						? `${colorInfo.bgClass} ${colorInfo.borderClass} ${colorInfo.textClass} scale-105 shadow-lg`
+						? `${colorInfo.bgClass} ${colorInfo.borderClass} ${colorInfo.textClass} scale-105 shadow-lg ${colorInfo.shadowClass}`
 						: `${colorInfo.bgMutedClass} ${colorInfo.borderClass} ${colorInfo.textClass} hover:scale-105`}"
 					aria-pressed={isHighlighted}
 					aria-label="{actor?.label || actorKey} - click to highlight related requests"
@@ -190,7 +190,7 @@
 	<!-- HTTP exchanges -->
 	<section class="mb-4">
 		<h3
-			class="mb-3 text-sm font-semibold uppercase tracking-wider text-ink-tertiary print:text-gray-700"
+			class="mb-3 text-xs font-semibold uppercase tracking-wider text-ink-muted print:text-gray-700"
 		>
 			HTTP Exchanges
 		</h3>
