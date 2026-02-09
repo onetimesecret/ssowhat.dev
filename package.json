@@ -8,6 +8,7 @@
 		"type": "git",
 		"url": "https://github.com/onetimesecret/ssowhat.dev"
 	},
+	"packageManager": "pnpm@10.22.0",
 	"type": "module",
 	"scripts": {
 		"dev": "vite dev --host",
