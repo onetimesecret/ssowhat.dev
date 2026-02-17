@@ -5,17 +5,21 @@
 	let { children } = $props();
 
 	/**
-	 * Secure context gate.
+	 * Crypto capability gate.
 	 *
 	 * Demo components use crypto.randomUUID() for aria-controls IDs.
 	 * That API is only available in secure contexts (HTTPS, localhost).
 	 * On plain HTTP, the call throws and breaks Svelte hydration —
 	 * producing an unrecoverable white-screen error.
 	 *
+	 * We detect the actual capability (crypto.randomUUID) rather than
+	 * relying on isSecureContext, which is a proxy that can diverge
+	 * from real API availability in some environments.
+	 *
 	 * Rather than falling back to a weaker RNG (which would silently
 	 * degrade the security posture of a site that teaches security
 	 * concepts), we gate the entire app at the layout level. If the
-	 * context isn't secure, we render a friendly error explaining how
+	 * API is unavailable, we render a friendly error explaining how
 	 * to fix it. No child components are mounted, so the failing code
 	 * path is never reached.
 	 *
@@ -23,12 +27,12 @@
 	 * always has crypto available regardless of the downstream
 	 * transport.
 	 */
-	let isSecureContext = $derived(
-		!browser || globalThis.isSecureContext
+	let hasCryptoSupport = $derived(
+		!browser || typeof globalThis.crypto?.randomUUID === 'function'
 	);
 </script>
 
-{#if isSecureContext}
+{#if hasCryptoSupport}
 	{@render children()}
 {:else}
 	<!-- Secure context error: shown instead of children when crypto APIs are unavailable -->

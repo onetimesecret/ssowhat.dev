@@ -4,7 +4,7 @@
 
 	const pageTitle = 'SP-Initiated SAML with Okta';
 	const pageDescription =
-		'Interactive visualization of SP-initiated SAML 2.0 authentication: OTS redirects to Okta, user authenticates, Okta posts signed assertion back';
+		'Interactive visualization of SP-initiated SAML 2.0 authentication: the service provider redirects to Okta, the user authenticates, and Okta returns a signed SAML assertion';
 </script>
 
 <svelte:head>

@@ -115,6 +115,8 @@ Per-actor colors with `-600` and `-700` shades for gradients:
 - `actor-caddy`: lime-600
 - `actor-logto`: purple-500
 - `actor-entra`: cyan-500
+- `actor-okta`: indigo-500
+- `actor-google`: rose-500
 - `actor-ots`: red-500
 
 ## Motion
