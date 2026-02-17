@@ -26,7 +26,7 @@
 	Browser chrome wrapper component.
 	Provides the macOS-style browser window frame with traffic lights and URL bar.
 -->
-<div class="flex flex-1 flex-col overflow-hidden rounded-lg border border-gray-700 shadow-2xl">
+<div class="flex flex-1 flex-col overflow-hidden rounded-lg border border-edge shadow-2xl shadow-black/20">
 	<!-- Browser chrome -->
 	<div
 		class="flex flex-shrink-0 items-center gap-2 bg-gradient-to-b from-gray-300 to-gray-400 px-3 py-2"
@@ -47,7 +47,7 @@
 
 	<!-- Loading progress bar - like browser page load indicator -->
 	<div
-		class="h-1 w-full bg-gray-600"
+		class="h-1 w-full bg-surface-raised"
 		role="progressbar"
 		aria-valuenow={loadingProgress}
 		aria-valuemin={0}

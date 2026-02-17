@@ -3,19 +3,19 @@
   Shows the Logto authentication UI with multiple sign-in options
   including SSO, Google, and email/password.
 -->
-<div class="flex h-full items-center justify-center bg-slate-900 p-4">
-	<div class="w-full max-w-sm rounded-lg border border-slate-700 bg-slate-800 p-8 shadow-lg">
+<div class="flex h-full items-center justify-center bg-surface p-4">
+	<div class="w-full max-w-sm rounded-lg border border-edge-emphasis bg-surface-raised p-8 shadow-lg">
 		<div class="mb-6 text-center">
 			<div
 				class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-lg bg-purple-600 font-bold text-white"
 			>
 				L
 			</div>
-			<h2 class="text-xl font-semibold text-slate-100">Sign in to OTS</h2>
+			<h2 class="text-xl font-semibold text-ink">Sign in to OTS</h2>
 		</div>
 		<div class="space-y-3">
 			<button
-				class="flex w-full items-center justify-center gap-3 rounded-lg border border-slate-600 bg-slate-700 px-4 py-3 text-slate-200 hover:bg-slate-600"
+				class="flex w-full items-center justify-center gap-3 rounded-lg border border-edge-emphasis bg-surface px-4 py-3 text-ink-secondary hover:bg-surface-raised"
 			>
 				<svg class="h-5 w-5" viewBox="0 0 24 24">
 					<path
@@ -38,7 +38,7 @@
 				Continue with Google
 			</button>
 			<button
-				class="flex w-full items-center justify-center gap-3 rounded-lg bg-blue-600 px-4 py-3 font-medium text-white ring-2 ring-blue-500 ring-offset-2 ring-offset-slate-800 hover:bg-blue-500"
+				class="flex w-full items-center justify-center gap-3 rounded-lg bg-blue-600 px-4 py-3 font-medium text-white ring-2 ring-blue-500 ring-offset-2 ring-offset-surface-raised hover:bg-blue-500"
 			>
 				<svg class="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
 					<path
@@ -49,10 +49,10 @@
 			</button>
 			<div class="relative my-4">
 				<div class="absolute inset-0 flex items-center">
-					<div class="w-full border-t border-slate-600"></div>
+					<div class="w-full border-t border-edge-emphasis"></div>
 				</div>
 				<div class="relative flex justify-center text-sm">
-					<span class="bg-slate-800 px-2 text-slate-500">or</span>
+					<span class="bg-surface-raised px-2 text-ink-muted">or</span>
 				</div>
 			</div>
 			<label for="logto-email" class="sr-only">Email</label>
@@ -60,10 +60,10 @@
 				id="logto-email"
 				type="email"
 				placeholder="Email"
-				class="box-border w-full appearance-none rounded-lg border border-slate-600 bg-slate-700 px-4 py-3 text-slate-200 placeholder-slate-400 outline-none"
+				class="box-border w-full appearance-none rounded-lg border border-edge-emphasis bg-surface px-4 py-3 text-ink-secondary placeholder-ink-tertiary outline-none"
 				readonly
 			/>
-			<button class="w-full rounded-lg bg-slate-600 py-2 text-slate-200 hover:bg-slate-500">
+			<button class="w-full rounded-lg bg-surface py-2 text-ink-secondary hover:bg-surface-raised">
 				Continue
 			</button>
 		</div>

@@ -2,6 +2,7 @@
 	// src/lib/sso-demos/shared/ActorDiagram.svelte
 
 	import type { Actors, ActorConfig } from '../types.js';
+	import { getActorColorInfo } from './transcript-utils.js';
 
 	interface Props {
 		/** Current active state of each actor */
@@ -24,10 +25,11 @@
 <div class="mb-4 flex flex-wrap items-center gap-1" role="img" aria-label={ariaLabel}>
 	{#each actorConfig as item, i}
 		{@const isActive = actors[item.key]}
+		{@const colorInfo = getActorColorInfo(item.activeColor)}
 		<div
 			class="flex items-center gap-1.5 rounded px-3 py-1 text-xs font-medium transition-all {isActive
-				? item.activeColor + ' border-2 border-white/40 text-white shadow-md'
-				: 'border-2 border-dashed border-gray-500 bg-gray-700/50 text-gray-500'}"
+				? item.activeColor + ` border-2 border-white/40 text-white shadow-md ${colorInfo.shadowClass}`
+				: 'border-2 border-dashed border-edge-emphasis bg-surface-raised/50 text-ink-muted'}"
 		>
 			{#if isActive}
 				<svg class="h-3 w-3" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -48,7 +50,7 @@
 			{item.label}
 		</div>
 		{#if i < actorConfig.length - 1}
-			<div class="text-gray-400" aria-hidden="true">→</div>
+			<div class="text-ink-tertiary" aria-hidden="true">→</div>
 		{/if}
 	{/each}
 </div>

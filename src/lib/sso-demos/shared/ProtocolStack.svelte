@@ -43,8 +43,8 @@
 	Protocol stack visualization showing the authentication architecture.
 	Components light up when active, with protocol labels on connections.
 -->
-<div class="rounded-lg border border-gray-700/50 bg-gray-800 p-5">
-	<h3 class="mb-4 text-center text-xs font-semibold uppercase tracking-wider text-gray-500">
+<div class="rounded-lg border border-edge bg-surface p-5">
+	<h3 class="mb-4 text-center text-xs font-semibold uppercase tracking-wider text-ink-muted">
 		Protocol Stack
 	</h3>
 	<div class="flex items-center justify-center gap-4">
@@ -57,7 +57,7 @@
 			<div
 				class="flex min-w-[90px] flex-col items-center rounded-xl p-4 transition-all duration-300 motion-reduce:transition-none {isActive
 					? `${component.activeGradient} ${component.activeShadow} ${component.activeRing} border-2 border-white/30`
-					: 'border-2 border-dashed border-gray-500 bg-gray-700/80'}"
+					: 'border-2 border-dashed border-edge-emphasis bg-surface-raised/80'}"
 			>
 				<div class="mb-1.5 text-2xl">{component.emoji}</div>
 				<div class="text-sm font-bold">{component.label}</div>
@@ -78,7 +78,7 @@
 								<path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
 							</svg>
 						{:else}
-							<svg class="h-3 w-3 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+							<svg class="h-3 w-3 text-ink-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
 								<circle cx="12" cy="12" r="9" stroke-dasharray="4 2" />
 							</svg>
 						{/if}
@@ -88,7 +88,7 @@
 						></div>
 						<!-- Line - solid when active, dashed when inactive -->
 						<div
-							class="h-0.5 w-6 transition-all duration-300 motion-reduce:transition-none {colors.activeColor} {!connIsActive ? 'border-t-2 border-dashed border-gray-500 bg-transparent' : ''}"
+							class="h-0.5 w-6 transition-all duration-300 motion-reduce:transition-none {colors.activeColor} {!connIsActive ? 'border-t-2 border-dashed border-edge-emphasis bg-transparent' : ''}"
 						></div>
 						<!-- Right arrow -->
 						<div
@@ -96,11 +96,11 @@
 						></div>
 					</div>
 					<!-- Protocol label -->
-					<div class="text-center text-[10px] text-gray-500">
+					<div class="text-center text-[10px] text-ink-muted">
 						{connection.protocol}
 						{#if connection.subProtocol}
 							<br />
-							<span class="text-gray-400">{connection.subProtocol}</span>
+							<span class="text-ink-tertiary">{connection.subProtocol}</span>
 						{/if}
 					</div>
 				</div>

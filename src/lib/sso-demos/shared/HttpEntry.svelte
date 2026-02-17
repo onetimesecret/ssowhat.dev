@@ -10,7 +10,7 @@
 	const TYPE_STYLES: Record<HttpMessage['type'], string> = {
 		request: 'border-l-4 border-http-request bg-http-request-dim',
 		response: 'border-l-4 border-http-response bg-http-response-dim',
-		internal: 'border-l-4 border-http-internal bg-gray-800',
+		internal: 'border-l-4 border-http-internal bg-surface',
 		server: 'border-l-4 border-http-server bg-http-server-dim',
 		'server-response': 'border-l-4 border-http-server bg-http-server-dim',
 	};
@@ -39,7 +39,7 @@
 <div class="{TYPE_STYLES[entry.type]} rounded p-3 text-sm">
 	<div class="flex items-start justify-between gap-2">
 		<div class="min-w-0 flex-1">
-			<div class="mb-1 flex items-center gap-2 text-xs text-gray-400">
+			<div class="mb-1 flex items-center gap-2 text-xs text-ink-tertiary">
 				<!-- Type icon -->
 				{#if entry.type === 'request'}
 					<svg
@@ -130,7 +130,7 @@
 			{/if}
 
 			{#if entry.headers && entry.headers.length > 0}
-				<div class="mt-2 font-mono text-xs text-gray-400">
+				<div class="mt-2 font-mono text-xs text-ink-tertiary">
 					{#each entry.headers as header}
 						<div>{header}</div>
 					{/each}
@@ -139,7 +139,7 @@
 
 			{#if entry.body}
 				<pre
-					class="mt-2 overflow-x-auto rounded bg-black/30 p-2 font-mono text-xs whitespace-pre-wrap text-gray-300">{entry.body}</pre>
+					class="mt-2 overflow-x-auto rounded bg-code-surface p-2 font-mono text-xs whitespace-pre-wrap text-ink-secondary">{entry.body}</pre>
 			{/if}
 
 			{#if entry.note}
@@ -154,7 +154,7 @@
 				onclick={() => (expanded = !expanded)}
 				aria-expanded={expanded}
 				aria-controls="payload-{uniqueId}"
-				class="flex-shrink-0 rounded bg-gray-700 px-2 py-1 text-xs hover:bg-gray-600"
+				class="flex-shrink-0 rounded bg-surface-raised px-2 py-1 text-xs hover:bg-surface-raised/80"
 			>
 				{expanded ? 'Hide decoded' : 'Show decoded'}
 			</button>
@@ -162,11 +162,11 @@
 	</div>
 
 	{#if expanded && entry.expandedPayload}
-		<div id="payload-{uniqueId}" class="mt-3 border-t border-gray-700 pt-3">
-			<div class="mb-1 text-xs text-gray-400">
+		<div id="payload-{uniqueId}" class="mt-3 border-t border-edge pt-3">
+			<div class="mb-1 text-xs text-ink-tertiary">
 				{entry.expandedPayload.label}
 			</div>
-			<pre class="overflow-x-auto rounded bg-black/40 p-3 font-mono text-xs whitespace-pre-wrap text-green-300">{entry
+			<pre class="overflow-x-auto rounded bg-code-surface-deep p-3 font-mono text-xs whitespace-pre-wrap text-green-300">{entry
 					.expandedPayload.content}</pre>
 		</div>
 	{/if}

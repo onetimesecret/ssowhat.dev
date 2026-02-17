@@ -5,6 +5,6 @@
    */
 </script>
 
-<div class="flex h-full items-center justify-center bg-slate-900 text-slate-500">
+<div class="flex h-full items-center justify-center bg-surface text-ink-muted">
   <div class="animate-pulse motion-reduce:animate-none" role="status" aria-live="polite">Redirecting to login...</div>
 </div>

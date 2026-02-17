@@ -1,7 +1,8 @@
-# SSO Demo Shared Components
+# SSO Demo Components
 
-Reusable Svelte components for creating interactive authentication flow demos.
-Each demo shows the same OTS application protected by different authentication architectures.
+> Part of [ssowhat.dev](https://github.com/onetimesecret/ssowhat.dev) — interactive SSO protocol visualizations.
+
+Reusable Svelte 5 components for building step-by-step authentication flow demos. Each demo shows the same application protected by a different SSO architecture, with full HTTP transcript visibility.
 
 ## Quick Start: Creating a New Demo
 
