@@ -64,6 +64,10 @@ Reusable Svelte 5 components for building step-by-step authentication flow demos
 | `TeamMembers` | `ots-team` | Team-members admin page; Alice SCIM-provisioned, active, never logged in |
 | `TeamMembersDeactivated` | `ots-team-deactivated` | Team-members page after offboarding; Alice deactivated via SCIM |
 | `SignedOut` | `signed-out` | Post-logout confirmation page ("You've been signed out") |
+| `SignInDiscovery` | `signin` | Email-first sign-in page for home-realm discovery (accepts optional `email` prop) |
+| `SignInDiscoveryAlice` | `signin-alice` | Discovery page with `alice@contoso.com` entered |
+| `SignInDiscoveryBob` | `signin-bob` | Discovery page with `bob@acme.com` entered |
+| `DashboardBob` | `dashboard-bob` | Dashboard as Bob from Acme (`Dashboard` accepts optional `email`/`initial` props) |
 
 ### IdP Screens (Pick Per Demo)
 
@@ -72,7 +76,8 @@ Reusable Svelte 5 components for building step-by-step authentication flow demos
 | `LogtoSignIn` | `logto-signin` | Logto OIDC provider login |
 | `EntraLogin` | `entra-login` | Microsoft Entra ID login |
 | `EntraAutoSubmit` | `entra-autosubmit` | Entra SAML auto-submit |
-| `OktaLogin` | `okta-login` | Okta login page |
+| `OktaLogin` | `okta-login` | Okta login page (accepts optional `username` prop) |
+| `OktaLoginBob` | `okta-login-bob` | Okta login as Bob from Acme |
 | `OktaDashboard` | `okta-dashboard` | Okta end-user dashboard with app tiles |
 | `OktaAdminConsole` | `okta-admin` | Okta Admin Console, app Assignments tab |
 | `OktaAdminProfile` | `okta-admin-profile` | Okta Admin Console user profile editor |

@@ -11,6 +11,15 @@
     created: string;
   }
 
+  interface DashboardProps {
+    /** Signed-in user's email shown in the nav */
+    email?: string;
+    /** Avatar initial shown in the nav */
+    initial?: string;
+  }
+
+  let { email = 'alice@contoso.com', initial = 'A' }: DashboardProps = $props();
+
   let secretText = $state('');
   let recentSecrets = $state<Secret[]>([]);
 
@@ -37,9 +46,9 @@
       <span class="text-sm text-ink-tertiary">Dashboard</span>
     </div>
     <div class="flex items-center gap-3">
-      <span class="text-sm text-ink-secondary">alice@contoso.com</span>
+      <span class="text-sm text-ink-secondary">{email}</span>
       <div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 font-medium">
-        A
+        {initial}
       </div>
     </div>
   </nav>

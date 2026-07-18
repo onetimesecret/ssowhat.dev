@@ -12,6 +12,15 @@
 			path: '/oauth2-google/',
 		},
 		{
+			id: 'oidc-entra',
+			title: 'Enterprise OIDC with Entra ID',
+			subtitle: 'OTS authenticates directly with Microsoft Entra ID via OpenID Connect',
+			description:
+				'The same authorization code + PKCE dance as the Google demo, pointed at a workforce tenant: tenant-scoped endpoints, admin consent instead of a consent screen, Conditional Access at sign-in, and the tid/oid claims that actually identify an enterprise user.',
+			tags: ['OIDC', 'OAuth2', 'Entra ID', 'Enterprise SSO'],
+			path: '/oidc-entra/',
+		},
+		{
 			id: 'sp-saml-okta',
 			title: 'SP-Initiated SAML with Okta',
 			subtitle: 'OTS authenticates directly with Okta via SAML 2.0',
@@ -55,6 +64,15 @@
 				'The gateway handles enterprise SSO; the application just receives authenticated requests. Step through every redirect, cookie, and token exchange in the complete flow.',
 			tags: ['OIDC', 'SAML', 'Forward Auth', 'Protocol Bridging'],
 			path: '/oidc-saml-bridge/',
+		},
+		{
+			id: 'multi-idp-discovery',
+			title: 'Multi-IdP Home-Realm Discovery',
+			subtitle: 'One email-first sign-in page routes each organization to its own IdP',
+			description:
+				'Alice types alice@contoso.com and lands on Entra via OIDC; Bob types bob@acme.com and lands on Okta via SAML. Follow the domain lookup, the per-realm redirects, and the realm-binding checks that keep one tenant from impersonating another.',
+			tags: ['Home-Realm Discovery', 'Federation', 'OIDC', 'SAML'],
+			path: '/multi-idp-discovery/',
 		},
 	];
 </script>
@@ -184,7 +202,7 @@
 		<div class="mt-8 rounded-lg border border-edge bg-surface px-6 py-5">
 			<h3 class="text-xs font-semibold uppercase tracking-wider text-ink-muted">More Coming Soon</h3>
 			<p class="mt-2 text-sm text-ink-tertiary">
-				Planned demos include multi-IdP federation patterns.
+				Planned demos include OIDC back-channel logout and just-in-time provisioning.
 			</p>
 		</div>
 
