@@ -36,6 +36,10 @@
 @source inline("bg-actor-wiki/30 bg-actor-wiki/10 border-actor-wiki ring-actor-wiki ring-actor-wiki/60 shadow-actor-wiki/25 text-actor-wiki bg-actor-wiki border-l-actor-wiki border-r-actor-wiki");
 @source inline("border-l-gray-600 border-r-gray-600 bg-gray-600");
 
+/* ActorDiagram derives `${activeColor}-700` chip backgrounds at runtime for
+ * WCAG AA contrast with white text; safelist them for the same reason. */
+@source inline("bg-actor-browser-700 bg-actor-caddy-700 bg-actor-logto-700 bg-actor-entra-700 bg-actor-okta-700 bg-actor-google-700 bg-actor-ots-700");
+
 @theme {
   /* HTTP Message Type Colors
    * These generate utilities: bg-http-*, border-http-*, text-http-*, ring-http-*
