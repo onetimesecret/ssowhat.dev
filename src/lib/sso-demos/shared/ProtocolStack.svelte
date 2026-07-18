@@ -47,7 +47,11 @@
 	<h3 class="mb-4 text-center text-xs font-semibold uppercase tracking-wider text-ink-muted">
 		Protocol Stack
 	</h3>
-	<div class="flex items-center justify-center gap-4">
+	<!-- Wide stacks scroll inside this container on small screens instead of
+	     overflowing the page body horizontally. w-max + min-w-full keeps the
+	     row centered when it fits and scrollable when it doesn't. -->
+	<div class="overflow-x-auto">
+		<div class="flex w-max min-w-full items-center justify-center gap-4">
 		{#each components as component, i}
 			{@const isActive = actors[component.key]}
 			{@const nextComponent = components[i + 1]}
@@ -106,5 +110,6 @@
 				</div>
 			{/if}
 		{/each}
+		</div>
 	</div>
 </div>
