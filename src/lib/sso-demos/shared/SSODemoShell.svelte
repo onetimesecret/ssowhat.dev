@@ -70,14 +70,24 @@
 	let playbackSpeed = $state<PlaybackSpeed>('normal');
 	let announcement = $state('');
 	// Single-character shortcut opt-out (WCAG 2.1.4) and keyboard-help visibility
-	// (closed by default), both persisted across visits.
-	let charShortcutsEnabled = $state(readPref(CHAR_SHORTCUTS_KEY) !== 'false');
-	let kbdHelpOpen = $state(readPref(KBD_HELP_KEY) === 'open');
+	// (closed by default), both persisted across visits. Initialized to SSR-safe
+	// defaults; persisted prefs are loaded client-only in an effect below to avoid
+	// a hydration mismatch against the prerendered markup.
+	let charShortcutsEnabled = $state(true);
+	let kbdHelpOpen = $state(false);
 
 	// -- Derived --
 	let step = $derived(steps[currentStep]);
 	let autoplayInterval = $derived(SPEED_INTERVALS[playbackSpeed]);
 	let ScreenComponent = $derived(screens[step.userSees]);
+
+	// Load persisted UI prefs after mount. Effects run client-only, so reading
+	// localStorage here (rather than in the $state initializers) keeps the first
+	// client render identical to the prerendered HTML.
+	$effect(() => {
+		charShortcutsEnabled = readPref(CHAR_SHORTCUTS_KEY) !== 'false';
+		kbdHelpOpen = readPref(KBD_HELP_KEY) === 'open';
+	});
 
 	// -- Actions --
 	function toggleViewMode() {
@@ -278,7 +288,7 @@
 					<button
 						onclick={toggleAutoPlay}
 						aria-pressed={autoPlay}
-						aria-label={autoPlay ? 'Stop autoplay' : 'Auto (start autoplay)'}
+						aria-label={autoPlay ? 'Stop autoplay' : 'Start autoplay'}
 						class="rounded-md border px-3 py-2 text-xs font-medium transition-colors motion-reduce:transition-none {autoPlay
 							? 'border-red-500/50 bg-red-900/30 text-red-400 hover:bg-red-900/50'
 							: 'border-edge bg-transparent text-ink-tertiary hover:border-edge-emphasis hover:text-ink-secondary'}"
@@ -330,7 +340,7 @@
 				<button
 					onclick={toggleViewMode}
 					aria-pressed={viewMode === 'transcript'}
-					aria-label={viewMode === 'interactive' ? 'Transcript view' : 'Interactive view'}
+					aria-label={viewMode === 'interactive' ? 'Switch to transcript view' : 'Switch to interactive view'}
 					class="rounded-md border px-3 py-2 text-xs font-medium transition-colors motion-reduce:transition-none {viewMode === 'transcript'
 						? 'border-amber-500/50 bg-amber-900/30 text-amber-400 hover:bg-amber-900/50'
 						: 'border-edge bg-transparent text-ink-tertiary hover:border-edge-emphasis hover:text-ink-secondary'}"
