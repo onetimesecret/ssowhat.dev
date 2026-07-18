@@ -30,6 +30,15 @@
 			path: '/idp-saml-okta/',
 		},
 		{
+			id: 'slo-saml-okta',
+			title: 'SAML Single Logout with Okta',
+			subtitle: 'One logout click, three sessions, and no guarantee all of them die',
+			description:
+				'The most misunderstood corner of SAML: OTS sends a LogoutRequest, Okta kills its own session, and front-channel propagation to a second app silently fails. Ends with the spec’s own admission -- StatusCode: PartialLogout -- and what to rely on instead.',
+			tags: ['SAML', 'Single Logout', 'Front-Channel', 'Sessions'],
+			path: '/slo-saml-okta/',
+		},
+		{
 			id: 'scim-okta',
 			title: 'SCIM Provisioning with Okta',
 			subtitle: "Okta pushes user lifecycle changes to the app's SCIM API",

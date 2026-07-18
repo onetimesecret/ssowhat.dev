@@ -63,6 +63,7 @@ Reusable Svelte 5 components for building step-by-step authentication flow demos
 | `Dashboard` | `dashboard` | Authenticated OTS dashboard |
 | `TeamMembers` | `ots-team` | Team-members admin page; Alice SCIM-provisioned, active, never logged in |
 | `TeamMembersDeactivated` | `ots-team-deactivated` | Team-members page after offboarding; Alice deactivated via SCIM |
+| `SignedOut` | `signed-out` | Post-logout confirmation page ("You've been signed out") |
 
 ### IdP Screens (Pick Per Demo)
 
@@ -75,6 +76,7 @@ Reusable Svelte 5 components for building step-by-step authentication flow demos
 | `OktaDashboard` | `okta-dashboard` | Okta end-user dashboard with app tiles |
 | `OktaAdminConsole` | `okta-admin` | Okta Admin Console, app Assignments tab |
 | `OktaAdminProfile` | `okta-admin-profile` | Okta Admin Console user profile editor |
+| `OktaSignOut` | `okta-signout` | Okta SLO propagation page; per-app sign-out status, one app unresponsive |
 | `Auth0Universal` | `auth0-universal` | Auth0 Universal Login |
 | `GoogleOAuth` | `google-oauth` | Google OAuth consent |
 | `KeycloakLogin` | `keycloak-login` | Keycloak login page |

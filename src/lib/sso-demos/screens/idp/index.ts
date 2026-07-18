@@ -10,3 +10,4 @@ export { default as OktaAdminProfile } from './OktaAdminProfile.svelte';
 export { default as Auth0Universal } from './Auth0Universal.svelte';
 export { default as GoogleOAuth } from './GoogleOAuth.svelte';
 export { default as KeycloakLogin } from './KeycloakLogin.svelte';
+export { default as OktaSignOut } from './OktaSignOut.svelte';
