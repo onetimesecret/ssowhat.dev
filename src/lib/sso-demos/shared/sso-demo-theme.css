@@ -33,6 +33,7 @@
 @source inline("bg-actor-ots/30 bg-actor-ots/10 border-actor-ots ring-actor-ots ring-actor-ots/60 shadow-actor-ots/25 text-actor-ots bg-actor-ots border-l-actor-ots border-r-actor-ots");
 @source inline("bg-actor-okta/30 bg-actor-okta/10 border-actor-okta ring-actor-okta ring-actor-okta/60 shadow-actor-okta/25 text-actor-okta bg-actor-okta border-l-actor-okta border-r-actor-okta");
 @source inline("bg-actor-google/30 bg-actor-google/10 border-actor-google ring-actor-google ring-actor-google/60 shadow-actor-google/25 text-actor-google bg-actor-google border-l-actor-google border-r-actor-google");
+@source inline("bg-actor-wiki/30 bg-actor-wiki/10 border-actor-wiki ring-actor-wiki ring-actor-wiki/60 shadow-actor-wiki/25 text-actor-wiki bg-actor-wiki border-l-actor-wiki border-r-actor-wiki");
 @source inline("border-l-gray-600 border-r-gray-600 bg-gray-600");
 
 @theme {
@@ -75,6 +76,10 @@
   --color-actor-ots: var(--color-red-500);
   --color-actor-ots-600: var(--color-red-600);
   --color-actor-ots-700: var(--color-red-700);
+
+  --color-actor-wiki: var(--color-amber-500);
+  --color-actor-wiki-600: var(--color-amber-600);
+  --color-actor-wiki-700: var(--color-amber-700);
 
   /* Dimmed variants for backgrounds (40% opacity approximation) */
   --color-http-request-dim: color-mix(

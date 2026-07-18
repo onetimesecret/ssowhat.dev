@@ -1,7 +1,12 @@
-<!--
-  Okta login screen mockup.
-  Shows the Okta authentication UI with username/password fields.
--->
+<script lang="ts">
+	/**
+	 * Okta login screen mockup.
+	 * Shows the Okta authentication UI with username/password fields.
+	 * The username is configurable so demos can show different users.
+	 */
+	let { username = 'alice@contoso.com' }: { username?: string } = $props();
+</script>
+
 <div class="flex h-full items-center justify-center bg-slate-50 p-4">
 	<div class="w-full max-w-sm rounded-lg bg-white p-8 shadow-lg">
 		<div class="mb-6 text-center">
@@ -21,7 +26,7 @@
 				<input
 					id="okta-email"
 					type="text"
-					value="alice@contoso.com"
+					value={username}
 					readonly
 					class="w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-gray-900 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500"
 				/>
