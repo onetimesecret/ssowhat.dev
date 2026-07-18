@@ -1,6 +1,6 @@
 // src/lib/sso-demos/shared/transcript-utils.ts
 
-import type { HttpMessage, Step, DemoConfig } from '../types.js';
+import type { HttpMessage, Step, DemoConfig, ActorConfig } from '../types.js';
 
 /**
  * Color class set derived from an actor's activeColor token.
@@ -52,6 +52,40 @@ export function getActorColorInfo(activeColor?: string): ActorColorInfo {
 		textClass: `text-${token}`,
 		dotClass: `bg-${token}`
 	};
+}
+
+/**
+ * Resolves an HTTP entry from/to name to its index in actorConfig.
+ * Matches case-insensitively against each actor's label or key, first on the
+ * raw name, then with a trailing parenthetical stripped so annotated names
+ * like "Caddy (oauth2-proxy)" or "Browser (via Caddy)" resolve to their base
+ * actor. Returns -1 when the name matches no configured actor (e.g. bare
+ * pseudo-actors like "oauth2-proxy"), so callers can fall back gracefully.
+ */
+export function resolveActorIndex(name: string, actorConfig: ActorConfig[]): number {
+	const findByName = (candidate: string) => {
+		const normalized = candidate.trim().toLowerCase();
+		return actorConfig.findIndex(
+			(actor) => actor.label.toLowerCase() === normalized || actor.key.toLowerCase() === normalized
+		);
+	};
+	const rawIndex = findByName(name);
+	if (rawIndex !== -1) return rawIndex;
+	const stripped = name.replace(/\s*\(.*\)\s*$/, '');
+	if (stripped === name) return -1;
+	return findByName(stripped);
+}
+
+/**
+ * Resolves an HTTP entry from/to name to the matching actor's activeColor
+ * background class (e.g. "bg-actor-caddy"), for rendering actor dot markers.
+ * Returns null when the name matches no configured actor, so callers can fall
+ * back to plain text without a dot.
+ */
+export function resolveActorBg(name: string, actorConfig: ActorConfig[]): string | null {
+	const index = resolveActorIndex(name, actorConfig);
+	if (index === -1) return null;
+	return actorConfig[index].activeColor;
 }
 
 /**
