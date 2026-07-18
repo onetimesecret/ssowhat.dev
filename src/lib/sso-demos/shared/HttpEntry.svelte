@@ -1,5 +1,6 @@
 <script lang="ts">
-	import type { HttpMessage } from '../types.js';
+	import type { HttpMessage, ActorConfig } from '../types.js';
+	import { resolveActorBg } from './transcript-utils.js';
 
 	/**
 	 * Renders a single HTTP message in the authentication flow.
@@ -26,14 +27,21 @@
 	interface Props {
 		/** The HTTP message to display */
 		entry: HttpMessage;
+		/** Actor configuration used to color from/to names (optional) */
+		actorConfig?: ActorConfig[];
 	}
 
-	let { entry }: Props = $props();
+	let { entry, actorConfig = [] }: Props = $props();
+
+	// Method/status text color: emerald-400 fails WCAG AA (4.23:1) on the
+	// emerald-tinted bg-http-response-dim background, so response entries use
+	// the lighter emerald-300. It passes on request/server dim backgrounds.
+	let methodStatusColor = $derived(entry.type === 'response' ? 'text-emerald-300' : 'text-emerald-400');
 
 	let expanded = $state(false);
 
-	// Generate a unique ID for aria-controls (stable per component instance)
-	const uniqueId = crypto.randomUUID().slice(0, 8);
+	// Stable per-instance ID for aria-controls (consistent between prerender and hydration)
+	const uid = $props.id();
 </script>
 
 <div class="{TYPE_STYLES[entry.type]} rounded p-3 text-sm">
@@ -106,27 +114,43 @@
 				<span class="font-mono font-semibold">{TYPE_LABELS[entry.type]}</span>
 
 				{#if entry.from && entry.to}
+					{@const fromBg = resolveActorBg(entry.from, actorConfig)}
+					{@const toBg = resolveActorBg(entry.to, actorConfig)}
 					<span>
-						{entry.from} &rarr; {entry.to}
+						{#if fromBg}
+							<span class="inline-flex items-center gap-1">
+								<span class="inline-block h-2 w-2 rounded-full {fromBg}" aria-hidden="true"></span>{entry.from}
+							</span>
+						{:else}
+							{entry.from}
+						{/if}
+						&rarr;
+						{#if toBg}
+							<span class="inline-flex items-center gap-1">
+								<span class="inline-block h-2 w-2 rounded-full {toBg}" aria-hidden="true"></span>{entry.to}
+							</span>
+						{:else}
+							{entry.to}
+						{/if}
 					</span>
 				{/if}
 			</div>
 
 			{#if entry.label}
-				<div class="mb-1 font-medium text-yellow-400">
+				<div class="mb-1 font-medium text-amber-300">
 					{entry.label}
 				</div>
 			{/if}
 
 			{#if entry.method}
 				<div class="font-mono">
-					<span class="text-emerald-400">{entry.method}</span>{' '}
+					<span class={methodStatusColor}>{entry.method}</span>{' '}
 					<span class="break-all text-blue-300">{entry.url}</span>
 				</div>
 			{/if}
 
 			{#if entry.status}
-				<div class="font-mono text-emerald-400">{entry.status}</div>
+				<div class="font-mono {methodStatusColor}">{entry.status}</div>
 			{/if}
 
 			{#if entry.headers && entry.headers.length > 0}
@@ -143,7 +167,7 @@
 			{/if}
 
 			{#if entry.note}
-				<div class="mt-2 text-xs text-yellow-500/80 italic">
+				<div class="mt-2 text-xs text-amber-300/90 italic">
 					&#x1F4A1; {entry.note}
 				</div>
 			{/if}
@@ -153,7 +177,7 @@
 			<button
 				onclick={() => (expanded = !expanded)}
 				aria-expanded={expanded}
-				aria-controls="payload-{uniqueId}"
+				aria-controls="payload-{uid}"
 				class="flex-shrink-0 rounded bg-surface-raised px-2 py-1 text-xs hover:bg-surface-raised/80"
 			>
 				{expanded ? 'Hide decoded' : 'Show decoded'}
@@ -162,7 +186,7 @@
 	</div>
 
 	{#if expanded && entry.expandedPayload}
-		<div id="payload-{uniqueId}" class="mt-3 border-t border-edge pt-3">
+		<div id="payload-{uid}" class="mt-3 border-t border-edge pt-3">
 			<div class="mb-1 text-xs text-ink-tertiary">
 				{entry.expandedPayload.label}
 			</div>
