@@ -61,6 +61,8 @@ Reusable Svelte 5 components for building step-by-step authentication flow demos
 | `Blank` | `blank` | Initial redirect state ("Redirecting to login...") |
 | `Loading` | `loading` | Processing state (spinner) |
 | `Dashboard` | `dashboard` | Authenticated OTS dashboard |
+| `TeamMembers` | `ots-team` | Team-members admin page; Alice SCIM-provisioned, active, never logged in |
+| `TeamMembersDeactivated` | `ots-team-deactivated` | Team-members page after offboarding; Alice deactivated via SCIM |
 
 ### IdP Screens (Pick Per Demo)
 
@@ -71,6 +73,8 @@ Reusable Svelte 5 components for building step-by-step authentication flow demos
 | `EntraAutoSubmit` | `entra-autosubmit` | Entra SAML auto-submit |
 | `OktaLogin` | `okta-login` | Okta login page |
 | `OktaDashboard` | `okta-dashboard` | Okta end-user dashboard with app tiles |
+| `OktaAdminConsole` | `okta-admin` | Okta Admin Console, app Assignments tab |
+| `OktaAdminProfile` | `okta-admin-profile` | Okta Admin Console user profile editor |
 | `Auth0Universal` | `auth0-universal` | Auth0 Universal Login |
 | `GoogleOAuth` | `google-oauth` | Google OAuth consent |
 | `KeycloakLogin` | `keycloak-login` | Keycloak login page |

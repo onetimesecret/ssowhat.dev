@@ -30,6 +30,15 @@
 			path: '/idp-saml-okta/',
 		},
 		{
+			id: 'scim-okta',
+			title: 'SCIM Provisioning with Okta',
+			subtitle: "Okta pushes user lifecycle changes to the app's SCIM API",
+			description:
+				'Provisioning is not authentication: Okta creates, updates, group-pushes, and deactivates accounts in OTS via server-to-server REST -- no end-user browser in the protocol. See the full lifecycle, and why deactivation without session revocation leaves the door open.',
+			tags: ['SCIM 2.0', 'Provisioning', 'Lifecycle', 'REST'],
+			path: '/scim-okta/',
+		},
+		{
 			id: 'oidc-saml-bridge',
 			title: 'Enterprise SAML for Modern Apps',
 			subtitle: 'Caddy + Logto bridge OIDC\u2194SAML to Entra',
@@ -166,7 +175,7 @@
 		<div class="mt-8 rounded-lg border border-edge bg-surface px-6 py-5">
 			<h3 class="text-xs font-semibold uppercase tracking-wider text-ink-muted">More Coming Soon</h3>
 			<p class="mt-2 text-sm text-ink-tertiary">
-				Planned demos include SCIM provisioning flows and multi-IdP federation patterns.
+				Planned demos include multi-IdP federation patterns.
 			</p>
 		</div>
 
