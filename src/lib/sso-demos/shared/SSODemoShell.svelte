@@ -122,17 +122,21 @@
 
 	// -- Keyboard handler --
 	function handleKeydown(e: KeyboardEvent) {
-		// Skip keyboard shortcuts when focus is on interactive elements.
-		// Without BUTTON and A, pressing Space on a focused button fires both
-		// the native click AND toggleAutoPlay(), causing double-actions.
-		const target = e.target as HTMLElement;
-		if (
-			target.tagName === 'INPUT' ||
-			target.tagName === 'TEXTAREA' ||
-			target.tagName === 'SELECT' ||
-			target.tagName === 'BUTTON' ||
-			target.tagName === 'A'
-		) {
+		// Form fields own all their keys (arrows move the caret/selection).
+		// Buttons and links only need protection from Space and character
+		// keys — Space would fire the native click AND toggleAutoPlay() —
+		// so arrow navigation stays live after clicking any toolbar button.
+		const tag = (e.target as HTMLElement).tagName;
+		const isFormField = tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT';
+		if (!isFormField && e.key === 'ArrowLeft') {
+			goBack();
+			return;
+		}
+		if (!isFormField && e.key === 'ArrowRight') {
+			goForward();
+			return;
+		}
+		if (isFormField || tag === 'BUTTON' || tag === 'A') {
 			return;
 		}
 
@@ -142,12 +146,6 @@
 		}
 
 		switch (e.key) {
-			case 'ArrowLeft':
-				goBack();
-				break;
-			case 'ArrowRight':
-				goForward();
-				break;
 			case ' ':
 				e.preventDefault();
 				toggleAutoPlay();
