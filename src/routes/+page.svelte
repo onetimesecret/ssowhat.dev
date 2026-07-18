@@ -21,6 +21,15 @@
 			path: '/sp-saml-okta/',
 		},
 		{
+			id: 'idp-saml-okta',
+			title: 'IdP-Initiated SAML with Okta',
+			subtitle: 'User launches OTS from the Okta dashboard tile',
+			description:
+				'The mirror image of SP-initiated login: Okta pushes an unsolicited signed assertion with no AuthnRequest and no InResponseTo. See what the SP loses, why it matters, and the safer conversion pattern.',
+			tags: ['SAML', 'IdP-Initiated', 'Enterprise SSO'],
+			path: '/idp-saml-okta/',
+		},
+		{
 			id: 'oidc-saml-bridge',
 			title: 'Enterprise SAML for Modern Apps',
 			subtitle: 'Caddy + Logto bridge OIDC\u2194SAML to Entra',
@@ -157,7 +166,7 @@
 		<div class="mt-8 rounded-lg border border-edge bg-surface px-6 py-5">
 			<h3 class="text-xs font-semibold uppercase tracking-wider text-ink-muted">More Coming Soon</h3>
 			<p class="mt-2 text-sm text-ink-tertiary">
-				Planned demos include SCIM provisioning flows, multi-IdP federation patterns, and IdP-initiated SAML login.
+				Planned demos include SCIM provisioning flows and multi-IdP federation patterns.
 			</p>
 		</div>
 

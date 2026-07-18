@@ -16,6 +16,7 @@ The example application is [Onetime Secret](https://onetimesecret.com) (OTS) —
 |------|-----------|--------------|
 | [Enterprise SAML for Modern Apps](https://ssowhat.dev/oidc-saml-bridge/) | OIDC, SAML | Caddy + Logto bridge OIDC to SAML with Entra ID |
 | [SP-Initiated SAML with Okta](https://ssowhat.dev/sp-saml-okta/) | SAML 2.0 | OTS redirects to Okta, assertion posted back |
+| [IdP-Initiated SAML with Okta](https://ssowhat.dev/idp-saml-okta/) | SAML 2.0 | User clicks Okta dashboard tile, unsolicited assertion pushed to OTS |
 | [OAuth2 Social Login with Google](https://ssowhat.dev/oauth2-google/) | OAuth 2.0, OIDC | Authorization Code Flow with PKCE via Google |
 
 Planned: SCIM provisioning flows, multi-IdP federation patterns.
