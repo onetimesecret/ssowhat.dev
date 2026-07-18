@@ -236,7 +236,7 @@
 						aria-label="Restart demo from beginning"
 						class="rounded-md border border-edge bg-transparent px-3 py-2 text-xs font-medium text-ink-tertiary transition-colors motion-reduce:transition-none hover:border-edge-emphasis hover:bg-surface-raised hover:text-ink-secondary"
 					>
-						\u23EE Restart
+						{'\u23EE'} Restart
 					</button>
 					<span class="mx-1 text-ink-muted">|</span>
 

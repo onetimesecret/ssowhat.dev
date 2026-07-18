@@ -70,6 +70,7 @@ Reusable Svelte 5 components for building step-by-step authentication flow demos
 | `EntraLogin` | `entra-login` | Microsoft Entra ID login |
 | `EntraAutoSubmit` | `entra-autosubmit` | Entra SAML auto-submit |
 | `OktaLogin` | `okta-login` | Okta login page |
+| `OktaDashboard` | `okta-dashboard` | Okta end-user dashboard with app tiles |
 | `Auth0Universal` | `auth0-universal` | Auth0 Universal Login |
 | `GoogleOAuth` | `google-oauth` | Google OAuth consent |
 | `KeycloakLogin` | `keycloak-login` | Keycloak login page |
