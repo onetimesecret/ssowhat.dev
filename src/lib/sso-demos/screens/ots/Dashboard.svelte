@@ -45,9 +45,11 @@
   </nav>
   <div class="p-6">
     <div class="mb-4 rounded-lg border border-edge-emphasis bg-surface-raised p-6">
-      <h2 id="create-secret-heading" class="mb-4 text-lg font-semibold text-ink">
+      <!-- h4: this simulated screen renders under the shell's h3 "What the user
+           sees" section, so its headings sit below that in the document outline -->
+      <h4 id="create-secret-heading" class="mb-4 text-lg font-semibold text-ink">
         Create a Secret
-      </h2>
+      </h4>
       <label for="secret-text" class="sr-only">Secret content</label>
       <textarea
         id="secret-text"
@@ -65,9 +67,9 @@
       </button>
     </div>
     <div class="rounded-lg border border-edge-emphasis bg-surface-raised p-6">
-      <h2 class="mb-4 text-lg font-semibold text-ink">
+      <h4 class="mb-4 text-lg font-semibold text-ink">
         Recent Secrets
-      </h2>
+      </h4>
       {#if recentSecrets.length > 0}
         <div class="space-y-2">
           {#each recentSecrets as secret (secret.id)}
