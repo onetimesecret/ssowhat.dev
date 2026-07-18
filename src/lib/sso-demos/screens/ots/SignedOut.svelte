@@ -11,6 +11,7 @@
     <h2 class="text-lg font-semibold text-ink">You've been signed out</h2>
     <p class="mt-2 text-sm text-ink-tertiary">Your Onetime Secret session has ended.</p>
     <button
+      type="button"
       class="mt-6 rounded-lg bg-emerald-600 px-4 py-2 text-sm text-white transition-colors hover:bg-emerald-500"
     >
       Sign back in
