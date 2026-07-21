@@ -94,6 +94,17 @@ export const STEPS: Step[] = [
 			okta: true,
 			ots: true,
 		},
+		live: {
+			exchanges: [
+				{
+					staticRequestIndex: 0,
+					staticResponseIndex: 1,
+					method: 'GET',
+					path: '/scim/v2/Users?filter=userName%20eq%20%22alice%40contoso.com%22&startIndex=1&count=100',
+					headers: ['Accept: application/scim+json'],
+				},
+			],
+		},
 	},
 	{
 		id: 3,
@@ -192,6 +203,36 @@ export const STEPS: Step[] = [
 			browser: false,
 			okta: true,
 			ots: true,
+		},
+		live: {
+			exchanges: [
+				{
+					staticRequestIndex: 0,
+					staticResponseIndex: 2,
+					method: 'POST',
+					path: '/scim/v2/Users',
+					headers: ['Content-Type: application/scim+json', 'Accept: application/scim+json'],
+					body: `{
+  "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
+  "userName": "alice@contoso.com",
+  "name": {
+    "givenName": "Alice",
+    "familyName": "Smith"
+  },
+  "displayName": "Alice Smith",
+  "emails": [
+    {
+      "value": "alice@contoso.com",
+      "type": "work",
+      "primary": true
+    }
+  ],
+  "externalId": "00u1abcd2EFGHIJKL345",
+  "active": true
+}`,
+					capture: { userId: 'id' },
+				},
+			],
 		},
 	},
 	{
@@ -298,6 +339,37 @@ export const STEPS: Step[] = [
 			browser: true,
 			okta: true,
 			ots: true,
+		},
+		live: {
+			exchanges: [
+				{
+					staticRequestIndex: 1,
+					staticResponseIndex: 2,
+					method: 'PUT',
+					path: '/scim/v2/Users/{{userId}}',
+					headers: ['Content-Type: application/scim+json', 'Accept: application/scim+json'],
+					body: `{
+  "schemas": ["urn:ietf:params:scim:schemas:core:2.0:User"],
+  "id": "{{userId}}",
+  "externalId": "00u1abcd2EFGHIJKL345",
+  "userName": "alice@contoso.com",
+  "name": {
+    "givenName": "Alice",
+    "familyName": "Nguyen"
+  },
+  "displayName": "Alice Nguyen",
+  "emails": [
+    {
+      "value": "alice@contoso.com",
+      "type": "work",
+      "primary": true
+    }
+  ],
+  "active": true
+}`,
+				},
+			],
+			requires: ['userId'],
 		},
 	},
 	{
@@ -460,6 +532,29 @@ export const STEPS: Step[] = [
 			browser: true,
 			okta: true,
 			ots: true,
+		},
+		live: {
+			exchanges: [
+				{
+					staticRequestIndex: 1,
+					staticResponseIndex: 3,
+					method: 'PATCH',
+					path: '/scim/v2/Users/{{userId}}',
+					headers: ['Content-Type: application/scim+json', 'Accept: application/scim+json'],
+					body: `{
+  "schemas": ["urn:ietf:params:scim:api:messages:2.0:PatchOp"],
+  "Operations": [
+    {
+      "op": "replace",
+      "value": {
+        "active": false
+      }
+    }
+  ]
+}`,
+				},
+			],
+			requires: ['userId'],
 		},
 	},
 	{

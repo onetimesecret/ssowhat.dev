@@ -73,4 +73,6 @@ export const demoConfig: DemoConfig = {
 	},
 	actorConfig,
 	protocolStack,
+	// Presence of `live` enables the Static/Live transport toggle for this demo; defaults apply (see LiveDemoConfig).
+	live: {},
 };

@@ -29,3 +29,11 @@ jobs:
 
       - name: Build
         run: pnpm build
+
+      - name: Unit tests
+        run: pnpm test
+
+      - name: Workspace packages
+        run: |
+          pnpm -r --if-present check
+          pnpm -r --if-present test
