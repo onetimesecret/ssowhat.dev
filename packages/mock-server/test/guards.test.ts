@@ -63,16 +63,34 @@ describe('rate limits', () => {
 	});
 
 	it('per-IP limit trips across different session uuids', async () => {
-		const { app } = makeApp();
+		// trustProxy on: the LAST X-Forwarded-For hop (appended by the trusted
+		// proxy) keys the limit, so session cycling does not help.
+		const { app } = makeApp({ trustProxy: true });
 		const forwarded = { 'X-Forwarded-For': '203.0.113.9, 10.0.0.1' };
 		for (let i = 0; i < 120; i++) {
 			const res = await authedReq(app, newSession(), '/scim/v2/Users', { headers: forwarded });
 			expect(res.status).toBe(200);
 		}
-		// 121st request from the same first-hop IP: session cycling does not help.
 		const limited = await authedReq(app, newSession(), '/scim/v2/Users', { headers: forwarded });
 		expect(limited.status).toBe(429);
 		expect(limited.headers.get('Retry-After')).not.toBeNull();
+	});
+
+	it('ignores spoofed X-Forwarded-For when trustProxy is off (default)', async () => {
+		// Every request claims a different IP; without a declared trusted proxy
+		// the spoofable header must not key the limit, so all requests share
+		// the socket-derived key and the cap still trips.
+		const { app } = makeApp();
+		for (let i = 0; i < 120; i++) {
+			const res = await authedReq(app, newSession(), '/scim/v2/Users', {
+				headers: { 'X-Forwarded-For': `203.0.113.${i % 250}, 198.51.100.${i % 250}` },
+			});
+			expect(res.status).toBe(200);
+		}
+		const limited = await authedReq(app, newSession(), '/scim/v2/Users', {
+			headers: { 'X-Forwarded-For': '192.0.2.99' },
+		});
+		expect(limited.status).toBe(429);
 	});
 });
 

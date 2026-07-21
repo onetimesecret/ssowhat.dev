@@ -2,7 +2,7 @@
 
 import { describe, expect, it } from 'vitest';
 import type { HttpMessage } from '../../types.js';
-import { INFO_ABBREVIATED_BODY, diffExchange } from './diff.js';
+import { INFO_ABBREVIATED_BODY, INFO_SESSION_STATE, diffExchange } from './diff.js';
 
 const STATIC_ID = '8c1f9a2e-4b7d-4e3a-9c0d-2f5e8a716b43';
 const LIVE_ID = '7e0d1c2b-3a49-4f58-8671-90a1b2c3d4e5';
@@ -183,5 +183,49 @@ describe('diffExchange', () => {
 		const livePair = liveCreatePair();
 		const diff = diffExchange(staticPair.req, staticPair.res, livePair.req, livePair.res);
 		expect(diff.chips.filter((chip) => chip.path.toLowerCase().includes('x-demo-session'))).toEqual([]);
+	});
+
+	it('labels a non-empty live ListResponse against the empty static one as session state, not drift', () => {
+		// Rehire replay: step 2 re-run after step 3 created Alice in this live
+		// session. The non-empty list is correct session state -- one info chip
+		// instead of amber totalResults/itemsPerPage/Resources drift.
+		const emptyList =
+			'{\n  "schemas": ["urn:ietf:params:scim:api:messages:2.0:ListResponse"],\n  "totalResults": 0,\n  "startIndex": 1,\n  "itemsPerPage": 0,\n  "Resources": []\n}';
+		const staticReq: HttpMessage = {
+			type: 'server',
+			from: 'Okta',
+			to: 'OTS',
+			method: 'GET',
+			url: 'https://secrets.example.com/scim/v2/Users?filter=userName%20eq%20%22alice%40contoso.com%22',
+			headers: [AUTH_LINE, 'Accept: application/scim+json'],
+		};
+		const staticRes: HttpMessage = {
+			type: 'server-response',
+			from: 'OTS',
+			to: 'Okta',
+			status: '200 OK',
+			headers: ['Content-Type: application/scim+json'],
+			body: emptyList,
+		};
+		const liveReq: HttpMessage = { ...staticReq, url: 'http://localhost:8787/scim/v2/Users?filter=userName%20eq%20%22alice%40contoso.com%22' };
+		const liveRes: HttpMessage = {
+			...staticRes,
+			body: JSON.stringify(
+				{
+					schemas: ['urn:ietf:params:scim:api:messages:2.0:ListResponse'],
+					totalResults: 1,
+					startIndex: 1,
+					itemsPerPage: 1,
+					Resources: [JSON.parse(userBody(LIVE_ID, 'http://localhost:8787', '2026-07-21T19:00:00Z'))],
+				},
+				null,
+				2
+			),
+		};
+
+		const diff = diffExchange(staticReq, staticRes, liveReq, liveRes);
+		expect(diff.chips).toContainEqual({ path: INFO_SESSION_STATE, kind: 'info' });
+		expect(diff.chips.filter((chip) => chip.kind === 'unexpected')).toEqual([]);
+		expect(diff.identical).toBe(false);
 	});
 });

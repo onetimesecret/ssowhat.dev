@@ -200,11 +200,13 @@ export async function runExchange(
 			headers: responseHeaders,
 		};
 		if (text) {
-			try {
-				response.body = JSON.stringify(JSON.parse(text), null, 2);
-			} catch {
-				response.body = text;
-			}
+			// Preserve the server's body text verbatim. The mock server already
+			// emits the canonical 2-space form the static payloads use (including
+			// inlined single-string schemas arrays); re-serializing here would
+			// re-expand that formatting and make "byte-identical" bodies render
+			// differently in the compare panel. The diff compares structurally,
+			// so formatting never affects chips either way.
+			response.body = text;
 		}
 		return { spec, request, response, durationMs, ok: true };
 	} catch (error) {

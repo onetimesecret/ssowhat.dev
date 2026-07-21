@@ -5,16 +5,22 @@ import { RATE_LIMIT_PER_IP, RATE_LIMIT_PER_SESSION, RATE_WINDOW_MS } from '../co
 import { scimError } from '../scim/serialize.js';
 
 /**
- * Best-effort client address: first x-forwarded-for hop when behind a
- * proxy, the socket address under @hono/node-server (its bindings land on
- * c.env), 'local' for in-process test requests. Typed structurally so
- * app.ts stays free of Node-only imports.
+ * Client address for rate-limit keying. X-Forwarded-For is client-supplied
+ * and therefore spoofable, so it is honored ONLY when the operator has
+ * explicitly declared a trusted proxy in front (trustProxy) -- and then the
+ * LAST hop is used, since that is the one the trusted proxy appended.
+ * Otherwise the socket address under @hono/node-server (its bindings land
+ * on c.env) is authoritative; 'local' covers in-process test requests.
+ * Typed structurally so app.ts stays free of Node-only imports.
  */
-function clientIp(c: Context): string {
-	const forwarded = c.req.header('x-forwarded-for');
-	if (forwarded) {
-		const firstHop = forwarded.split(',')[0].trim();
-		if (firstHop) return firstHop;
+function clientIp(c: Context, trustProxy: boolean): string {
+	if (trustProxy) {
+		const forwarded = c.req.header('x-forwarded-for');
+		if (forwarded) {
+			const hops = forwarded.split(',');
+			const lastHop = hops[hops.length - 1].trim();
+			if (lastHop) return lastHop;
+		}
 	}
 	const env = c.env as { incoming?: { socket?: { remoteAddress?: string } } } | undefined;
 	return env?.incoming?.socket?.remoteAddress ?? 'local';
@@ -28,7 +34,8 @@ function clientIp(c: Context): string {
  * client cycles. Exceeding either limit gets a 429 SCIM Error envelope
  * with a Retry-After header pointing at the window end.
  */
-export function rateLimit(options: { now: () => Date }): MiddlewareHandler {
+export function rateLimit(options: { now: () => Date; trustProxy?: boolean }): MiddlewareHandler {
+	const trustProxy = options.trustProxy ?? false;
 	let windowId = -1;
 	const counts = new Map<string, number>();
 
@@ -46,7 +53,7 @@ export function rateLimit(options: { now: () => Date }): MiddlewareHandler {
 			counts.clear();
 		}
 		const retryAfter = String(Math.max(1, Math.ceil(((currentWindow + 1) * RATE_WINDOW_MS - nowMs) / 1000)));
-		if (bump(`ip:${clientIp(c)}`) > RATE_LIMIT_PER_IP) {
+		if (bump(`ip:${clientIp(c, trustProxy)}`) > RATE_LIMIT_PER_IP) {
 			return scimError(429, 'Rate limit exceeded', { headers: { 'Retry-After': retryAfter } });
 		}
 		const sessionId = c.req.header('x-demo-session');

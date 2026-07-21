@@ -23,9 +23,11 @@
 		onretry: () => void;
 		/** Opens the static-versus-live compare panel */
 		onopencompare: () => void;
+		/** Element id for the Compare button, so the shell can restore focus when the panel closes */
+		compareButtonId: string;
 	}
 
-	let { step, steps, session, onrun, onretry, onopencompare }: Props = $props();
+	let { step, steps, session, onrun, onretry, onopencompare, compareButtonId }: Props = $props();
 
 	let result = $derived(session.results[step.id]);
 	let busy = $derived(session.runningStepId !== null);
@@ -57,11 +59,18 @@
 					Retry connection
 				</button>
 			{:else}
+				<!-- aria-disabled + click guard rather than the disabled attribute:
+				     disabling the focused button mid-run would throw keyboard focus
+				     to <body> on every single live run (WCAG 2.4.3). -->
 				<button
-					onclick={onrun}
-					disabled={busy}
+					onclick={() => {
+						if (!busy) onrun();
+					}}
+					aria-disabled={busy}
 					aria-busy={busyThis}
-					class="flex items-center gap-1.5 rounded-md bg-blue-600 px-2.5 py-1 text-xs font-semibold text-white shadow-md shadow-blue-500/20 transition-colors motion-reduce:transition-none hover:bg-blue-500 disabled:cursor-not-allowed disabled:bg-surface-raised disabled:text-ink-muted disabled:shadow-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
+					class="flex items-center gap-1.5 rounded-md px-2.5 py-1 text-xs font-semibold transition-colors motion-reduce:transition-none focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas {busy
+						? 'cursor-not-allowed bg-surface-raised text-ink-muted'
+						: 'bg-blue-600 text-white shadow-md shadow-blue-500/20 hover:bg-blue-500'}"
 				>
 					{#if busyThis}
 						<svg class="h-3 w-3 animate-spin motion-reduce:animate-none" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -78,6 +87,7 @@
 			{/if}
 			{#if result}
 				<button
+					id={compareButtonId}
 					onclick={onopencompare}
 					class="rounded-md border border-emerald-500/50 bg-emerald-900/30 px-2.5 py-1 text-xs font-medium text-emerald-400 transition-colors motion-reduce:transition-none hover:bg-emerald-900/50 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-canvas"
 				>

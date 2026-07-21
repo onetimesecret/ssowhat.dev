@@ -25,6 +25,12 @@ export interface CreateAppOptions {
 	now?: () => Date;
 	/** Injectable session store; the server entry passes its own so it can run the eviction sweep. */
 	store?: SessionStore;
+	/**
+	 * Honor X-Forwarded-For (last hop) for rate-limit keying. Enable ONLY
+	 * when a trusted proxy fronts the server -- the header is client-supplied
+	 * and spoofable, so the default keys strictly off the socket address.
+	 */
+	trustProxy?: boolean;
 }
 
 /**
@@ -34,7 +40,7 @@ export interface CreateAppOptions {
  * store also evicts opportunistically on every access.
  */
 export function createApp(options: CreateAppOptions): Hono<AppEnv> {
-	const { publicBaseUrl, allowedOrigins, now = () => new Date(), store = new SessionStore() } = options;
+	const { publicBaseUrl, allowedOrigins, now = () => new Date(), store = new SessionStore(), trustProxy = false } = options;
 	const app = new Hono<AppEnv>();
 
 	// Middleware order (LEAD-DECISIONS): CORS -> body-limit -> rate-limit ->
@@ -44,7 +50,7 @@ export function createApp(options: CreateAppOptions): Hono<AppEnv> {
 		maxSize: BODY_LIMIT_BYTES,
 		onError: () => scimError(413, `Request body exceeds the ${BODY_LIMIT_BYTES / 1024} KB demo limit`),
 	});
-	const limitRate = rateLimit({ now });
+	const limitRate = rateLimit({ now, trustProxy });
 	const requireSession = demoSession({ store, now });
 
 	app.use(

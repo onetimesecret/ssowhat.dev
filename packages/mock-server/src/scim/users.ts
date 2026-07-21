@@ -61,6 +61,8 @@ function writableAttributes(body: Record<string, unknown>): Partial<StoredUser> 
 	return attrs;
 }
 
+const WRITABLE_ATTRIBUTE_NAMES = ['externalId', 'userName', 'name', 'displayName', 'emails', 'active'] as const;
+
 /** Case-insensitive userName lookup (RFC 7643: userName is caseExact=false). */
 function findByUserName(session: Session, userName: string): StoredUser | undefined {
 	const wanted = userName.toLowerCase();
@@ -218,7 +220,26 @@ export function registerUserRoutes(app: Hono<ScimEnv>, ctx: ScimRouteContext): v
 				if (!isRecord(operation.value)) {
 					return scimError(400, PATCH_SUPPORT_DETAIL, { scimType: 'invalidPath' });
 				}
-				Object.assign(updates, writableAttributes(operation.value));
+				const value: Record<string, unknown> = { ...operation.value };
+				// The Okta string-boolean quirk applies here exactly as it does
+				// on the path "active" branch.
+				if ('active' in value) {
+					const active = coerceBoolean(value.active);
+					if (active === undefined) {
+						return scimError(400, 'active must be a boolean', { scimType: 'invalidValue' });
+					}
+					value.active = active;
+				}
+				const accepted = writableAttributes(value);
+				// A supplied writable attribute that fails its type check must
+				// fail the whole request: silently dropping it would return a
+				// 200 no-op with a version bump -- for a deactivation, the
+				// worst possible failure mode.
+				const dropped = WRITABLE_ATTRIBUTE_NAMES.find((name) => name in value && !(name in accepted));
+				if (dropped !== undefined) {
+					return scimError(400, `${dropped} has an invalid value`, { scimType: 'invalidValue' });
+				}
+				Object.assign(updates, accepted);
 			} else if (typeof path === 'string' && path.toLowerCase() === 'active') {
 				const value = coerceBoolean(operation.value);
 				if (value === undefined) {

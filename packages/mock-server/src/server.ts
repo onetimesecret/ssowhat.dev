@@ -14,8 +14,12 @@ const allowedOrigins = process.env.ALLOWED_ORIGINS
 			.filter((origin) => origin !== '')
 	: DEFAULT_ALLOWED_ORIGINS;
 
+// Honor X-Forwarded-For only when the operator declares a trusted fronting
+// proxy; the header is spoofable by direct clients.
+const trustProxy = process.env.TRUST_PROXY === '1' || process.env.TRUST_PROXY?.toLowerCase() === 'true';
+
 const store = new SessionStore();
-const app = createApp({ publicBaseUrl, allowedOrigins, store });
+const app = createApp({ publicBaseUrl, allowedOrigins, store, trustProxy });
 
 // The 5-minute expired-session sweep lives here, not in app.ts, so the app
 // factory stays portable to timerless runtimes. unref() lets the process

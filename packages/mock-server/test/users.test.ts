@@ -266,6 +266,38 @@ describe('PATCH /Users/:id', () => {
 		expect(((await res.json()) as Record<string, any>).active).toBe(false);
 	});
 
+	it('PATCH no-path replace coerces the Okta "false" string-boolean for active', async () => {
+		const { app } = makeApp();
+		const session = newSession();
+		const { id } = await seedAlice(app, session);
+		const res = await authedReq(app, session, `/scim/v2/Users/${id}`, {
+			method: 'PATCH',
+			headers: JSON_HEADERS,
+			body: '{"schemas":["urn:ietf:params:scim:api:messages:2.0:PatchOp"],"Operations":[{"op":"replace","value":{"active":"false"}}]}',
+		});
+		expect(res.status).toBe(200);
+		expect(((await res.json()) as Record<string, any>).active).toBe(false);
+	});
+
+	it('PATCH no-path replace with an uncoercible active value returns 400, not a silent no-op', async () => {
+		const { app } = makeApp();
+		const session = newSession();
+		const { id } = await seedAlice(app, session);
+		const res = await authedReq(app, session, `/scim/v2/Users/${id}`, {
+			method: 'PATCH',
+			headers: JSON_HEADERS,
+			body: '{"schemas":["urn:ietf:params:scim:api:messages:2.0:PatchOp"],"Operations":[{"op":"replace","value":{"active":"nope"}}]}',
+		});
+		expect(res.status).toBe(400);
+		const body = (await res.json()) as Record<string, any>;
+		expect(body.scimType).toBe('invalidValue');
+		// The resource is untouched: still active, version unchanged.
+		const check = await authedReq(app, session, `/scim/v2/Users/${id}`);
+		const user = (await check.json()) as Record<string, any>;
+		expect(user.active).toBe(true);
+		expect(user.meta.version).toBe('W/"1"');
+	});
+
 	it('PATCH /Users/:id repeated deactivate returns 200 and still increments version', async () => {
 		const { app } = makeApp();
 		const session = newSession();

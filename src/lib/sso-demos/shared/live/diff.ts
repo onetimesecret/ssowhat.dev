@@ -28,6 +28,16 @@ export interface ExchangeDiff {
 /** Info-chip text for static bodies that are abbreviated display strings, not JSON. */
 export const INFO_ABBREVIATED_BODY = 'static body abbreviated — full body shown live only';
 
+/**
+ * Info-chip text for the rehire replay: re-running the filter step after the
+ * user was created in the same live session correctly returns a non-empty
+ * ListResponse. That is session state, not mock-server contract drift.
+ */
+export const INFO_SESSION_STATE =
+	'user already exists in this live session — rehire path; use New session for the empty result';
+
+const LIST_RESPONSE_URN = 'urn:ietf:params:scim:api:messages:2.0:ListResponse';
+
 // Allowlist of expected static<->live differences in JSON bodies: the values
 // only a real server can mint. Everything else must byte-match.
 const EXPECTED_BODY_PATHS = new Set(['id', 'meta.created', 'meta.lastModified', 'meta.version', 'meta.location']);
@@ -175,11 +185,33 @@ function compareBodies(staticBody: string | undefined, liveBody: string | undefi
 		return;
 	}
 
+	// Rehire replay: the static story expects an empty ListResponse, but the
+	// user already exists in this live session, so the live list is non-empty.
+	// Correct session state -- one info chip, not a wall of amber drift.
+	if (isEmptyListResponse(staticJson) && isNonEmptyListResponse(liveJson)) {
+		add(INFO_SESSION_STATE, 'info');
+		return;
+	}
+
 	const paths: string[] = [];
 	walkJsonDiff(staticJson, liveJson, '', paths);
 	for (const path of paths) {
 		add(path, EXPECTED_BODY_PATHS.has(path) ? 'expected' : 'unexpected');
 	}
+}
+
+function isListResponse(value: unknown): value is { totalResults?: unknown } {
+	if (value === null || typeof value !== 'object') return false;
+	const schemas = (value as Record<string, unknown>).schemas;
+	return Array.isArray(schemas) && schemas.includes(LIST_RESPONSE_URN);
+}
+
+function isEmptyListResponse(value: unknown): boolean {
+	return isListResponse(value) && value.totalResults === 0;
+}
+
+function isNonEmptyListResponse(value: unknown): boolean {
+	return isListResponse(value) && typeof value.totalResults === 'number' && value.totalResults > 0;
 }
 
 /** Recursive structural walk producing dot-paths of differing leaves. */

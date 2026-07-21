@@ -51,10 +51,29 @@ export function createLiveSession(configLive: LiveDemoConfig | undefined, steps:
 	let lastError = $state<string | null>(null);
 	let lastErrorStepId = $state<number | null>(null);
 
+	// Staleness guards (non-reactive; only read/written inside actions).
+	// generation invalidates in-flight run()s across reset(): a run that
+	// resolves after New session/Restart must not commit results, captures,
+	// or errors from the old server session into the fresh one.
+	let generation = 0;
+	// probeToken invalidates an in-flight probe once a newer probe starts or
+	// a run outcome has already settled backend: a slow /healthz answer must
+	// not overwrite fresher knowledge (e.g. flip a just-proven 'online' back
+	// to 'offline').
+	let probeToken = 0;
+
 	async function probe(): Promise<void> {
+		const token = ++probeToken;
 		backend = 'checking';
 		const status = await probeLiveBackend(resolveBaseUrl(configLive));
+		if (token !== probeToken) return;
 		backend = status === 'up' ? 'online' : 'offline';
+	}
+
+	/** Leading status code of a step result's last exchange, 0 when absent. */
+	function lastStatusCode(result: LiveStepResult): number {
+		const last = result.exchanges[result.exchanges.length - 1];
+		return Number.parseInt(last?.response?.status ?? '0', 10);
 	}
 
 	/** Finds the earlier step whose live exchanges capture the given variable. */
@@ -72,6 +91,7 @@ export function createLiveSession(configLive: LiveDemoConfig | undefined, steps:
 		// offline pill carry the news instead.
 		lastError = error;
 		lastErrorStepId = stepId;
+		probeToken++; // a run outcome supersedes any probe still in flight
 		backend = 'offline';
 	}
 
@@ -79,6 +99,7 @@ export function createLiveSession(configLive: LiveDemoConfig | undefined, steps:
 		if (!step.live || runningStepId !== null) return;
 		const sid = sessionId ?? crypto.randomUUID();
 		sessionId = sid;
+		const gen = generation;
 		runningStepId = step.id;
 		lastError = null;
 		lastErrorStepId = null;
@@ -94,18 +115,31 @@ export function createLiveSession(configLive: LiveDemoConfig | undefined, steps:
 				const prerequisite = findPrerequisiteStep(variable, step);
 				if (!prerequisite) continue; // runStep will throw naming the variable
 				const prerequisiteResult = await runStep(prerequisite, ctx, opts);
+				if (gen !== generation) return; // session was reset mid-run; discard
 				const failed = prerequisiteResult.exchanges.find((exchange) => !exchange.ok);
 				if (failed) {
 					failRun(step.id, failed.error ?? 'Live request failed');
 					return;
 				}
+				// Commit the prerequisite result under its own step id so the
+				// user can inspect what actually ran, then stop here when the
+				// server declined it (409 replay, 429 rate limit, ...): running
+				// the main step would only die on the missing capture.
 				results[prerequisite.id] = prerequisiteResult;
 				Object.assign(ctx, prerequisiteResult.captured);
 				Object.assign(captures, prerequisiteResult.captured);
+				const code = lastStatusCode(prerequisiteResult);
+				if (code < 200 || code >= 300) {
+					const last = prerequisiteResult.exchanges[prerequisiteResult.exchanges.length - 1];
+					lastError = `Prerequisite step ${prerequisite.id} returned ${last?.response?.status ?? 'no response'} — its response is shown on step ${prerequisite.id}; start a new session for a fresh run.`;
+					lastErrorStepId = step.id;
+					return;
+				}
 				ranPrerequisiteStepIds.push(prerequisite.id);
 			}
 
 			const result = await runStep(step, ctx, opts);
+			if (gen !== generation) return; // session was reset mid-run; discard
 			const failed = result.exchanges.find((exchange) => !exchange.ok);
 			if (failed) {
 				failRun(step.id, failed.error ?? 'Live request failed');
@@ -114,9 +148,12 @@ export function createLiveSession(configLive: LiveDemoConfig | undefined, steps:
 			result.ranPrerequisiteStepIds = ranPrerequisiteStepIds;
 			results[step.id] = result;
 			Object.assign(captures, result.captured);
-			// A successful round trip is proof of connectivity.
+			// A successful round trip is proof of connectivity, superseding any
+			// probe still in flight.
+			probeToken++;
 			backend = 'online';
 		} catch (error) {
+			if (gen !== generation) return; // stale error from a pre-reset run
 			// Placeholder/capture contract bugs: surfaced inline, not swallowed.
 			lastError = error instanceof Error ? error.message : String(error);
 			lastErrorStepId = step.id;
@@ -126,6 +163,7 @@ export function createLiveSession(configLive: LiveDemoConfig | undefined, steps:
 	}
 
 	function reset(): void {
+		generation++;
 		sessionId = crypto.randomUUID();
 		results = {};
 		captures = {};

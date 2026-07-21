@@ -1,5 +1,6 @@
 <script lang="ts">
 	import type { Component } from 'svelte';
+	import { tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import BrowserMockup from './BrowserMockup.svelte';
 	import HttpEntry from './HttpEntry.svelte';
@@ -91,6 +92,11 @@
 	// svelte-ignore state_referenced_locally
 	const liveSession = createLiveSession(config.live, steps);
 
+	// Hydration-stable id for the Compare button so closeCompare() can return
+	// focus to it after the takeover unmounts.
+	const uid = $props.id();
+	const compareButtonId = `${uid}-compare-open`;
+
 	// -- Derived --
 	let step = $derived(steps[currentStep]);
 	let autoplayInterval = $derived(SPEED_INTERVALS[playbackSpeed]);
@@ -154,6 +160,9 @@
 	async function probeBackend() {
 		if (!liveSession) return;
 		await liveSession.probe();
+		// The user may have toggled back to static while the probe was in
+		// flight; a backend announcement would be noise there.
+		if (transport !== 'live') return;
 		announcement =
 			liveSession.backend === 'online' ? 'Live backend connected' : 'Live backend unreachable — static traces shown';
 	}
@@ -187,9 +196,13 @@
 		announcement = `Comparison view opened for step ${step.id}`;
 	}
 
-	function closeCompare() {
+	async function closeCompare() {
 		compareOpen = false;
 		announcement = 'Comparison view closed';
+		// The panel unmounts with focus inside it; return focus to the Compare
+		// button that opened it instead of letting it drop to <body>.
+		await tick();
+		document.getElementById(compareButtonId)?.focus();
 	}
 
 	function changeSpeed(speed: PlaybackSpeed) {
@@ -678,6 +691,7 @@
 								onrun={() => void runLiveStep()}
 								onretry={() => void probeBackend()}
 								onopencompare={openCompare}
+								{compareButtonId}
 							/>
 						{/if}
 					</div>

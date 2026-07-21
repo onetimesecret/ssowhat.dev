@@ -87,7 +87,7 @@ export interface TestApp {
 }
 
 /** Fresh app + store + fake clock per test; no listener, no network. */
-export function makeApp(): TestApp {
+export function makeApp(options: { trustProxy?: boolean } = {}): TestApp {
 	let t = Date.parse('2026-01-15T10:31:02Z');
 	const store = new SessionStore();
 	const app = createApp({
@@ -95,6 +95,7 @@ export function makeApp(): TestApp {
 		allowedOrigins: [ORIGIN],
 		now: () => new Date(t),
 		store,
+		trustProxy: options.trustProxy ?? false,
 	});
 	return {
 		app,

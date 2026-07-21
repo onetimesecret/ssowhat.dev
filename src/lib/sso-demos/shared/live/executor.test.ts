@@ -151,10 +151,13 @@ describe('runExchange', () => {
 		]);
 	});
 
-	it('re-serializes JSON response body to canonical 2-space form', async () => {
-		stubFetchResponse(new Response('{"a":1,"b":{"c":[1,2]}}', { status: 200 }));
+	it('preserves the response body text verbatim (the server already emits the canonical form)', async () => {
+		// Re-serializing would re-expand the server's inlined schemas arrays and
+		// break the byte-identity the compare panel shows for step 2.
+		const canonical = '{\n  "schemas": ["urn:ietf:params:scim:api:messages:2.0:ListResponse"],\n  "totalResults": 0\n}';
+		stubFetchResponse(new Response(canonical, { status: 200 }));
 		const result = await runExchange(SPEC, {}, OPTS);
-		expect(result.response?.body).toBe(JSON.stringify({ a: 1, b: { c: [1, 2] } }, null, 2));
+		expect(result.response?.body).toBe(canonical);
 	});
 
 	it('maps a 409 response to ok:true with a renderable server-response message', async () => {
@@ -165,7 +168,7 @@ describe('runExchange', () => {
 		expect(result.error).toBeUndefined();
 		expect(result.response?.type).toBe('server-response');
 		expect(result.response?.status).toBe('409 Conflict');
-		expect(result.response?.body).toContain('"status": "409"');
+		expect(result.response?.body).toBe(envelope);
 	});
 
 	it('maps network failure to ok:false with error and no response message', async () => {
@@ -255,6 +258,20 @@ describe('runStep', () => {
 		const step = makeStep([SPEC], ['userId']);
 		await expect(runStep(step, {}, OPTS)).rejects.toThrowError(LivePlaceholderError);
 		await expect(runStep(step, {}, OPTS)).rejects.toThrowError(/userId/);
+	});
+
+	it('does not capture from a non-2xx response and keeps the prior context value', async () => {
+		// LEAD decision 4: captures apply only to 2xx. A 409 Error envelope has
+		// no `id`; a declared capture on it must neither throw nor clobber the
+		// value captured by an earlier successful run.
+		const withCapture: LiveExchangeSpec = { ...SPEC, capture: { userId: 'id' } };
+		const envelope = '{"schemas":["urn:ietf:params:scim:api:messages:2.0:Error"],"status":"409"}';
+		stubFetchResponse(new Response(envelope, { status: 409, headers: { 'Content-Type': 'application/scim+json' } }));
+		const ctx = { userId: 'earlier-run-id' };
+		const result = await runStep(makeStep([withCapture]), ctx, OPTS);
+		expect(result.exchanges[0].ok).toBe(true);
+		expect(result.captured).toEqual({});
+		expect(ctx.userId).toBe('earlier-run-id');
 	});
 });
 

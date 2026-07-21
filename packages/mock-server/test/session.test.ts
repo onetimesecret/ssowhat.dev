@@ -78,6 +78,12 @@ describe('session isolation and lifecycle', () => {
 		advance(29 * 60 * 1000);
 		const alive = await authedReq(app, session, '/scim/v2/Users');
 		expect(((await alive.json()) as Record<string, any>).totalResults).toBe(1);
+		// 29 MORE minutes idle -- 58 minutes after creation. This is what
+		// separates a sliding TTL from a fixed-from-creation one: the request
+		// above slid the deadline, so the session must still be alive here.
+		advance(29 * 60 * 1000);
+		const slid = await authedReq(app, session, '/scim/v2/Users');
+		expect(((await slid.json()) as Record<string, any>).totalResults).toBe(1);
 		// 31 more minutes idle: expired; the next request lazily recreates empty.
 		advance(31 * 60 * 1000);
 		const expired = await authedReq(app, session, '/scim/v2/Users');

@@ -32,6 +32,15 @@
 	// Stable per-instance IDs for the column headers and skip target
 	const uid = $props.id();
 
+	// The takeover replaces the main grid -- including the Compare button that
+	// opened it -- so without an explicit focus move, keyboard focus drops to
+	// <body> (WCAG 2.4.3). Focus the close button when the panel mounts; the
+	// shell restores focus to the Compare button on close.
+	let closeButton = $state<HTMLButtonElement | null>(null);
+	$effect(() => {
+		closeButton?.focus();
+	});
+
 	interface CompareRow {
 		index: number;
 		staticMessage: HttpMessage;
@@ -68,9 +77,11 @@
 	let has409 = $derived(result.exchanges.some((exchange) => exchange.response?.status?.startsWith('409')));
 </script>
 
+<!-- relative anchors the focused skip link inside the panel instead of the
+     document's top-left corner (which would also scroll-jump the viewport) -->
 <section
 	aria-label="Static versus live comparison for step {step.id}"
-	class="min-w-0 rounded-lg border border-edge bg-surface p-4"
+	class="relative min-w-0 rounded-lg border border-edge bg-surface p-4"
 >
 	<a
 		href="#compare-close-{uid}"
@@ -82,6 +93,7 @@
 	<div class="mb-4 flex flex-wrap items-center justify-between gap-3">
 		<button
 			id="compare-close-{uid}"
+			bind:this={closeButton}
 			onclick={onclose}
 			class="rounded-md border border-edge bg-transparent px-3 py-2 text-xs font-medium text-ink-tertiary transition-colors motion-reduce:transition-none hover:border-edge-emphasis hover:bg-surface-raised hover:text-ink-secondary focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-surface"
 		>

@@ -28,6 +28,7 @@ Or inside this package: `pnpm dev` (watch) / `pnpm start` (once) / `pnpm check` 
 | `PORT` | `8787` | Listen port |
 | `PUBLIC_BASE_URL` | `http://localhost:{PORT}` | Origin used **verbatim** in `Location` headers and `meta.location` |
 | `ALLOWED_ORIGINS` | `http://localhost:5184, http://localhost:4173, https://ssowhat.dev` | Comma-separated CORS allowlist |
+| `TRUST_PROXY` | unset | Set to `1`/`true` ONLY behind a trusted proxy: keys the per-IP rate limit off the last `X-Forwarded-For` hop instead of the socket address (the header is spoofable by direct clients) |
 
 ## Endpoints
 

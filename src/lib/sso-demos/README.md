@@ -337,7 +337,17 @@ sso-demos/
 │   ├── ProtocolStack.svelte
 │   ├── SSODemoShell.svelte
 │   ├── StepArticle.svelte
-│   └── TranscriptView.svelte
+│   ├── TranscriptView.svelte
+│   └── live/               # Live transport mode (opt-in per demo)
+│       ├── config.ts       # Base-URL resolution + demo token
+│       ├── executor.ts     # Replays LiveExchangeSpecs, renders HttpMessages
+│       ├── diff.ts         # Field-level static-vs-live diff chips
+│       ├── session.svelte.ts  # Runes session state (results, captures, backend)
+│       ├── TransportToggle.svelte
+│       ├── LiveStatusPill.svelte
+│       ├── LiveRunControls.svelte
+│       ├── LiveComparePanel.svelte
+│       └── DiffChips.svelte
 ├── types.ts
 └── index.ts
 ```
