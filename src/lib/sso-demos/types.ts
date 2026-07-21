@@ -46,6 +46,104 @@ export interface HttpMessage {
 }
 
 /**
+ * One real HTTP exchange to perform against the mock-integration server in
+ * live transport mode. References the static request/response pair in
+ * Step.http that it replays, so live attribution can never drift from the
+ * curated story. The executor renders results into the same HttpMessage
+ * shape the UI already consumes -- one trace schema, two producers.
+ */
+export interface LiveExchangeSpec {
+  /** Index into Step.http of the static request message this exchange replays */
+  staticRequestIndex: number;
+  /** Index into Step.http of the static response message this exchange's response pairs with */
+  staticResponseIndex: number;
+  /** HTTP method */
+  method: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  /**
+   * Path + query relative to the mock server origin, e.g.
+   * "/scim/v2/Users/{{userId}}". May contain {{placeholders}} resolved from
+   * captured variables. Query strings are pre-encoded verbatim so they
+   * byte-match the static URL encoding.
+   */
+  path: string;
+  /**
+   * Request headers as pre-formatted "Name: value" lines (the HttpMessage
+   * convention). Authorization and X-Demo-Session are injected by the
+   * executor -- do not list them here.
+   */
+  headers: string[];
+  /**
+   * Canonical request body -- the static expandedPayload.content verbatim,
+   * with {{placeholders}} where server-assigned values appear.
+   */
+  body?: string;
+  /**
+   * Values to capture from the parsed response JSON: variable name to
+   * dot-path (numeric segments index arrays), e.g. { userId: "id" }.
+   * Captures apply only to 2xx responses.
+   */
+  capture?: Record<string, string>;
+  /** Note for the live request card (defaults to the static message's note) */
+  note?: string;
+}
+
+/** Live-mode spec for a step. Absent = the step is static-only. */
+export interface LiveStepSpec {
+  /** Real exchanges to perform, in order */
+  exchanges: LiveExchangeSpec[];
+  /**
+   * Captured variables this step's exchanges consume, e.g. ["userId"].
+   * When one is missing from the session context, the shell auto-runs the
+   * earlier live step whose exchanges capture it before running this one,
+   * and says so visibly.
+   */
+  requires?: string[];
+}
+
+/** Result of executing one LiveExchangeSpec against the mock server. */
+export interface LiveExchangeResult {
+  /** The spec that was executed */
+  spec: LiveExchangeSpec;
+  /** The request actually sent, render-ready (type "server", from/to copied from the static twin) */
+  request: HttpMessage;
+  /** The response received, render-ready (type "server-response"); absent on network failure */
+  response?: HttpMessage;
+  /** Wall-clock round trip in milliseconds */
+  durationMs: number;
+  /** True when an HTTP response was received -- any status, including 4xx/5xx (those still render) */
+  ok: boolean;
+  /** Network/CORS/timeout failure description when ok is false */
+  error?: string;
+}
+
+/** Result of running all live exchanges for one step. */
+export interface LiveStepResult {
+  /** The step this result belongs to */
+  stepId: number;
+  /** Per-exchange results, in execution order */
+  exchanges: LiveExchangeResult[];
+  /** Variables captured during this step (merged into the session context) */
+  captured: Record<string, string>;
+  /** Step ids auto-run first to satisfy `requires` (empty when none) */
+  ranPrerequisiteStepIds: number[];
+  /** ISO timestamp of the run */
+  at: string;
+}
+
+/**
+ * Live-transport configuration for a demo. Presence enables the
+ * Static/Live toggle; absence leaves the demo exactly as it was.
+ */
+export interface LiveDemoConfig {
+  /**
+   * Mock server origin override. When absent, the runtime default applies:
+   * the ssowhat:mock-server-url localStorage key, then the build-time
+   * VITE_MOCK_SERVER_URL value, then http://localhost:8787.
+   */
+  baseUrl?: string;
+}
+
+/**
  * Generic actor state - tracks which system components are active in a step.
  * Keys are actor identifiers, values indicate if that actor is active.
  */
@@ -133,6 +231,12 @@ export interface Step {
   http: HttpMessage[];
   /** Which system components are active/involved in this step */
   actors: Actors;
+  /**
+   * Optional live-transport spec: real exchanges the browser can perform
+   * against the mock-integration server for this step. Static remains the
+   * authoritative default; steps without a spec simply stay static-only.
+   */
+  live?: LiveStepSpec;
 }
 
 /**
@@ -154,4 +258,9 @@ export interface DemoConfig {
   actorConfig: ActorConfig[];
   /** Protocol stack visualization configuration */
   protocolStack: ProtocolStackConfig;
+  /**
+   * Live-transport configuration. Presence enables the Static/Live toggle
+   * for this demo; absence leaves the demo fully static as before.
+   */
+  live?: LiveDemoConfig;
 }

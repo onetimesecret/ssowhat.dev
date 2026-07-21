@@ -16,7 +16,10 @@
 		"preview": "vite preview",
 		"prepare": "svelte-kit sync || echo ''",
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
-		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch"
+		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
+		"test": "vitest run",
+		"test:all": "pnpm run test && pnpm -r --if-present test",
+		"mock:dev": "pnpm --filter @ssowhat/mock-server dev"
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-static": "^3.0.10",
@@ -29,6 +32,7 @@
 		"svelte-check": "^4.7.3",
 		"tailwindcss": "^4.3.3",
 		"typescript": "^5.9.3",
-		"vite": "^8.1.5"
+		"vite": "^8.1.5",
+		"vitest": "^4.1.10"
 	}
 }
