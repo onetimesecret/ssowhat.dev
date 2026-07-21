@@ -3,9 +3,11 @@
 import type { LiveDemoConfig } from '../../types.js';
 
 /**
- * localStorage key that overrides the mock-server origin at runtime, so a
- * deployed static build can be pointed at an alternate backend without a
- * rebuild.
+ * localStorage key that overrides the mock-server origin at runtime. The
+ * site's CSP connect-src is an allowlist (src/app.html), so this can only
+ * switch between origins already listed there -- localhost:8787 and the
+ * hosted mock origin on a deployed build. Pointing at any other origin
+ * requires adding it to that allowlist and rebuilding.
  */
 export const MOCK_SERVER_URL_KEY = 'ssowhat:mock-server-url';
 

@@ -278,7 +278,7 @@ Opting in takes two things:
 
 The static trace remains authoritative: SSR and the default view always render the static fixtures, navigation and autoplay never fire network requests, and live runs are explicit per-step user actions. The SCIM demo (`scim-okta/`) is the pilot.
 
-The mock server's endpoint, session, and rate-limit contract is documented in [`packages/mock-server/README.md`](../../../packages/mock-server/README.md). The server origin resolves in this order: the `ssowhat:mock-server-url` localStorage key (runtime override, no rebuild needed), then `config.live.baseUrl`, then the build-time `VITE_MOCK_SERVER_URL` env value, then `http://localhost:8787`.
+The mock server's endpoint, session, and rate-limit contract is documented in [`packages/mock-server/README.md`](../../../packages/mock-server/README.md). The server origin resolves in this order: the `ssowhat:mock-server-url` localStorage key (runtime override), then `config.live.baseUrl`, then the build-time `VITE_MOCK_SERVER_URL` env value, then `http://localhost:8787`. Whatever wins must also be in the site's CSP `connect-src` allowlist (`src/app.html`) — the deployed build ships with `http://localhost:8787` and the hosted mock origin allowlisted, so the override switches between those without a rebuild; any other origin needs a CSP entry and a rebuild.
 
 ## Keyboard Shortcuts
 

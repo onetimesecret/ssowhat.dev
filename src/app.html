@@ -5,6 +5,13 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<meta name="theme-color" content="#111827" />
 		<meta name="author" content="Onetime Secret (onetimesecret.com)" />
+		<!-- connect-src is a deliberate allowlist for the live demo transport:
+		     http://localhost:8787 lets a visitor point the deployed site at their
+		     own locally-running mock server (packages/mock-server), and
+		     scim-mock.ssowhat.dev is the hosted mock. The mock server holds no
+		     real data and accepts only a public throwaway token, so the localhost
+		     allowance exposes nothing a visitor doesn't already run themselves.
+		     Any other live backend origin must be added here at build time. -->
 		<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self' http://localhost:8787 https://scim-mock.ssowhat.dev; base-uri 'self'; form-action 'none';" />
 		<meta http-equiv="X-Content-Type-Options" content="nosniff" />
 		<meta name="referrer" content="strict-origin-when-cross-origin" />

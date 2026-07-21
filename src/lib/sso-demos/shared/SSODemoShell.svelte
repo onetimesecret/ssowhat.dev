@@ -117,7 +117,11 @@
 		}
 	});
 
-	// The compare takeover is a per-step view; close it whenever the step changes.
+	// The compare takeover is a per-step view; close it whenever the step
+	// changes. The only way to change steps while it is open is pointer
+	// navigation (shortcuts are modal-guarded and opening the takeover stops
+	// autoplay), and there focus stays on the control the user clicked, so
+	// closing without closeCompare()'s focus restoration is safe.
 	$effect(() => {
 		void currentStep;
 		compareOpen = false;
@@ -192,6 +196,9 @@
 	}
 
 	function openCompare() {
+		// Autoplay advancing the step would unmount the takeover mid-read and
+		// drop focus with it, so opening the comparison stops the slideshow.
+		autoPlay = false;
 		compareOpen = true;
 		announcement = `Comparison view opened for step ${step.id}`;
 	}
@@ -242,6 +249,10 @@
 			closeCompare();
 			return;
 		}
+		// The takeover is modal: while it is open every other shortcut is
+		// ignored, so navigation can't unmount the panel from under the user
+		// and drop their focus to <body>.
+		if (compareOpen) return;
 		// Form fields own all their keys (arrows move the caret/selection).
 		// Buttons and links only need protection from Space and character
 		// keys — Space would fire the native click AND toggleAutoPlay() —
