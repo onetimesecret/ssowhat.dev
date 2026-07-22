@@ -54,8 +54,13 @@ jobs:
           additional_permissions: |
             actions: read
 
-          # Optional: Specify model (defaults to Claude Sonnet 4, uncomment for Claude Opus 4)
-          # model: "claude-opus-4-20250514"
+          # Pin a current, non-dated model alias. The action's previous default
+          # (claude-sonnet-4-20250514) was retired and now 404s, failing the job
+          # before it starts; a non-dated alias won't rot the same way.
+          # fallback_model is a second current alias the action uses if the
+          # primary is briefly unavailable.
+          model: "claude-sonnet-5"
+          fallback_model: "claude-opus-4-8"
 
           # Optional: Customize the trigger phrase (default: @claude)
           # trigger_phrase: "/claude"
