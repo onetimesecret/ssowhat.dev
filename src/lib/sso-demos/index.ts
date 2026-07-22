@@ -23,4 +23,9 @@ export type {
   ProtocolStackConfig,
   Step,
   DemoConfig,
+  LiveExchangeSpec,
+  LiveStepSpec,
+  LiveExchangeResult,
+  LiveStepResult,
+  LiveDemoConfig,
 } from "./types.js";

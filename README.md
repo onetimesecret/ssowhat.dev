@@ -18,7 +18,7 @@ The example application is [Onetime Secret](https://onetimesecret.com) (OTS) —
 | [SP-Initiated SAML with Okta](https://ssowhat.dev/sp-saml-okta/) | SAML 2.0 | OTS redirects to Okta, assertion posted back |
 | [IdP-Initiated SAML with Okta](https://ssowhat.dev/idp-saml-okta/) | SAML 2.0 | User clicks Okta dashboard tile, unsolicited assertion pushed to OTS |
 | [OAuth2 Social Login with Google](https://ssowhat.dev/oauth2-google/) | OAuth 2.0, OIDC | Authorization Code Flow with PKCE via Google |
-| [SCIM Provisioning with Okta](https://ssowhat.dev/scim-okta/) | SCIM 2.0 | Okta pushes user lifecycle changes (create, update, deactivate) to the OTS SCIM API |
+| [SCIM Provisioning with Okta](https://ssowhat.dev/scim-okta/) | SCIM 2.0 | Okta pushes user lifecycle changes (create, update, deactivate) to the OTS SCIM API — live-mode pilot |
 
 Planned: multi-IdP federation patterns.
 
@@ -30,6 +30,16 @@ pnpm dev
 ```
 
 Open [localhost:5184](http://localhost:5184).
+
+## Live mock-integration mode
+
+The demos are curated static traces — the map. Demos that opt in can also replay their server-to-server calls against a real mock server — the territory — and show both side by side. Live results render through the same trace schema as the static fixtures: one schema, two producers. The SCIM demo is the pilot.
+
+```bash
+pnpm mock:dev
+```
+
+Then flip the Static/Live toggle in the demo. Live mode is opt-in per demo and per click; the site itself is fully static and never depends on the backend — when the server is unreachable, the static traces render exactly as before. Server contract: [packages/mock-server/README.md](packages/mock-server/README.md).
 
 ## Building
 
