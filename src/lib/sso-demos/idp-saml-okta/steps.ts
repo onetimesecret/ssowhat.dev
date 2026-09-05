@@ -21,6 +21,11 @@ import type { Step } from '$lib/sso-demos';
  * Bindings:
  *   SAMLResponse -> HTTP-POST (base64-encoded in auto-submit form)
  *   (no AuthnRequest exists in this flow)
+ *
+ * The HTTP traces below are reconstructed examples, not packet captures.
+ * The SAML messages follow the specification, but cookie names, endpoint
+ * paths, redirect chains, and response bodies on the Okta side vary by
+ * org configuration and product version.
  */
 export const STEPS: Step[] = [
 	{
@@ -63,9 +68,9 @@ export const STEPS: Step[] = [
 		userSees: 'okta-dashboard',
 		urlBar: 'https://contoso.okta.com/app/UserHome',
 		description:
-			"User enters credentials (and completes MFA if the org-wide sign-on policy requires it). Okta establishes an IdP session and renders the end-user dashboard: a grid of tiles for every application assigned to this user. The OTS tile is among them.",
+			"User enters credentials (and completes MFA if the org-wide sign-on policy requires it), and Okta establishes an IdP session before rendering the end-user dashboard: a grid of tiles for every application assigned to this user. The OTS tile is among them. The trace below uses the Classic Engine Authentication API (/api/v1/authn) because it shows credentials in, session out in two exchanges. Identity Engine hosted login reaches the same end state through an Interaction Code (IDX) sequence over /oauth2/v1/interact and /idp/idx/*, which is longer and does not change anything about the SAML behaviour this demo is actually about.",
 		securityNote:
-			'The Okta session created here is the keys-to-the-kingdom credential: from this dashboard the user can silently SSO into every assigned app without re-entering a password. This is why IdP session protection (MFA, device trust, session lifetime limits) matters more than any individual SP session.',
+			'Authentication and session establishment are two things, and the API separates them: /api/v1/authn returns a single-use sessionToken, which only becomes the sid browser cookie once it is redeemed. The Okta session created that way is the keys-to-the-kingdom credential: from this dashboard the user can silently SSO into every assigned app without re-entering a password. This is why IdP session protection (MFA, device trust, session lifetime limits) matters more than any individual SP session.',
 		http: [
 			{
 				type: 'request',
@@ -75,19 +80,36 @@ export const STEPS: Step[] = [
 				url: 'https://contoso.okta.com/api/v1/authn',
 				headers: ['Content-Type: application/json'],
 				body: '{\n  "username": "alice@contoso.com",\n  "password": "********"\n}',
-				note: 'Credentials submitted to Okta authentication API',
+				note: 'Credentials submitted to the Classic Engine Authentication API. Illustrative: an Identity Engine org reaches the same outcome through the IDX endpoints instead.',
 			},
 			{
 				type: 'response',
 				from: 'Okta',
 				to: 'Browser',
 				status: '200 OK',
-				headers: [
-					'Content-Type: application/json',
-					'Set-Cookie: sid=okta_session_abc; HttpOnly; Secure; SameSite=Lax',
-				],
+				headers: ['Content-Type: application/json'],
 				body: '{\n  "status": "SUCCESS",\n  "sessionToken": "20111..."\n}',
-				note: 'IdP session established; dashboard with app tiles rendered',
+				note: 'Authentication succeeded, but no Set-Cookie yet. A sessionToken is a one-time credential, not a browser session.',
+			},
+			{
+				type: 'request',
+				from: 'Browser',
+				to: 'Okta',
+				method: 'GET',
+				url: 'https://contoso.okta.com/login/sessionCookieRedirect?token=20111...&redirectUrl=https%3A%2F%2Fcontoso.okta.com%2Fapp%2FUserHome',
+				headers: ['Cookie: (no Okta session)'],
+				note: 'Redeem the sessionToken for a session cookie. The documented alternative is /oauth2/v1/authorize with prompt=none and sessionToken; the redirectUrl must be a Trusted Origin in the org.',
+			},
+			{
+				type: 'response',
+				from: 'Okta',
+				to: 'Browser',
+				status: '302 Found',
+				headers: [
+					'Set-Cookie: sid=okta_session_abc; HttpOnly; Secure; SameSite=None',
+					'Location: https://contoso.okta.com/app/UserHome',
+				],
+				note: 'IdP session established; the browser follows the redirect and the dashboard with app tiles renders. Cookie name and attributes are a reconstructed example and vary by org.',
 			},
 		],
 		actors: {
@@ -256,6 +278,13 @@ export const STEPS: Step[] = [
 				to: 'OTS',
 				label: 'Validate unsolicited SAML assertion',
 				note: "Verify Response + Assertion XML signatures against Okta's X.509 certificate, validate NotBefore/NotOnOrAfter timestamps, confirm AudienceRestriction and Recipient URL. InResponseTo check is skipped -- there is no stored request ID. Store assertion ID _assertion_jkl012 and reject any repeat: with no request correlation, the replay cache is the primary anti-replay defense.",
+			},
+			{
+				type: 'internal',
+				from: 'OTS',
+				to: 'OTS',
+				label: 'Resolve the local account',
+				note: 'Look up the account by (IdP entityID, NameID) = (http://www.okta.com/exk1234, the Subject NameID), or by an explicit mapping table keyed on that pair. The email attribute is profile data to refresh on the account, not the key it is stored under. This matters more here than in the SP-initiated flow: an unsolicited assertion is the only thing telling OTS who this is, so if the key is an email address, whoever controls that address at the IdP controls the local account it resolves to.',
 			},
 			{
 				type: 'response',

@@ -15,6 +15,11 @@ import type { Step } from '$lib/sso-demos';
  * Bindings:
  *   AuthnRequest  -> HTTP-Redirect (deflated, base64, URL-encoded in query string)
  *   SAMLResponse  -> HTTP-POST (base64-encoded in auto-submit form)
+ *
+ * The HTTP traces below are reconstructed examples, not packet captures.
+ * The SAML messages follow the specification, but cookie names, endpoint
+ * paths, redirect chains, and response bodies on the Okta side vary by
+ * org configuration and product version.
  */
 export const STEPS: Step[] = [
 	{
@@ -118,8 +123,8 @@ export const STEPS: Step[] = [
 				from: 'Okta',
 				to: 'Browser',
 				status: '200 OK',
-				headers: ['Content-Type: text/html', 'Set-Cookie: sid=okta_session_abc; HttpOnly; Secure; SameSite=Lax'],
-				note: 'Okta login page rendered (or auto-proceeds if Okta session already exists)',
+				headers: ['Content-Type: text/html'],
+				note: 'Okta login page rendered (or auto-proceeds if an Okta session cookie is already present). No session cookie is set yet: the user has not authenticated.',
 			},
 		],
 		actors: {
@@ -134,9 +139,9 @@ export const STEPS: Step[] = [
 		userSees: 'okta-login',
 		urlBar: 'https://contoso.okta.com/app/ots-saml/exk1234/sso/saml',
 		description:
-			"User enters credentials at Okta. Okta validates the credentials and may prompt for MFA based on the application's sign-on policy.",
+			"User enters credentials at Okta. Okta validates the credentials and may prompt for MFA based on the application's sign-on policy. The exchange shown here is the Classic Engine Authentication API (/api/v1/authn), which returns a one-time sessionToken. Identity Engine hosted login does not use it: it runs an Interaction Code (IDX) sequence over /oauth2/v1/interact and /idp/idx/*, with the credential and factor steps driven by remediation objects. The demo keeps the Classic trace because it is the shortest legible illustration of credentials in, session out. The SAML legs on either side of it are identical under both engines.",
 		securityNote:
-			'Okta sign-on policies can enforce MFA, device trust, network zones, and risk-based authentication per application. The SP has no visibility into these IdP-side steps -- it only receives the final signed assertion. If the user has an existing Okta session, this step may be skipped entirely.',
+			'Okta sign-on policies can enforce MFA, device trust, network zones, and risk-based authentication per application. The SP has no visibility into these IdP-side steps -- it only receives the final signed assertion. If the user has an existing Okta session, this step and the next one are skipped entirely.',
 		http: [
 			{
 				type: 'request',
@@ -144,9 +149,9 @@ export const STEPS: Step[] = [
 				to: 'Okta',
 				method: 'POST',
 				url: 'https://contoso.okta.com/api/v1/authn',
-				headers: ['Content-Type: application/json', 'Cookie: sid=okta_session_abc'],
+				headers: ['Content-Type: application/json', 'Cookie: (no Okta session)'],
 				body: '{\n  "username": "alice@contoso.com",\n  "password": "********"\n}',
-				note: 'Credentials submitted to Okta authentication API',
+				note: 'Credentials submitted to the Classic Engine Authentication API. Illustrative: an Identity Engine org reaches the same outcome through the IDX endpoints instead.',
 			},
 			{
 				type: 'response',
@@ -155,7 +160,7 @@ export const STEPS: Step[] = [
 				status: '200 OK',
 				headers: ['Content-Type: application/json'],
 				body: '{\n  "status": "SUCCESS",\n  "sessionToken": "20111..."\n}',
-				note: 'Authentication successful; may return MFA_REQUIRED if step-up auth is enforced',
+				note: 'Authentication successful; may return MFA_REQUIRED if step-up auth is enforced. Note what is not here: no Set-Cookie. A sessionToken is not yet a browser session.',
 			},
 		],
 		actors: {
@@ -166,14 +171,60 @@ export const STEPS: Step[] = [
 	},
 	{
 		id: 4,
+		title: 'sessionToken is exchanged for an Okta session cookie',
+		userSees: 'loading',
+		urlBar: 'https://contoso.okta.com/login/sessionCookieRedirect',
+		description:
+			'The sessionToken from the previous step is a single-use bearer credential, not a session. It has to be redeemed at Okta for a browser session cookie before the SAML endpoint will recognise the user. Okta documents two ways to do this: a redirect through /login/sessionCookieRedirect with token and redirectUrl, and an OIDC /oauth2/v1/authorize call carrying sessionToken with prompt=none. Both set the sid cookie and then send the browser on to the target URL, which here is the SAML SSO endpoint the AuthnRequest was aimed at.',
+		securityNote:
+			'The sessionToken is consumed on first use and is invalidated on logout, so a leaked token is only useful inside a narrow window. The redirectUrl must be a Trusted Origin in the Okta org, otherwise this endpoint is an open redirect that hands a session-establishing token to an attacker-chosen destination. Classic Engine orgs ignore sessionToken when a session cookie is already present, which is why this step disappears entirely for a user who is already signed in.',
+		http: [
+			{
+				type: 'request',
+				from: 'Browser',
+				to: 'Okta',
+				method: 'GET',
+				url: 'https://contoso.okta.com/login/sessionCookieRedirect?token=20111...&redirectUrl=https%3A%2F%2Fcontoso.okta.com%2Fapp%2Fots-saml%2Fexk1234%2Fsso%2Fsaml',
+				headers: ['Cookie: (no Okta session)'],
+				note: 'Redeem the one-time sessionToken. The OIDC alternative is /oauth2/v1/authorize?...&prompt=none&sessionToken=20111..., which sets the same cookie.',
+			},
+			{
+				type: 'response',
+				from: 'Okta',
+				to: 'Browser',
+				status: '302 Found',
+				headers: [
+					'Set-Cookie: sid=okta_session_abc; HttpOnly; Secure; SameSite=None',
+					'Location: https://contoso.okta.com/app/ots-saml/exk1234/sso/saml',
+				],
+				note: 'Okta session established. Cookie name and attributes are shown as a reconstructed example; the actual set varies by org. The browser now returns to the SAML SSO endpoint with a session in hand.',
+			},
+		],
+		actors: {
+			browser: true,
+			ots: false,
+			okta: true,
+		},
+	},
+	{
+		id: 5,
 		title: 'Okta issues SAML Response',
 		userSees: 'loading',
 		urlBar: 'https://contoso.okta.com/app/ots-saml/exk1234/sso/saml',
 		description:
-			"After successful authentication, Okta generates a signed SAML Response containing the assertion with the user's identity and attributes. It returns an auto-submitting HTML form that POSTs the response to the SP's ACS endpoint (HTTP-POST binding).",
+			"The browser is back at the SAML SSO endpoint, now carrying the sid cookie. Okta recognises the session, matches it against the pending AuthnRequest, and generates a signed SAML Response containing the assertion with the user's identity and attributes. It returns an auto-submitting HTML form that POSTs the response to the SP's ACS endpoint (HTTP-POST binding).",
 		securityNote:
 			"Okta signs both the SAML Response envelope and the inner Assertion with its private key (RSA-SHA256). Signing both layers prevents an attacker from wrapping a legitimate assertion inside a forged response. The SP must validate signatures at both levels against Okta's X.509 certificate from metadata.",
 		http: [
+			{
+				type: 'request',
+				from: 'Browser',
+				to: 'Okta',
+				method: 'GET',
+				url: 'https://contoso.okta.com/app/ots-saml/exk1234/sso/saml',
+				headers: ['Cookie: sid=okta_session_abc'],
+				note: 'Back at the SSO endpoint, now with a session. Okta resolves the pending AuthnRequest for this browser and builds the assertion.',
+			},
 			{
 				type: 'response',
 				from: 'Okta',
@@ -198,14 +249,14 @@ export const STEPS: Step[] = [
 		},
 	},
 	{
-		id: 5,
+		id: 6,
 		title: 'Browser POSTs assertion to OTS ACS endpoint',
 		userSees: 'loading',
 		urlBar: 'https://secrets.example.com/saml/acs',
 		description:
 			"Browser auto-submits the SAML Response to OTS's Assertion Consumer Service (ACS) endpoint. OTS validates the assertion thoroughly and creates a local session from the SAML attributes.",
 		securityNote:
-			"The ACS endpoint must perform all of these validations: (1) verify Response and Assertion XML signatures against Okta's certificate, (2) check InResponseTo matches the stored AuthnRequest ID, (3) validate NotBefore/NotOnOrAfter timestamps with clock skew tolerance (typically 2-5 minutes), (4) confirm AudienceRestriction matches the SP's entity ID, (5) verify Recipient URL matches this ACS endpoint, (6) store the Assertion ID and reject any ID seen before to prevent replay attacks.",
+			"The ACS endpoint must perform all of these validations: (1) verify Response and Assertion XML signatures against Okta's certificate, (2) check InResponseTo matches the stored AuthnRequest ID, (3) validate NotBefore/NotOnOrAfter timestamps with clock skew tolerance (typically 2-5 minutes), (4) confirm AudienceRestriction matches the SP's entity ID, (5) verify Recipient URL matches this ACS endpoint, (6) store the Assertion ID and reject any ID seen before to prevent replay attacks. Separately from validation, the choice of local account key matters. The account key should be (IdP entityID, a persistent NameID) or an explicit mapping maintained by the SP. This demo requests the emailAddress NameID format because it is what most Okta SAML apps are configured with, but an email address is a mutable, reassignable attribute: keying accounts on it means a rename silently orphans an account and a reissued address silently inherits one. Prefer a persistent or Okta-user-ID NameID and treat email as a profile attribute to refresh.",
 		http: [
 			{
 				type: 'request',
@@ -310,6 +361,13 @@ export const STEPS: Step[] = [
 				note: "Verify Response + Assertion XML signatures against Okta's X.509 certificate, check InResponseTo matches _request_abc123, validate NotBefore/NotOnOrAfter timestamps, confirm AudienceRestriction, verify Recipient URL, store assertion ID _assertion_def456 for replay prevention.",
 			},
 			{
+				type: 'internal',
+				from: 'OTS',
+				to: 'OTS',
+				label: 'Resolve the local account',
+				note: 'Look up the account by (IdP entityID, NameID) = (http://www.okta.com/exk1234, the Subject NameID), or by an explicit mapping table keyed on that pair. The email attribute is profile data to refresh on the account, not the key it is stored under.',
+			},
+			{
 				type: 'response',
 				from: 'OTS',
 				to: 'Browser',
@@ -328,7 +386,7 @@ export const STEPS: Step[] = [
 		},
 	},
 	{
-		id: 6,
+		id: 7,
 		title: 'Authenticated request reaches dashboard',
 		userSees: 'dashboard',
 		urlBar: 'https://secrets.example.com/dashboard',
@@ -372,7 +430,7 @@ export const STEPS: Step[] = [
 		},
 	},
 	{
-		id: 7,
+		id: 8,
 		title: 'Subsequent requests use session cookie',
 		userSees: 'dashboard',
 		urlBar: 'https://secrets.example.com/dashboard',
