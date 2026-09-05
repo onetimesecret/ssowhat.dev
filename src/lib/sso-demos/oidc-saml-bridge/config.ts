@@ -97,6 +97,10 @@ export const demoConfig: DemoConfig = {
   title: "Enterprise SAML for Modern Apps",
   subtitle: "Caddy + Logto bridge OIDC\u2194SAML to Entra",
   version: "0.3.0",
+  fidelity: {
+    level: "reconstructed",
+    reviewed: "2026-09-05",
+  },
   backLink: {
     href: DEMOS_INDEX_PATH,
     label: "All demos",

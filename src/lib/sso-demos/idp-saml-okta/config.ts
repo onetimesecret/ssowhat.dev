@@ -61,6 +61,11 @@ export const demoConfig: DemoConfig = {
 	title: 'IdP-Initiated SAML with Okta',
 	subtitle: 'User launches OTS from the Okta dashboard; Okta pushes an unsolicited SAML assertion',
 	version: '0.1.0',
+	fidelity: {
+		level: 'reconstructed',
+		note: 'The Okta login trace uses the Classic Engine Authentication API (/api/v1/authn); Identity Engine hosted login differs.',
+		reviewed: '2026-09-05',
+	},
 	backLink: {
 		href: DEMOS_INDEX_PATH,
 		label: 'All demos',

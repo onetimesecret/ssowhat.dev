@@ -136,8 +136,23 @@ interface DemoConfig {
   actorConfig: ActorConfig[];    // Actor definitions
   protocolStack: ProtocolStackConfig;
   live?: LiveDemoConfig;         // Presence enables the Static/Live toggle
+  fidelity?: DemoFidelity;       // Trace fidelity level, caveat, and review date
 }
 ```
+
+### DemoFidelity
+
+Every demo's traces are reconstructed examples rather than packet captures, and the shell says so whether or not this field is set. Setting it adds a demo-specific caveat and the date the traces were last checked against the vendor.
+
+```typescript
+interface DemoFidelity {
+  level: 'reconstructed' | 'live-verified';
+  note?: string;                 // Demo-specific caveat, appended to the standing statement
+  reviewed?: string;             // ISO date (YYYY-MM-DD) of the last review
+}
+```
+
+The shell renders it as one line of small muted text under the demo header (`shared/FidelityNote.svelte`), and the transcript view repeats it in its header so printed transcripts carry the same caveat.
 
 ### ActorConfig
 

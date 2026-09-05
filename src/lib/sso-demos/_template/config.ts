@@ -63,6 +63,10 @@ export const demoConfig: DemoConfig = {
   title: 'Your Demo Title',
   subtitle: 'Brief description of the auth flow',
   version: '0.1.0',
+  fidelity: {
+    level: 'reconstructed',
+    reviewed: '2026-09-05',
+  },
   backLink: {
     href: DEMOS_INDEX_PATH,
     label: 'All demos',

@@ -80,6 +80,10 @@ export const demoConfig: DemoConfig = {
 	title: 'SAML Single Logout with Okta',
 	subtitle: 'One logout click, three sessions, and no guarantee all of them die',
 	version: '0.1.0',
+	fidelity: {
+		level: 'reconstructed',
+		reviewed: '2026-09-05',
+	},
 	backLink: {
 		href: DEMOS_INDEX_PATH,
 		label: 'All demos',

@@ -67,6 +67,11 @@ export const demoConfig: DemoConfig = {
 	title: 'SCIM Provisioning with Okta',
 	subtitle: "Okta pushes user lifecycle changes (create, update, deactivate) to the app's SCIM API",
 	version: '0.1.0',
+	fidelity: {
+		level: 'reconstructed',
+		note: 'Live mode replays against a mock SCIM server, not against Okta.',
+		reviewed: '2026-09-05',
+	},
 	backLink: {
 		href: DEMOS_INDEX_PATH,
 		label: 'All demos',

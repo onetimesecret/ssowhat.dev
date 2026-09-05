@@ -240,6 +240,28 @@ export interface Step {
 }
 
 /**
+ * How closely a demo's traces match real traffic from a real deployment.
+ *
+ * Every demo is explanatory pseudocode unless stated otherwise: the HTTP
+ * exchanges are reconstructed from vendor documentation and from real
+ * integrations, then trimmed for teaching. Cookie names, endpoints,
+ * redirects, headers, and response bodies vary by provider configuration
+ * and product version, so the shell always says so, with or without this
+ * field. Set it to add a per-demo caveat and a review date.
+ */
+export interface DemoFidelity {
+  /**
+   * `reconstructed` - curated traces, not captured traffic.
+   * `live-verified` - the traces were checked against a real run.
+   */
+  level: "reconstructed" | "live-verified";
+  /** Demo-specific caveat appended to the shell's standing statement */
+  note?: string;
+  /** ISO date (YYYY-MM-DD) the traces were last reviewed against the vendor */
+  reviewed?: string;
+}
+
+/**
  * Configuration for the demo shell component.
  */
 export interface DemoConfig {
@@ -263,4 +285,9 @@ export interface DemoConfig {
    * for this demo; absence leaves the demo fully static as before.
    */
   live?: LiveDemoConfig;
+  /**
+   * Fidelity metadata for the traces. Absent still renders the shell's
+   * default statement that the traces are reconstructed examples.
+   */
+  fidelity?: DemoFidelity;
 }

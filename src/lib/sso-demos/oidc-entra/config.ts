@@ -62,6 +62,10 @@ export const demoConfig: DemoConfig = {
 	title: 'Enterprise OIDC with Entra ID',
 	subtitle: 'OTS authenticates directly with Microsoft Entra ID via OpenID Connect',
 	version: '0.1.0',
+	fidelity: {
+		level: 'reconstructed',
+		reviewed: '2026-09-05',
+	},
 	backLink: {
 		href: DEMOS_INDEX_PATH,
 		label: 'All demos',
