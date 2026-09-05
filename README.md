@@ -12,7 +12,7 @@ The example application is [Onetime Secret](https://onetimesecret.com) (OTS) —
 
 ## Fidelity
 
-The traces are reconstructed examples, not packet captures. They are assembled from vendor documentation and real integrations, then trimmed so the protocol is legible; endpoints, cookie names, redirects, headers, and response bodies vary by provider configuration and product version. Each demo header states that its traces are reconstructed and the date they were last reviewed. Where a demo simplifies something notable, such as the Okta Classic Engine Authentication API used in the SAML login sequences, the demo header says so.
+The traces are reconstructed educational examples, not packet captures or implementation recipes. They are assembled from primary specifications and vendor documentation, then trimmed so the protocol is legible; endpoints, cookie names, redirects, headers, and response bodies vary by provider configuration and product version. The review dates record documentation review, not live interoperability testing. Where a demo simplifies something notable, such as the Okta Classic Engine Authentication API used in the SAML login sequences, the demo header says so.
 
 ## Available demos
 

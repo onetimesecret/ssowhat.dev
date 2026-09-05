@@ -142,13 +142,13 @@ interface DemoConfig {
 
 ### DemoFidelity
 
-Every demo's traces are reconstructed examples rather than packet captures, and the shell says so whether or not this field is set. Setting it adds a demo-specific caveat and the date the traces were last checked against the vendor.
+Every demo's traces are reconstructed educational examples rather than packet captures or implementation recipes, and the shell says so whether or not this field is set. Setting it adds a demo-specific caveat and a documentation-review date. That date does not imply live interoperability testing.
 
 ```typescript
 interface DemoFidelity {
   level: 'reconstructed' | 'live-verified';
   note?: string;                 // Demo-specific caveat, appended to the standing statement
-  reviewed?: string;             // ISO date (YYYY-MM-DD) of the last review
+  reviewed?: string;             // ISO date (YYYY-MM-DD) of the last documentation review
 }
 ```
 

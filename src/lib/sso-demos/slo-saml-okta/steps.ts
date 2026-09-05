@@ -133,9 +133,9 @@ export const STEPS: Step[] = [
 		userSees: 'okta-signout',
 		urlBar: 'https://contoso.okta.com/app/ots-saml/exk1234/slo/saml',
 		description:
-			'Okta renders a page with a hidden iframe per session participant, each loading that SP’s SLO endpoint with a signed LogoutRequest. This is front-channel logout: the user’s own browser is the messenger. The Wiki’s iframe loads, and the LogoutRequest inside it names Alice by NameID and SessionIndex, which is enough to identify the session server-side. The Wiki’s own cookie is SameSite=Lax and is not sent in a third-party iframe, so the Wiki cannot clear the browser cookie here. It also never stored a mapping from NameID and SessionIndex to its local sessions, so it has nothing to look the session up by either. It returns 200 and revokes nothing.',
+			'Okta renders a page with a hidden iframe per session participant, each loading that SP’s SLO endpoint with a signed LogoutRequest. This is front-channel logout: the user’s own browser is the messenger. The Wiki’s iframe loads, and the LogoutRequest inside it names Alice by NameID and SessionIndex, which is enough to identify the session server-side. The Wiki’s own cookie is SameSite=Lax and is not sent in a third-party iframe, but that does not prevent server-side revocation or, by itself, prevent the response from expiring a known cookie name. The Wiki fails because it never stored a mapping from NameID and SessionIndex to its local sessions, so it has nothing to look the session up by. It returns 200 and revokes nothing.',
 		securityNote:
-			'The LogoutRequest is self-describing. Per SAML Core 2.0 section 3.7.3.1 the recipient must invalidate the sessions named by the identifier and any SessionIndex elements, and all sessions for that principal if no SessionIndex is supplied. An SP that persists NameID and SessionIndex at login can revoke the server-side session from the LogoutRequest alone, with no cookie on the request. The Wiki does not, and that is the real defect in this step. What third-party cookie blocking and partitioned storage actually break is narrower: the SP cannot clear the stale browser cookie, so treat that cookie as a lookup key into server-side state you revoked, not as the session itself. The other failure modes are participants that are down or time out, stale session mappings, and partial completion with no retry. Back-channel SLO (SOAP, IdP-to-SP server-to-server) avoids the browser entirely but is rarely implemented on either side: Okta does not support it for SAML apps, and most SPs never expose a back-channel endpoint.',
+			'The LogoutRequest is self-describing. Per SAML Core 2.0 section 3.7.3.1 the recipient must invalidate the sessions named by the identifier and any SessionIndex elements, and all sessions for that principal if no SessionIndex is supplied. An SP that persists NameID and SessionIndex at login can revoke the server-side session from the LogoutRequest alone, with no cookie on the request. The Wiki does not, and that is the real defect in this step. Third-party cookie or storage policies can still block a Set-Cookie deletion response, leaving a stale browser cookie, so treat that cookie as a lookup key into server-side state you revoked, not as the session itself. Other failure modes include participants that are down or time out, stale session mappings, and partial completion with no retry. Back-channel SLO (SOAP, IdP-to-SP server-to-server) avoids the browser entirely but is rarely implemented on either side: Okta does not support it for SAML apps, and most SPs never expose a back-channel endpoint.',
 		http: [
 			{
 				type: 'response',
@@ -161,7 +161,7 @@ export const STEPS: Step[] = [
 				method: 'GET',
 				url: 'https://wiki.contoso.com/saml/slo?SAMLRequest=...&Signature=...',
 				headers: ['Cookie: (none -- wiki_session is SameSite=Lax, not sent in cross-site iframe)'],
-				note: 'The signed LogoutRequest names alice@contoso.com and SessionIndex _session_okta_ghi789. An SP that saved that mapping at login can revoke the session from this alone; the missing cookie only stops it clearing the browser copy.',
+				note: 'The signed LogoutRequest names alice@contoso.com and SessionIndex _session_okta_ghi789. An SP that saved that mapping at login can revoke the session from this alone; receiving no cookie does not prevent server-side revocation or deletion of a known cookie name.',
 			},
 			{
 				type: 'response',
@@ -169,7 +169,7 @@ export const STEPS: Step[] = [
 				to: 'Browser',
 				status: '200 OK',
 				headers: ['Content-Type: text/html'],
-				note: 'The Wiki keys sessions only on wiki_session and never indexed them by NameID, so it resolves nothing and revokes nothing. It returns 200 without a SAML LogoutResponse, and Okta cannot tell that apart from a successful logout.',
+				note: 'The Wiki keys sessions only on wiki_session and never indexed them by NameID, so it resolves nothing and revokes nothing. HTTP 200 is not SAML confirmation: Okta waits for the Wiki’s separate LogoutResponse callback and eventually times out.',
 			},
 		],
 		actors: {

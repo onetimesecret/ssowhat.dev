@@ -1,6 +1,6 @@
 // src/lib/sso-demos/slo-saml-okta/config.ts
 
-import type { DemoConfig, ActorConfig, ProtocolStackConfig } from '$lib/sso-demos';
+import type { ActorConfig, DemoConfig, ProtocolStackConfig } from '$lib/sso-demos';
 import { DEMOS_INDEX_PATH } from '$lib/sso-demos';
 
 /**
@@ -82,6 +82,7 @@ export const demoConfig: DemoConfig = {
 	version: '0.1.0',
 	fidelity: {
 		level: 'reconstructed',
+		note: 'Okta iframe fan-out reflects the Identity Engine Early Access Front-channel Single Logout feature and requires downstream participateSlo configuration.',
 		reviewed: '2026-09-05',
 	},
 	backLink: {

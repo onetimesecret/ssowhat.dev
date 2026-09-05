@@ -24,7 +24,7 @@ export const STEPS: Step[] = [
 		userSees: 'signin',
 		urlBar: 'https://secrets.example.com/signin',
 		description:
-			"OTS sells to many companies, and each brings its own IdP: Contoso runs Entra ID, Acme runs Okta. With no session and no realm hint, OTS cannot know where to redirect -- so instead of guessing, it renders an email-first sign-in page. The routing decision comes after the user identifies themselves.",
+			'OTS sells to many companies, and each brings its own IdP: Contoso runs Entra ID, Acme runs Okta. With no session and no realm hint, OTS cannot know where to redirect -- so instead of guessing, it renders an email-first sign-in page. The routing decision comes after the user identifies themselves.',
 		securityNote:
 			"The alternative -- one button per customer IdP -- is the 'NASCAR problem': it does not scale past a handful of providers, and it leaks your customer list to anyone who loads the page. Identifier-first login keeps the domain-to-IdP registry server-side and shows every visitor the same neutral form.",
 		http: [
@@ -166,9 +166,9 @@ export const STEPS: Step[] = [
 		userSees: 'loading',
 		urlBar: 'https://secrets.example.com/auth/callback?code=0.AR8AnSqjO3vZ...&state=xYz9Kp2mN7qR4sT1',
 		description:
-			'OTS validates state, exchanges the code server-to-server, and validates the ID token as usual. Then comes the check discovery makes essential: the authenticated identity must actually belong to the realm that was discovered. Everything in that check is read from the token, not from the sign-in form. The iss and tid claims must be Contoso’s tenant, and any email claim used for display must fall in a domain the registry maps to that tenant.',
+			'OTS validates state, exchanges the code server-to-server, and validates the ID token as usual. Then comes the check discovery makes essential: the response must come from the issuer and tenant selected for this transaction. Everything in that check is read from the validated token, not from the sign-in form. Access is then decided from the tenant-qualified subject and Contoso’s account-assignment or provisioning policy; a matching email domain is not proof of membership.',
 		securityNote:
-			'This is the core multi-IdP invariant: an IdP may only assert identities for domains it is registered to own, and the domain typed in the box carries no weight here. Bind the pending auth state to the discovered realm and verify iss and tid (OIDC) or Issuer/entityID (SAML) against it on every callback. Skip that and any customer IdP, or a tenant an attacker controls, can mint a token whose email or subject collides with a real Contoso user and take over her account.',
+			'This is the core multi-IdP invariant: the domain typed in the box only selects an IdP. Bind the pending auth state to that selection and verify iss and tid (OIDC) or Issuer/entityID (SAML) against it on every callback. Then authorize the stable subject through an explicit account mapping, tenant assignment, or provisioning record. Do not authorize from email or preferred_username: those claims are mutable, and Entra guest users may legitimately have identifiers outside the tenant’s vanity domain.',
 		http: [
 			{
 				type: 'internal',
@@ -212,7 +212,7 @@ export const STEPS: Step[] = [
 				from: 'OTS',
 				to: 'OTS',
 				label: 'Validate token + realm binding',
-				note: 'Signature, iss, aud, exp, nonce all valid. Realm check: tid 3b2a1c9d... is the tenant registered for contoso.com, and the domain of preferred_username in the token matches the realm the request was started for. Account key: (tid 3b2a1c9d..., oid 5d1e8f3a...), a tenant-qualified subject. preferred_username and email are display attributes only; they change when Alice is renamed, the account key does not.',
+				note: 'Signature, iss, aud, exp, nonce all valid. Realm check: iss and tid 3b2a1c9d... match the Entra tenant selected for the pending transaction. Account key: (tid 3b2a1c9d..., oid 5d1e8f3a...), a tenant-qualified subject that Contoso has assigned or provisioned for access. preferred_username and email are display attributes only; neither their value nor the domain typed in step 2 grants access.',
 			},
 			{
 				type: 'response',
@@ -329,7 +329,7 @@ export const STEPS: Step[] = [
 		userSees: 'okta-login-bob',
 		urlBar: 'https://acme.okta.com/app/ots-saml/exk9876/sso/saml',
 		description:
-			"Bob signs in under Acme's Okta policies. Okta returns an auto-submitting form that POSTs a signed SAML assertion to OTS's ACS endpoint. OTS runs the full SAML validation stack (see the SP-initiated SAML demo), plus the same realm-binding check Alice's flow needed: the assertion must come from the entityID registered for acme.com. The NameID here is an opaque persistent identifier, so the email address travels as an ordinary attribute and never acts as the key.",
+			"Bob signs in under Acme's Okta policies. This reconstructed Classic Engine trace first returns a one-time sessionToken, redeems it for an Okta browser session, and then returns an auto-submitting form that POSTs a signed SAML assertion to OTS's ACS endpoint. Identity Engine hosted login uses a different IDX sequence. OTS runs the full SAML validation stack (see the SP-initiated SAML demo), plus the same realm-binding check Alice's flow needed: the assertion must come from the entityID registered for acme.com. The NameID here is an opaque persistent identifier, so the email address travels as an ordinary attribute and never acts as the key.",
 		securityNote:
 			"The ACS endpoint accepts assertions from every registered IdP, so issuer pinning is what keeps realms apart: the Issuer entityID and signing certificate must match the IdP bound to the pending request's realm. An assertion signed by Contoso's IdP but carrying an acme.com email attribute must be rejected on the issuer check alone, however valid its signature is. Note that a persistent NameID is only unique within its issuer: two IdPs can emit the same opaque string, which is why the account key is the pair (entityID, NameID) and never the NameID by itself.",
 		http: [
@@ -341,7 +341,45 @@ export const STEPS: Step[] = [
 				url: 'https://acme.okta.com/api/v1/authn',
 				headers: ['Content-Type: application/json'],
 				body: '{\n  "username": "bob@acme.com",\n  "password": "********"\n}',
-				note: 'Credentials validated under Acme’s Okta sign-on policies (MFA, network zones)',
+				note: 'Credentials submitted to the Classic Engine Authentication API. An Identity Engine org uses its hosted IDX flow instead.',
+			},
+			{
+				type: 'response',
+				from: 'Okta',
+				to: 'Browser',
+				status: '200 OK',
+				headers: ['Content-Type: application/json'],
+				body: '{\n  "status": "SUCCESS",\n  "sessionToken": "20111..."\n}',
+				note: 'Authentication succeeded, but no browser session exists yet. sessionToken is a one-time credential, not a cookie.',
+			},
+			{
+				type: 'request',
+				from: 'Browser',
+				to: 'Okta',
+				method: 'GET',
+				url: 'https://acme.okta.com/login/sessionCookieRedirect?token=20111...&redirectUrl=https%3A%2F%2Facme.okta.com%2Fapp%2Fots-saml%2Fexk9876%2Fsso%2Fsaml%3FSAMLRequest%3D...%26RelayState%3D%252Fdashboard',
+				headers: ['Cookie: (no Okta session)'],
+				note: 'Redeem the sessionToken and preserve the original SAMLRequest and RelayState in the trusted redirectUrl.',
+			},
+			{
+				type: 'response',
+				from: 'Okta',
+				to: 'Browser',
+				status: '302 Found',
+				headers: [
+					'Set-Cookie: sid=okta_session_bob; HttpOnly; Secure; SameSite=None',
+					'Location: https://acme.okta.com/app/ots-saml/exk9876/sso/saml?SAMLRequest=...&RelayState=%2Fdashboard',
+				],
+				note: 'Okta browser session established. Cookie name and attributes vary by org and browser context.',
+			},
+			{
+				type: 'request',
+				from: 'Browser',
+				to: 'Okta',
+				method: 'GET',
+				url: 'https://acme.okta.com/app/ots-saml/exk9876/sso/saml?SAMLRequest=...&RelayState=%2Fdashboard',
+				headers: ['Cookie: sid=okta_session_bob'],
+				note: 'Return to the original SP-initiated SAML request with an Okta session.',
 			},
 			{
 				type: 'response',
@@ -403,7 +441,7 @@ export const STEPS: Step[] = [
 				from: 'OTS',
 				to: 'OTS',
 				label: 'Validate assertion + realm binding',
-				note: "Signatures verify against Acme's Okta certificate, InResponseTo matches _request_bob42, audience and recipient correct, assertion ID unseen. Realm check: Issuer http://www.okta.com/exk9876 is the entityID registered for acme.com, and the email attribute falls in that realm. Account key: (http://www.okta.com/exk9876, 7f3d1a90-...), the entityID plus the persistent NameID. email is stored as a profile attribute only.",
+				note: "Signatures verify against Acme's Okta certificate, InResponseTo matches _request_bob42, audience and recipient are correct, and the assertion ID is unseen. Realm check: Issuer http://www.okta.com/exk9876 is the entityID selected for this pending transaction. Account key: (http://www.okta.com/exk9876, 7f3d1a90-...), the entityID plus the persistent NameID, resolved through Acme's assignment or provisioning record. email is profile data only and does not establish realm membership or access.",
 			},
 			{
 				type: 'response',
@@ -431,7 +469,7 @@ export const STEPS: Step[] = [
 		userSees: 'dashboard-bob',
 		urlBar: 'https://secrets.example.com/dashboard',
 		description:
-			"Bob lands on the same dashboard Alice uses. Her session was minted from an OIDC ID token, his from a SAML assertion -- past the session layer, the application cannot tell and does not care. Discovery plus per-realm IdP configuration confines all protocol differences to the auth module.",
+			'Bob lands on the same dashboard Alice uses. Her session was minted from an OIDC ID token, his from a SAML assertion -- past the session layer, the application cannot tell and does not care. Discovery plus per-realm IdP configuration confines all protocol differences to the auth module.',
 		securityNote:
 			'Account linking discipline is what makes this safe long-term: key user records on (issuer, subject) -- (tid, oid) for Entra, (entityID, persistent NameID) for Okta -- never on an email address or an email-form NameID, both of which the IdP can change under you. Cross-tenant impersonation is prevented only while the SP does both halves: binds the account to that pair and re-checks the issuer or tenant on every assertion. Drop the issuer half and an attacker who controls IdP B can assert a subject or email that collides with a user of IdP A and land in that account.',
 		http: [
