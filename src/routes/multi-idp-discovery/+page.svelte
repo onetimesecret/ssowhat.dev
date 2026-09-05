@@ -4,7 +4,7 @@
 
 	const pageTitle = 'Multi-IdP Home-Realm Discovery';
 	const pageDescription =
-		'Interactive visualization of identifier-first login across multiple identity providers: email domain lookup, per-realm routing to Entra ID (OIDC) and Okta (SAML), and the realm-binding checks that keep tenants apart';
+		'Interactive visualization of identifier-first login across multiple identity providers: email domain lookup as routing only, per-realm routing to Entra ID (OIDC) and Okta (SAML), and the issuer and tenant binding that keeps accounts from colliding across tenants';
 </script>
 
 <svelte:head>
