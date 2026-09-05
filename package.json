@@ -1,7 +1,7 @@
 {
 	"name": "ssowhat.dev",
 	"private": true,
-	"version": "0.1.0",
+	"version": "0.3.0",
 	"description": "Interactive SSO protocol demos — visualize SAML, OIDC, OAuth2, and more",
 	"license": "MIT",
 	"repository": {
