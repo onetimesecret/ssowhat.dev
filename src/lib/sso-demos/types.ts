@@ -21,8 +21,14 @@ export interface ExpandedPayload {
  * Can be a browser request, server response, internal process, or server-to-server communication.
  */
 export interface HttpMessage {
-  /** Type of HTTP message */
-  type: "request" | "response" | "internal" | "server" | "server-response";
+  /**
+   * Type of HTTP message.
+   * `request` / `response` - browser-initiated exchange with a server.
+   * `server` / `server-response` - server-to-server exchange the browser never sees
+   *   (back-channel token request, proxy to app, IdP to SP).
+   * `internal` - processing inside one actor, no wire traffic.
+   */
+  type: 'request' | 'response' | 'internal' | 'server' | 'server-response';
   /** Source of the message */
   from: string;
   /** Destination of the message */
@@ -254,7 +260,7 @@ export interface DemoFidelity {
    * `reconstructed` - curated traces, not captured traffic.
    * `live-verified` - the traces were checked against a real run.
    */
-  level: "reconstructed" | "live-verified";
+  level: 'reconstructed' | 'live-verified';
   /** Demo-specific caveat appended to the shell's standing statement */
   note?: string;
   /** ISO date (YYYY-MM-DD) the traces were last reviewed against the vendor */

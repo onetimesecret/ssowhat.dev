@@ -62,6 +62,9 @@ export const STEPS: Step[] = [
 			ots: false,
 		},
 	},
+	// Classic Engine /api/v1/authn + sessionCookieRedirect trace. sp-saml-okta/steps.ts
+	// (steps 3 and 4) and multi-idp-discovery/steps.ts (Bob's Okta step) carry the same
+	// explanation and IDX caveat; edit all three together.
 	{
 		id: 2,
 		title: 'User authenticates with Okta',

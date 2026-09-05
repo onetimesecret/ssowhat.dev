@@ -63,6 +63,8 @@ export const demoConfig: DemoConfig = {
   title: 'Your Demo Title',
   subtitle: 'Brief description of the auth flow',
   version: '0.1.0',
+  // Update `reviewed` whenever the traces in steps.ts change; it is a manual date
+  // with no test enforcing it, and it renders in the demo footer and transcript header.
   fidelity: {
     level: 'reconstructed',
     reviewed: '2026-09-05',
