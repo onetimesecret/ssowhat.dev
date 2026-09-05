@@ -284,7 +284,7 @@ export const STEPS: Step[] = [
 				from: 'OTS',
 				to: 'OTS',
 				label: 'Resolve the local account',
-				note: 'Look up the account by (IdP entityID, NameID) = (http://www.okta.com/exk1234, the Subject NameID), or by an explicit mapping table keyed on that pair. The email attribute is profile data to refresh on the account, not the key it is stored under. This matters more here than in the SP-initiated flow: an unsolicited assertion is the only thing telling OTS who this is, so if the key is an email address, whoever controls that address at the IdP controls the local account it resolves to.',
+				note: 'The NameID in this assertion is alice@contoso.com, so a lookup keyed on (entityID, NameID) here is an email-keyed lookup with every problem an email key has: a rename orphans the account and a reissued address inherits it. Two safe options. Recommended: configure the Okta app to send an immutable NameID (the Okta user ID, or the persistent format) and key the account on (http://www.okta.com/exk1234, that NameID). Otherwise: keep the email NameID but resolve it through an explicit mapping table that links (entityID, NameID) to a local account id, is populated by provisioning (SCIM) or an administrator rather than auto-created on first sight, and is re-linked by an administrator when the address changes. Either way the email attribute is profile data to refresh on the account, not the key it is stored under. This matters more here than in the SP-initiated flow: an unsolicited assertion is the only thing telling OTS who this is, so if the key is an email address, whoever controls that address at the IdP controls the local account it resolves to.',
 			},
 			{
 				type: 'response',
