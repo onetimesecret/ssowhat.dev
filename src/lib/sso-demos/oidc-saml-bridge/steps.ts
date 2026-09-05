@@ -9,9 +9,9 @@ const STEPS: Step[] = [
     userSees: "blank",
     urlBar: "https://secrets.example.com/dashboard",
     description:
-      "User navigates to the dashboard. Caddy intercepts and checks auth.",
+      "User navigates to the dashboard. Caddy intercepts and checks auth. oauth2-proxy has no session for this browser, so it starts an OIDC Authorization Code flow: it generates a random state, a nonce, and a PKCE code_verifier, stores all three server-side, and redirects the browser to Logto with code_challenge = BASE64URL(SHA256(code_verifier)).",
     securityNote:
-      "Confidential clients (like this Caddy setup) must validate the `state` parameter on callback to prevent CSRF attacks. Public clients (like SPAs with React/Vue) should additionally implement PKCE.",
+      "The `state` parameter is validated on callback to prevent CSRF. PKCE (RFC 7636) is sent as well: the OAuth 2.0 Security BCP (RFC 9700) recommends PKCE for every client, confidential ones included, because it binds the authorization code to the party that started the flow and so defeats code injection even when a client secret is in play. Treating PKCE as a public-client-only measure is out of date.",
     http: [
       {
         type: "request",
@@ -41,8 +41,11 @@ const STEPS: Step[] = [
           "  &response_type=code",
           "  &scope=openid profile email",
           "  &state=random-csrf-token",
+          "  &nonce=random-nonce",
+          "  &code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
+          "  &code_challenge_method=S256",
         ],
-        note: "Not authenticated \u2192 redirect to Logto",
+        note: "Not authenticated \u2192 redirect to Logto with state, nonce, and the S256 PKCE challenge. The code_verifier stays on the proxy.",
       },
     ],
     actors: {
@@ -81,7 +84,7 @@ const STEPS: Step[] = [
           "Location: https://logto.example.com/sign-in?...",
           "Set-Cookie: logto_session_id=sess_abc123; HttpOnly; Secure; SameSite=Lax",
         ],
-        note: "Logto creates pre-auth session, redirects to sign-in UI",
+        note: "Logto creates pre-auth session, redirects to sign-in UI. Cookie and parameter names throughout this demo are reconstructed from the documented behaviour of Caddy, oauth2-proxy, Logto, and Entra ID; they are not a packet capture, and exact names vary by version and configuration.",
       },
       {
         type: "request",
@@ -407,9 +410,9 @@ const STEPS: Step[] = [
     urlBar:
       "https://secrets.example.com/oauth2/callback?code=authz_code_xyz&state=random-csrf-token",
     description:
-      "Auth layer receives the code and exchanges it server-to-server with Logto for tokens.",
+      "Auth layer receives the code, checks that `state` matches the value it stored in step 1, then exchanges the code server-to-server with Logto for tokens, sending the PKCE code_verifier alongside its client credentials.",
     securityNote:
-      "This is the Authorization Code Flow with Client Secret. The browser never sees this request since the token exchange happens server-to-server (between Caddy and Logto).",
+      "Authorization Code Flow with a client secret AND PKCE. The browser never sees this request: the token exchange happens server-to-server between oauth2-proxy and Logto. Logto checks BASE64URL(SHA256(code_verifier)) against the code_challenge from step 1, so a stolen code is useless to anyone who does not hold the verifier. The client secret authenticates the client; PKCE binds the code to this specific flow. They cover different attacks, so send both.",
     http: [
       {
         type: "request",
@@ -430,8 +433,8 @@ const STEPS: Step[] = [
           "Content-Type: application/x-www-form-urlencoded",
           "Authorization: Basic base64(client_id:client_secret)",
         ],
-        body: "grant_type=authorization_code&code=authz_code_xyz&redirect_uri=https://secrets.example.com/oauth2/callback",
-        note: "Browser never sees this request",
+        body: "grant_type=authorization_code&code=authz_code_xyz&redirect_uri=https://secrets.example.com/oauth2/callback&code_verifier=dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk",
+        note: "Browser never sees this request. code_verifier is the PKCE proof for the challenge sent in step 1.",
       },
       {
         type: "server-response",
@@ -494,9 +497,9 @@ const STEPS: Step[] = [
     userSees: "dashboard",
     urlBar: "https://secrets.example.com/dashboard",
     description:
-      "The user reaches their dashboard. OTS receives identity headers from Caddy.",
+      "The user reaches their dashboard. OTS never validates a token; it reads identity out of HTTP headers that Caddy sets. That makes the headers the credential, and everything below is about not letting anyone else write them.",
     securityNote:
-      "After authentication, your app only receives identity headers from the reverse proxy and never validates tokens directly. Restrict OTS to only accept traffic from Caddy. OTS must set appropriate security headers (Content-Security-Policy, CORS) for browser protection\u2014reverse proxy authentication doesn't replace application-level security headers.",
+      "\"Internal network\" is not a trust boundary. RFC 9700 \u00a74.13 is directly about this pattern, and three points are load-bearing. (1) The proxy MUST strip or overwrite every identity header on each inbound request before forwarding, so a client that sends its own X-Auth-Request-Email or X-Forwarded-User cannot inject one; delete-then-set, never append. (2) The proxy and the app must authenticate each other, and any path that reaches OTS without passing the proxy is a full authentication bypass, because the attacker simply supplies the headers. RFC 9700 \u00a74.13 calls ensuring the authenticity of the communicating entities essential; in practice that is a network policy that does not route to the backend, mTLS between proxy and app, or at minimum a high-entropy shared secret header the proxy sets and the app verifies on every request. (3) The proxy-to-app channel MUST be protected against eavesdropping, injection, and replay to the same standard as the external TLS connection. OTS still owns its own response security headers (Content-Security-Policy, CORS); gateway authentication does not supply those.",
     http: [
       {
         type: "request",
@@ -510,8 +513,8 @@ const STEPS: Step[] = [
         type: "internal",
         from: "Caddy",
         to: "oauth2-proxy",
-        label: "forward_auth validation",
-        note: "Decrypt session cookie, validate not expired",
+        label: "forward_auth validation + header sanitization",
+        note: "Decrypt session cookie, validate not expired, then rewrite the identity headers from the session. Caddy\u2019s forward_auth copies back only an explicit allowlist of headers from the auth response (copy_headers), and the identity headers on the request to OTS are set, not merged, so a client-supplied X-Auth-Request-Email never survives the hop. RFC 9700 \u00a74.13.",
       },
       {
         type: "server",
@@ -525,9 +528,8 @@ const STEPS: Step[] = [
           "X-Auth-Request-User: alice@contoso.com",
           "X-Auth-Request-Email: alice@contoso.com",
           "X-Auth-Request-Groups: group-id-123",
-          "X-Auth-Request-Access-Token: at_xyz...",
         ],
-        note: "OTS trusts these headers implicitly (internal network)",
+        note: "Reconstructed example, not a capture; header names follow oauth2-proxy defaults. Caddy deleted any client-supplied copy of these headers before setting them. OTS accepts them only because the connection came from the proxy and is authenticated as such. Note what is not here: the access token. oauth2-proxy can forward it (--pass-access-token sets X-Auth-Request-Access-Token), but a backend that only needs to know who the user is has no use for a bearer token, and forwarding it widens the token\u2019s exposure to the app\u2019s logs, error reports, and any onward request it makes. Forward it only when the app actually calls an API with it.",
       },
       {
         type: "server-response",
@@ -554,7 +556,7 @@ const STEPS: Step[] = [
     description:
       "All future requests follow the same pattern: session cookie \u2192 forward_auth \u2192 identity headers \u2192 OTS.",
     securityNote:
-      "Session timeouts must be configured consistently across browser cookies, oauth2-proxy sessions, and application sessions to prevent security gaps.",
+      "Session timeouts must be configured consistently across browser cookies, oauth2-proxy sessions, and application sessions to prevent security gaps. The header sanitization and the proxy-only reachability from step 10 apply to every request on this path, not just the first one: there is no fast path that skips them.",
     http: [
       {
         type: "request",
@@ -581,6 +583,7 @@ const STEPS: Step[] = [
           "X-Auth-Request-User: alice@contoso.com",
           "X-Auth-Request-Email: alice@contoso.com",
         ],
+        note: "Same sanitize-then-set rule as step 10, on every request",
       },
       {
         type: "server-response",
