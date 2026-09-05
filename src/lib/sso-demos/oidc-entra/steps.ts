@@ -22,7 +22,7 @@ export const STEPS: Step[] = [
 		description:
 			"User navigates to the OTS dashboard or clicks 'Sign in with Microsoft'. OTS finds no session, generates PKCE parameters, state, and nonce, then redirects to the authorization endpoint of Contoso's tenant -- not a global Microsoft endpoint. The tenant is part of the URL.",
 		securityNote:
-			'Entra endpoints are tenant-scoped: /contoso.onmicrosoft.com/ (or the tenant GUID) accepts only Contoso accounts, /organizations/ accepts any work account, and /common/ additionally accepts personal Microsoft accounts. A single-tenant app should hardcode its tenant in the authorize URL and later verify the tid claim -- accepting tokens from /common/ without issuer validation is a classic multi-tenant vulnerability.',
+			'Entra endpoints are tenant-scoped: /contoso.onmicrosoft.com/ (or the tenant GUID) accepts only Contoso accounts, /organizations/ accepts any work account, and /common/ additionally accepts personal Microsoft accounts. A single-tenant app should hardcode its tenant in the authorize URL and later verify the tid claim -- accepting tokens from /common/ without issuer validation is a classic multi-tenant vulnerability. Scope choice is a security decision too: offline_access is omitted here because a login-only app has nothing to call later, and a refresh token it does not need is a long-lived credential it would have to store, rotate, revoke, and account for after a compromise.',
 		http: [
 			{
 				type: 'request',
@@ -51,13 +51,13 @@ export const STEPS: Step[] = [
 					'  &redirect_uri=https://secrets.example.com/auth/callback',
 					'  &response_type=code',
 					'  &response_mode=query',
-					'  &scope=openid profile email offline_access',
+					'  &scope=openid profile email',
 					'  &state=xYz9Kp2mN7qR4sT1',
 					'  &nonce=aB3cD5eF7gH9iJ1k',
 					'  &code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
 					'  &code_challenge_method=S256',
 				],
-				note: 'Redirect to the tenant-scoped authorize endpoint with PKCE challenge, state, and nonce. offline_access requests a refresh token.',
+				note: 'Redirect to the tenant-scoped authorize endpoint with PKCE challenge, state, and nonce. offline_access is deliberately absent: signing in needs no refresh token.',
 			},
 		],
 		actors: {
@@ -81,7 +81,7 @@ export const STEPS: Step[] = [
 				from: 'Browser',
 				to: 'Entra',
 				method: 'GET',
-				url: 'https://login.microsoftonline.com/contoso.onmicrosoft.com/oauth2/v2.0/authorize?client_id=8f3a2b1c-9d4e-4f5a-b6c7-1a2b3c4d5e6f&redirect_uri=...&response_type=code&scope=openid+profile+email+offline_access&state=xYz9Kp2mN7qR4sT1&nonce=aB3cD5eF7gH9iJ1k&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256',
+				url: 'https://login.microsoftonline.com/contoso.onmicrosoft.com/oauth2/v2.0/authorize?client_id=8f3a2b1c-9d4e-4f5a-b6c7-1a2b3c4d5e6f&redirect_uri=...&response_type=code&scope=openid+profile+email&state=xYz9Kp2mN7qR4sT1&nonce=aB3cD5eF7gH9iJ1k&code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM&code_challenge_method=S256',
 				headers: [],
 			},
 			{
@@ -89,7 +89,7 @@ export const STEPS: Step[] = [
 				from: 'Entra',
 				to: 'Entra',
 				label: 'Resolve app + consent check',
-				note: 'App registration 8f3a2b1c... found in tenant. Admin consent already granted for openid, profile, email, offline_access -- no consent prompt will be shown.',
+				note: 'App registration 8f3a2b1c... found in tenant. Admin consent already granted for openid, profile, email -- no consent prompt will be shown.',
 			},
 			{
 				type: 'response',
@@ -124,7 +124,7 @@ export const STEPS: Step[] = [
 				url: 'https://login.microsoftonline.com/contoso.onmicrosoft.com/login',
 				headers: ['Content-Type: application/x-www-form-urlencoded', 'Cookie: ESTSWEBSESSION=...'],
 				body: 'login=alice%40contoso.com&passwd=********&ctx=...&flowToken=...',
-				note: 'Credentials submitted; Conditional Access may insert an MFA challenge here',
+				note: 'Credentials submitted; Conditional Access may insert an MFA challenge here. The sign-in POST is an internal Entra endpoint, sketched here to show the shape, not a documented contract.',
 			},
 			{
 				type: 'internal',
@@ -195,7 +195,6 @@ export const STEPS: Step[] = [
   "expires_in": 3599,
   "ext_expires_in": 3599,
   "access_token": "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIs...",
-  "refresh_token": "0.AR8AnSqjO3vZbUOxk2Yl...",
   "id_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
 }`,
 				expandedPayload: {
@@ -227,7 +226,7 @@ export const STEPS: Step[] = [
 // Signature: RS256 signed with the tenant's current signing key
 // Verify with JWKS: https://login.microsoftonline.com/contoso.onmicrosoft.com/discovery/v2.0/keys`,
 				},
-				note: 'Note the Entra-specific claims: tid (tenant), oid (directory object id), and a pairwise sub. ext_expires_in allows token reuse during Entra outages.',
+				note: 'Note the Entra-specific claims: tid (tenant), oid (directory object id), and a pairwise sub. ext_expires_in allows token reuse during Entra outages. No refresh_token, because offline_access was not requested. Values are illustrative, not a capture.',
 			},
 		],
 		actors: {
@@ -244,14 +243,14 @@ export const STEPS: Step[] = [
 		description:
 			"OTS validates the ID token (signature, issuer, audience, nonce, expiry) against the tenant's JWKS, then maps the user to a local account keyed on tid + oid -- not email. Optionally it calls the Microsoft Graph userinfo endpoint for extra profile data.",
 		securityNote:
-			"Key the account on tid + oid, never on the email claim. In Entra, sub is pairwise (different per application, useless across apps), and email/preferred_username are admin-editable and not guaranteed verified -- the root cause of the 'nOAuth' account-takeover pattern, where a rogue tenant admin sets a victim's email on their own user. tid + oid is the only cross-app-stable, tenant-anchored identifier.",
+			"Key the account on tid + oid, never on the email claim. In Entra, sub is pairwise (different per application, useless across apps), and email/preferred_username are admin-editable and not guaranteed verified -- the root cause of the 'nOAuth' account-takeover pattern, where a rogue tenant admin sets a victim's email on their own user. tid + oid is the only cross-app-stable, tenant-anchored identifier, so it is the key the local account row is created and looked up on. And when userinfo is called, its sub must exactly match the ID token sub (OIDC Core 5.3.2) before any of its claims are used.",
 		http: [
 			{
 				type: 'internal',
 				from: 'OTS',
 				to: 'OTS',
 				label: 'Validate ID token JWT',
-				note: 'Verify RS256 signature via tenant JWKS, check iss contains expected tid 3b2a1c9d..., aud matches client_id, exp in future, nonce=aB3cD5eF7gH9iJ1k. Map account key: (tid, oid) = (3b2a1c9d..., 5d1e8f3a...).',
+				note: 'Verify RS256 signature via tenant JWKS, check iss contains expected tid 3b2a1c9d..., aud matches client_id, exp in future, nonce=aB3cD5eF7gH9iJ1k. The account is looked up or created on the tenant-qualified key (tid, oid) = (3b2a1c9d..., 5d1e8f3a...), never on email or preferred_username.',
 			},
 			{
 				type: 'server',
@@ -279,6 +278,13 @@ export const STEPS: Step[] = [
 				note: 'Userinfo response; richer directory data (groups, manager, jobTitle) requires Graph API scopes',
 			},
 			{
+				type: 'internal',
+				from: 'OTS',
+				to: 'OTS',
+				label: 'Compare userinfo sub to ID token sub',
+				note: 'OIDC Core 5.3.2: the sub in the userinfo response MUST exactly match the sub in the ID token. If it does not, discard the userinfo values. This is what stops a substituted or mixed-up access token from attaching another user profile to this session. The userinfo response carries sub, not oid, so it confirms the response belongs to the same subject; the account key stays (tid, oid) from the ID token.',
+			},
+			{
 				type: 'response',
 				from: 'OTS',
 				to: 'Browser',
@@ -304,7 +310,7 @@ export const STEPS: Step[] = [
 		description:
 			'Alice is authenticated and reaches her dashboard. OTS reads the session to render content personalized with the Entra profile data (name, email, avatar via Graph).',
 		securityNote:
-			'The access_token and refresh_token stay server-side. Entra refresh tokens are long-lived but revocable: disabling the user, a password reset, or a Conditional Access change can invalidate them. Handle AADSTS50173 (token revoked) by re-running the authorization flow, not by retrying.',
+			'The access_token stays server-side and can be discarded once sign-in is finished. If a later feature does need offline_access, know what you are taking on: Entra refresh tokens are long-lived but revocable, and disabling the user, a password reset, or a Conditional Access change invalidates them. Handle AADSTS50173 (token revoked) by re-running the authorization flow, not by retrying.',
 		http: [
 			{
 				type: 'request',
@@ -346,9 +352,9 @@ export const STEPS: Step[] = [
 		userSees: 'dashboard',
 		urlBar: 'https://secrets.example.com/dashboard',
 		description:
-			'All future requests use the session cookie; no Entra interaction until the session expires or Alice signs out. When Contoso offboards Alice, disabling her Entra account blocks new sign-ins -- but the OTS session lives until it expires, which is why enterprises pair SSO with SCIM deprovisioning.',
+			'All future requests use the session cookie; no Entra interaction until the session expires or Alice signs out. When Contoso offboards Alice, disabling her Entra account blocks new sign-ins -- but the OTS session lives until OTS itself ends it, which is why enterprises pair SSO with SCIM deprovisioning.',
 		securityNote:
-			'Session lifetime is a local decision, decoupled from Entra token expiry. For high-value apps, Continuous Access Evaluation (CAE) lets Entra push near-real-time revocation to cooperating resource servers; for everything else, keep sessions short and re-validate with a silent token refresh. See the SCIM demo for the deprovisioning half of the lifecycle.',
+			'Session lifetime is a local decision, decoupled from Entra token expiry. Continuous Access Evaluation (CAE) is often misread here: it lets a CAE-enabled resource such as Microsoft Graph reject an already-issued access token with a 401 and a claims challenge, which a CAE-aware client answers by acquiring a fresh token. It does not reach into OTS and end the OTS session. Ending the local session stays the application\'s job: keep sessions short, re-check with Entra on a schedule or on sensitive actions, and consume deprovisioning events. See the SCIM demo for the deprovisioning half of the lifecycle.',
 		http: [
 			{
 				type: 'request',
