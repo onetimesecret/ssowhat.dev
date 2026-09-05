@@ -2,6 +2,7 @@
 	import type { Step, DemoConfig } from '../types.js';
 	import { generatePlainTextTranscript } from './transcript-utils.js';
 	import StepArticle from './StepArticle.svelte';
+	import FidelityNote from './FidelityNote.svelte';
 
 	interface TranscriptViewProps {
 		/** Array of demo steps to render as transcript */
@@ -81,6 +82,7 @@
 				<span class="mx-2">&bull;</span>
 				<span>Full transcript view</span>
 			</div>
+			<FidelityNote fidelity={config.fidelity} class="mt-3 print:text-gray-700" />
 		</header>
 
 		<!-- Main transcript content -->

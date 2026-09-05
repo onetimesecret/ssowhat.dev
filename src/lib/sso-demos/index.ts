@@ -23,6 +23,7 @@ export type {
   ProtocolStackConfig,
   Step,
   DemoConfig,
+  DemoFidelity,
   LiveExchangeSpec,
   LiveStepSpec,
   LiveExchangeResult,

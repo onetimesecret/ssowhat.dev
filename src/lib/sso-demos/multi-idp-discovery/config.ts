@@ -82,6 +82,11 @@ export const demoConfig: DemoConfig = {
 	title: 'Multi-IdP Home-Realm Discovery',
 	subtitle: 'One email-first sign-in page routes each organization to its own IdP',
 	version: '0.1.0',
+	fidelity: {
+		level: 'reconstructed',
+		note: 'The Okta login trace uses the Classic Engine Authentication API (/api/v1/authn); Identity Engine hosted login differs.',
+		reviewed: '2026-09-05',
+	},
 	backLink: {
 		href: DEMOS_INDEX_PATH,
 		label: 'All demos',

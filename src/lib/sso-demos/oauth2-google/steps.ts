@@ -23,7 +23,7 @@ export const STEPS: Step[] = [
 		description:
 			"User navigates to the OTS dashboard or clicks 'Sign in with Google'. OTS checks for a valid session and finds none, so it generates PKCE parameters (code_verifier + code_challenge), a random state for CSRF protection, and a nonce for token replay prevention, then redirects to Google's authorization endpoint.",
 		securityNote:
-			'PKCE (Proof Key for Code Exchange, RFC 7636) protects against authorization code interception attacks. OTS generates a random code_verifier (43-128 chars), computes code_challenge = BASE64URL(SHA256(code_verifier)), and sends only the challenge to Google. The verifier is stored server-side and sent during token exchange. The state parameter prevents CSRF; the nonce prevents ID token replay.',
+			'PKCE (Proof Key for Code Exchange, RFC 7636) protects against authorization code interception attacks. OTS generates a random code_verifier (43-128 chars), computes code_challenge = BASE64URL(SHA256(code_verifier)), and sends only the challenge to Google. The verifier is stored server-side and sent during token exchange. The state parameter prevents CSRF; the nonce prevents ID token replay. Note what is absent: access_type=offline. A refresh token is only needed to call Google APIs while the user is away. Requesting one for a login-only flow buys nothing and adds storage, rotation, revocation, and breach-handling obligations, so treat offline access as an opt-in taken when a specific background call requires it.',
 		http: [
 			{
 				type: 'request',
@@ -56,10 +56,8 @@ export const STEPS: Step[] = [
 					'  &nonce=aB3cD5eF7gH9iJ1k',
 					'  &code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM',
 					'  &code_challenge_method=S256',
-					'  &access_type=offline',
-					'  &prompt=consent',
 				],
-				note: 'Redirect to Google with PKCE challenge, state, and nonce',
+				note: 'Redirect to Google with PKCE challenge, state, and nonce. No access_type=offline: this flow only signs the user in.',
 			},
 		],
 		actors: {
@@ -119,7 +117,7 @@ export const STEPS: Step[] = [
 				url: 'https://accounts.google.com/signin/oauth/consent',
 				headers: ['Content-Type: application/x-www-form-urlencoded', 'Cookie: __Host-GAPS=...'],
 				body: 'approved=true&...',
-				note: 'User grants consent for email and profile access',
+				note: 'User grants consent for email and profile access. This is an internal Google endpoint, reconstructed here to show the shape; it is not a stable contract.',
 			},
 			{
 				type: 'response',
@@ -182,7 +180,6 @@ export const STEPS: Step[] = [
   "id_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
   "token_type": "Bearer",
   "expires_in": 3599,
-  "refresh_token": "1//0eXyz...",
   "scope": "openid email profile"
 }`,
 				expandedPayload: {
@@ -215,7 +212,7 @@ export const STEPS: Step[] = [
 // Signature: RS256 signed with Google's private key
 // Verify with JWKS: https://www.googleapis.com/oauth2/v3/certs`,
 				},
-				note: 'Token response includes access_token for API calls and id_token (JWT) with verified identity',
+				note: 'Token response includes an access_token (here only good for the userinfo endpoint) and an id_token (JWT) carrying the verified identity. No refresh_token, because access_type=offline was not requested. Values are illustrative, not a capture.',
 			},
 		],
 		actors: {
@@ -232,14 +229,14 @@ export const STEPS: Step[] = [
 		description:
 			"OTS validates the ID token JWT (signature, issuer, audience, nonce, expiry) using Google's public keys. It then optionally calls the userinfo endpoint with the access_token to fetch additional profile data that may not be in the ID token.",
 		securityNote:
-			"ID token validation checks: (1) verify RS256 signature against Google's JWKS at https://www.googleapis.com/oauth2/v3/certs, (2) iss must be 'https://accounts.google.com', (3) aud must match your client_id, (4) exp must be in the future, (5) nonce must match the value from step 1 to prevent replay. Cache JWKS with appropriate TTL to avoid fetching on every request.",
+			"ID token validation checks: (1) verify RS256 signature against Google's JWKS at https://www.googleapis.com/oauth2/v3/certs, (2) iss must be 'https://accounts.google.com', (3) aud must match your client_id, (4) exp must be in the future, (5) nonce must match the value from step 1 to prevent replay. Cache JWKS with appropriate TTL to avoid fetching on every request. The userinfo response is validated separately: its sub must exactly match the ID token sub (OIDC Core 5.3.2). The ID token, not userinfo, is the authority on who signed in.",
 		http: [
 			{
 				type: 'internal',
 				from: 'OTS',
 				to: 'OTS',
 				label: 'Validate ID token JWT',
-				note: 'Verify RS256 signature via Google JWKS, check iss, aud, exp, nonce=aB3cD5eF7gH9iJ1k. Extract sub=110248495921238986420 as stable user identifier.',
+				note: 'Verify RS256 signature via Google JWKS, check iss, aud, exp, nonce=aB3cD5eF7gH9iJ1k. Account key is the pair (iss, sub) = (https://accounts.google.com, 110248495921238986420), never the email address.',
 			},
 			{
 				type: 'server',
@@ -269,6 +266,13 @@ export const STEPS: Step[] = [
 				note: 'Userinfo response with additional profile claims (locale, picture URL)',
 			},
 			{
+				type: 'internal',
+				from: 'OTS',
+				to: 'OTS',
+				label: 'Compare userinfo sub to ID token sub',
+				note: 'OIDC Core 5.3.2: the sub in the userinfo response MUST exactly match the sub in the ID token. If it does not, discard the userinfo values. Without this check an access token belonging to a different user, injected or swapped by a mix-up or token substitution attack, would silently overwrite the profile attached to this session.',
+			},
+			{
 				type: 'response',
 				from: 'OTS',
 				to: 'Browser',
@@ -294,7 +298,7 @@ export const STEPS: Step[] = [
 		description:
 			'The user is authenticated and reaches their dashboard. OTS reads the session to render content personalized with the Google profile data (name, email, avatar).',
 		securityNote:
-			'The access_token and refresh_token are stored securely server-side, never exposed to the browser. The refresh_token allows OTS to obtain new access tokens without user interaction, useful for background API calls. Revoke tokens on logout via https://oauth2.googleapis.com/revoke.',
+			'The access_token stays server-side, never exposed to the browser. Since login is finished, OTS can drop it entirely; keeping it only makes sense if there is a Google API to call. Revoke any token still held on logout via https://oauth2.googleapis.com/revoke.',
 		http: [
 			{
 				type: 'request',
@@ -336,9 +340,9 @@ export const STEPS: Step[] = [
 		userSees: 'dashboard',
 		urlBar: 'https://secrets.example.com/dashboard',
 		description:
-			'All future requests use the session cookie. No further interaction with Google until the session expires or the user logs out. OTS can use the stored refresh_token to call Google APIs on behalf of the user if needed.',
+			'All future requests use the session cookie. No further interaction with Google until the session expires or the user logs out. The OTS session is entirely local: Google has no way to end it, and Google token expiry does not end it either.',
 		securityNote:
-			'Session lifetime should be managed independently of Google token expiry. Implement session rotation on privilege escalation. On logout, revoke the Google tokens to prevent lingering API access. Store tokens encrypted at rest with a server-side key, never in browser-accessible storage.',
+			'Session lifetime is a local decision, managed independently of Google token expiry. Rotate the session id on privilege escalation. On logout, revoke any Google token still held. If offline access was requested for a real API need, store those tokens encrypted at rest with a server-side key, never in browser-accessible storage, and have a plan for rotation and revocation before requesting them.',
 		http: [
 			{
 				type: 'request',

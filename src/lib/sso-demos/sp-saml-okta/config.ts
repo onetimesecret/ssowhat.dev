@@ -60,6 +60,11 @@ export const demoConfig: DemoConfig = {
 	title: 'SP-Initiated SAML with Okta',
 	subtitle: 'OTS authenticates directly with Okta via SAML 2.0',
 	version: '0.1.0',
+	fidelity: {
+		level: 'reconstructed',
+		note: 'The Okta login trace uses the Classic Engine Authentication API (/api/v1/authn); Identity Engine hosted login differs.',
+		reviewed: '2026-09-05',
+	},
 	backLink: {
 		href: DEMOS_INDEX_PATH,
 		label: 'All demos',

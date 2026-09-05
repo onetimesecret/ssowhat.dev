@@ -4,7 +4,7 @@
 
 	const pageTitle = 'SAML Single Logout with Okta';
 	const pageDescription =
-		'Interactive visualization of SAML 2.0 Single Logout: the service provider sends a LogoutRequest to Okta, front-channel propagation to other apps fails, and the LogoutResponse comes back PartialLogout';
+		'Interactive visualization of SAML 2.0 Single Logout: the service provider sends a LogoutRequest to Okta, Okta front-channels it to the other apps, one of them cannot map the NameID to a local session, and the LogoutResponse comes back PartialLogout';
 </script>
 
 <svelte:head>

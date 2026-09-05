@@ -10,6 +10,10 @@ Each demo walks through a complete authentication flow step by step, showing wha
 
 The example application is [Onetime Secret](https://onetimesecret.com) (OTS) — an open-source tool for sharing sensitive information via self-destructing links. It serves as a realistic stand-in for any web application adding SSO support.
 
+## Fidelity
+
+The traces are reconstructed educational examples, not packet captures or implementation recipes. They are assembled from primary specifications and vendor documentation, then trimmed so the protocol is legible; endpoints, cookie names, redirects, headers, and response bodies vary by provider configuration and product version. The review dates record documentation review, not live interoperability testing. Where a demo simplifies something notable, such as the Okta Classic Engine Authentication API used in the SAML login sequences, the demo header says so.
+
 ## Available demos
 
 | Demo | Protocols | Architecture |
@@ -19,8 +23,9 @@ The example application is [Onetime Secret](https://onetimesecret.com) (OTS) —
 | [IdP-Initiated SAML with Okta](https://ssowhat.dev/idp-saml-okta/) | SAML 2.0 | User clicks Okta dashboard tile, unsolicited assertion pushed to OTS |
 | [OAuth2 Social Login with Google](https://ssowhat.dev/oauth2-google/) | OAuth 2.0, OIDC | Authorization Code Flow with PKCE via Google |
 | [SCIM Provisioning with Okta](https://ssowhat.dev/scim-okta/) | SCIM 2.0 | Okta pushes user lifecycle changes (create, update, deactivate) to the OTS SCIM API — live-mode pilot |
-
-Planned: multi-IdP federation patterns.
+| [Enterprise OIDC with Entra ID](https://ssowhat.dev/oidc-entra/) | OIDC, OAuth 2.0 | OTS authenticates directly with Microsoft Entra ID via OpenID Connect |
+| [SAML Single Logout with Okta](https://ssowhat.dev/slo-saml-okta/) | SAML 2.0 | One logout click, three sessions, and no guarantee all of them die |
+| [Multi-IdP Home-Realm Discovery](https://ssowhat.dev/multi-idp-discovery/) | SAML 2.0, OIDC | One email-first sign-in page routes each organization to its own IdP |
 
 ## Running locally
 

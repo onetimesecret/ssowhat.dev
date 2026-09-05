@@ -8,6 +8,7 @@
 	import FlowTrack from './FlowTrack.svelte';
 	import ProtocolStack from './ProtocolStack.svelte';
 	import TranscriptView from './TranscriptView.svelte';
+	import FidelityNote from './FidelityNote.svelte';
 	import TransportToggle from './live/TransportToggle.svelte';
 	import LiveRunControls from './live/LiveRunControls.svelte';
 	import LiveComparePanel from './live/LiveComparePanel.svelte';
@@ -381,8 +382,12 @@
 			</h1>
 			<p class="text-base text-ink-tertiary">{config.subtitle}</p>
 			<p class="mt-2 text-xs text-ink-muted">
-				This is a static, self-contained demo for educational purposes. It does not connect to any live systems and is not intended as a reference implementation.
+				This is an educational demo, not a reference implementation. Any live mode uses a mock service, not a vendor system.
 			</p>
+			{#if viewMode === 'interactive'}
+				<!-- Transcript mode renders its own header, including this note, in TranscriptView. -->
+				<FidelityNote fidelity={config.fidelity} class="mx-auto mt-1 max-w-3xl" />
+			{/if}
 		</div>
 
 		<!-- Controls and Progress. In interactive mode this renders below the demo
