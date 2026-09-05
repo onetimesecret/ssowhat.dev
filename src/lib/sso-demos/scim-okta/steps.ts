@@ -77,7 +77,7 @@ export const STEPS: Step[] = [
 					'Authorization: Bearer ots_scim_tk_9f3a...redacted',
 					'Accept: application/scim+json',
 				],
-				note: 'Decoded filter: userName eq "alice@contoso.com". SCIM filter grammar is defined in RFC 7644 §3.4.2.2; eq on userName is the only filter Okta requires a SCIM server to support.',
+				note: 'Decoded filter: userName eq "alice@contoso.com". SCIM filter grammar is defined in RFC 7644 §3.4.2.2; eq on userName is the only filter Okta requires a SCIM server to support. The token value and query shape here are a reconstructed example, not a capture.',
 			},
 			{
 				type: 'server-response',
@@ -275,9 +275,9 @@ export const STEPS: Step[] = [
 		userSees: 'okta-admin-profile',
 		urlBar: 'https://contoso-admin.okta.com/admin/user/profile/view/00u1abcd2EFGHIJKL345',
 		description:
-			'The admin edits Alice’s profile in Okta -- say, her surname changes to Nguyen after a name change in HR. Okta pushes the change with PUT /Users/{id}. Here is the real-world nuance: RFC 7644 offers PATCH for sparse updates, but Okta sends PUT with the complete resource for profile updates, replacing the whole User. This is a defensible engineering choice -- full replace is idempotent and immune to the operational complexity of SCIM PATCH path expressions -- but it has a sharp implication for the SCIM server: any attribute missing from the PUT body must be treated as cleared, so OTS must not store authoritative state in SCIM-managed attributes that Okta does not know about, or every profile sync will silently erase it.',
+			'The admin edits Alice’s profile in Okta -- say, her surname changes to Nguyen after a name change in HR. Okta pushes the change with PUT /Users/{id}. Here is the real-world nuance: RFC 7644 offers PATCH for sparse updates, but Okta sends PUT with the complete resource for profile updates, replacing the whole User. This is a defensible engineering choice -- PUT is idempotent and immune to the operational complexity of SCIM PATCH path expressions -- but it has a sharp implication for the SCIM server. RFC 7644 §3.5.1 says writable attributes omitted from a PUT body MAY be assumed to be unasserted by the client: the provider MAY clear any existing values, or MAY assign a default instead. The spec leaves the choice to the implementation, so what actually happens depends on the SCIM server in use; check its documentation and test it. If it does clear unasserted attributes, OTS must not store authoritative state in SCIM-managed attributes that Okta does not know about, or every profile sync will silently erase it.',
 		securityNote:
-			'PUT-as-full-replace means the provisioning client’s attribute mappings effectively own the user record. If OTS let users self-edit their display name, the next Okta push overwrites it. Design rule for SCIM servers: partition attributes into IdP-owned (replaced on PUT) and app-owned (stored outside the SCIM-mapped set), and never blend the two in one column. The meta.version weak ETag in responses exists so clients that care can do If-Match concurrency control -- Okta does not send If-Match, which is another way of saying last-write-wins, and Okta writes last.',
+			'PUT-as-full-replace means the provisioning client’s attribute mappings effectively own the user record. If OTS let users self-edit their display name, the next Okta push overwrites it with whatever Okta has. Design rule for SCIM servers: partition attributes into IdP-owned (replaced on PUT) and app-owned (stored outside the SCIM-mapped set), and never blend the two in one column. The meta.version weak ETag in responses exists so clients that care can do If-Match concurrency control -- Okta does not send If-Match, which is another way of saying last-write-wins, and Okta writes last.',
 		http: [
 			{
 				type: 'request',
@@ -323,7 +323,7 @@ export const STEPS: Step[] = [
   "active": true
 }`,
 				},
-				note: 'Only familyName and displayName changed, but the entire resource is sent. Anything OTS stored in a SCIM-mapped attribute that is absent here would be wiped.',
+				note: 'Only familyName and displayName changed, but the entire resource is sent. Anything OTS stored in a SCIM-mapped attribute that is absent here is unasserted, and the server is permitted (not required) to clear it or reset it to a default.',
 			},
 			{
 				type: 'server-response',
@@ -565,7 +565,7 @@ export const STEPS: Step[] = [
 		description:
 			'The OTS team page shows the completed lifecycle: Alice’s account exists but is deactivated -- greyed out, sign-in blocked, her data and audit trail intact. If she attempted the SAML flow now, Okta would refuse first (she is unassigned from the app), and OTS would refuse second (active is false). That layering is the point: deprovisioning enforced independently at both the IdP and the application, so a mistake or compromise at either layer does not by itself re-open access. If Alice is rehired, reassignment in Okta replays this same machinery -- the step-2 filter finds her existing account, and a PATCH flips active back to true.',
 		securityNote:
-			'Operational realities to carry out of this demo: (1) the static Bearer token is the weakest link -- it is long-lived, rarely rotated, and grants full lifecycle control over every account, so store it in a secret manager, scope the endpoint to it alone, and rotate on a schedule; (2) the /scim/v2 endpoint must reject unauthenticated requests outright, rate-limit aggressively, and treat the filter parameter as untrusted input -- parse it with a real RFC 7644 grammar parser, never by interpolating it into a query, or "filter injection" becomes SQL injection with an enterprise price tag; (3) SCIM is eventually consistent by design -- Okta retries failed calls with backoff, so every operation must be idempotent and safe to receive twice.',
+			'Operational realities to carry out of this demo: (1) the static Bearer token is the weakest link -- it is long-lived, rarely rotated, and grants full lifecycle control over every account, so store it in a secret manager, scope the endpoint to it alone, and rotate on a schedule; (2) the /scim/v2 endpoint must reject unauthenticated requests outright, rate-limit aggressively, and treat the filter parameter as untrusted input -- parse it with a real RFC 7644 grammar parser, never by interpolating it into a query, or "filter injection" becomes SQL injection with an enterprise price tag; (3) delivery is asynchronous and retried -- a property of Okta’s push scheduling, not of SCIM, which is plain synchronous HTTP with no consistency model. PUT and DELETE are idempotent; POST /Users is not. A replayed POST for an existing userName must return 409 with scimType "uniqueness" (RFC 7644 §3.3), and the client should read that as "already created". Design for retries converging, not for every operation being replay-safe.',
 		http: [
 			{
 				type: 'request',
