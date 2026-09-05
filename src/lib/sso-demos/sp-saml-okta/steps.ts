@@ -175,7 +175,7 @@ export const STEPS: Step[] = [
 		userSees: 'loading',
 		urlBar: 'https://contoso.okta.com/login/sessionCookieRedirect',
 		description:
-			'The sessionToken from the previous step is a single-use bearer credential, not a session. It has to be redeemed at Okta for a browser session cookie before the SAML endpoint will recognise the user. Okta documents two ways to do this: a redirect through /login/sessionCookieRedirect with token and redirectUrl, and an OIDC /oauth2/v1/authorize call carrying sessionToken with prompt=none. Both set the sid cookie and then send the browser on to the target URL, which here is the SAML SSO endpoint the AuthnRequest was aimed at.',
+			'The sessionToken from the previous step is a single-use bearer credential, not a session. It has to be redeemed at Okta for a browser session cookie before the SAML endpoint will recognise the user. Okta documents two ways to do this: a redirect through /login/sessionCookieRedirect with token and redirectUrl, and an OIDC /oauth2/v1/authorize call carrying sessionToken with prompt=none. Both set the sid cookie and then send the browser on to the target URL. Here the trusted redirectUrl preserves the original SAMLRequest and RelayState; dropping them would turn the return into a new launch rather than completing the SP-initiated transaction.',
 		securityNote:
 			'The sessionToken is consumed on first use and is invalidated on logout, so a leaked token is only useful inside a narrow window. The redirectUrl must be a Trusted Origin in the Okta org, otherwise this endpoint is an open redirect that hands a session-establishing token to an attacker-chosen destination. Classic Engine orgs ignore sessionToken when a session cookie is already present, which is why this step disappears entirely for a user who is already signed in.',
 		http: [
@@ -184,9 +184,9 @@ export const STEPS: Step[] = [
 				from: 'Browser',
 				to: 'Okta',
 				method: 'GET',
-				url: 'https://contoso.okta.com/login/sessionCookieRedirect?token=20111...&redirectUrl=https%3A%2F%2Fcontoso.okta.com%2Fapp%2Fots-saml%2Fexk1234%2Fsso%2Fsaml',
+				url: 'https://contoso.okta.com/login/sessionCookieRedirect?token=20111...&redirectUrl=https%3A%2F%2Fcontoso.okta.com%2Fapp%2Fots-saml%2Fexk1234%2Fsso%2Fsaml%3FSAMLRequest%3D...%26RelayState%3D%252Fdashboard',
 				headers: ['Cookie: (no Okta session)'],
-				note: 'Redeem the one-time sessionToken. The OIDC alternative is /oauth2/v1/authorize?...&prompt=none&sessionToken=20111..., which sets the same cookie.',
+				note: 'Redeem the one-time sessionToken and preserve the original SAMLRequest in redirectUrl. The OIDC alternative is /oauth2/v1/authorize?...&prompt=none&sessionToken=20111..., which sets the same cookie.',
 			},
 			{
 				type: 'response',
@@ -195,7 +195,7 @@ export const STEPS: Step[] = [
 				status: '302 Found',
 				headers: [
 					'Set-Cookie: sid=okta_session_abc; HttpOnly; Secure; SameSite=None',
-					'Location: https://contoso.okta.com/app/ots-saml/exk1234/sso/saml',
+					'Location: https://contoso.okta.com/app/ots-saml/exk1234/sso/saml?SAMLRequest=...&RelayState=%2Fdashboard',
 				],
 				note: 'Okta session established. Cookie name and attributes are shown as a reconstructed example; the actual set varies by org. The browser now returns to the SAML SSO endpoint with a session in hand.',
 			},
@@ -221,9 +221,9 @@ export const STEPS: Step[] = [
 				from: 'Browser',
 				to: 'Okta',
 				method: 'GET',
-				url: 'https://contoso.okta.com/app/ots-saml/exk1234/sso/saml',
+				url: 'https://contoso.okta.com/app/ots-saml/exk1234/sso/saml?SAMLRequest=...&RelayState=%2Fdashboard',
 				headers: ['Cookie: sid=okta_session_abc'],
-				note: 'Back at the SSO endpoint, now with a session. Okta resolves the pending AuthnRequest for this browser and builds the assertion.',
+				note: 'Back at the SSO endpoint with both the original AuthnRequest and an Okta session. Okta validates the request and builds the correlated assertion.',
 			},
 			{
 				type: 'response',

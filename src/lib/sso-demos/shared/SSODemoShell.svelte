@@ -382,9 +382,12 @@
 			</h1>
 			<p class="text-base text-ink-tertiary">{config.subtitle}</p>
 			<p class="mt-2 text-xs text-ink-muted">
-				This is a static, self-contained demo for educational purposes. It does not connect to any live systems and is not intended as a reference implementation.
+				This is an educational demo, not a reference implementation. Any live mode uses a mock service, not a vendor system.
 			</p>
-			<FidelityNote fidelity={config.fidelity} class="mx-auto mt-1 max-w-3xl" />
+			{#if viewMode === 'interactive'}
+				<!-- Transcript mode renders its own header, including this note, in TranscriptView. -->
+				<FidelityNote fidelity={config.fidelity} class="mx-auto mt-1 max-w-3xl" />
+			{/if}
 		</div>
 
 		<!-- Controls and Progress. In interactive mode this renders below the demo

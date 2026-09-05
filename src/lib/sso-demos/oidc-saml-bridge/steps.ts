@@ -9,7 +9,7 @@ const STEPS: Step[] = [
     userSees: "blank",
     urlBar: "https://secrets.example.com/dashboard",
     description:
-      "User navigates to the dashboard. Caddy intercepts and checks auth. oauth2-proxy has no session for this browser, so it starts an OIDC Authorization Code flow: it generates a random state, a nonce, and a PKCE code_verifier, stores all three server-side, and redirects the browser to Logto with code_challenge = BASE64URL(SHA256(code_verifier)).",
+      "User navigates to the dashboard. Caddy intercepts and checks auth. oauth2-proxy has no session for this browser, so it starts an OIDC Authorization Code flow: it generates a random state, a nonce, and a PKCE code_verifier, protects them in an encrypted and signed CSRF cookie, and redirects the browser to Logto with code_challenge = BASE64URL(SHA256(code_verifier)).",
     securityNote:
       "The `state` parameter is validated on callback to prevent CSRF. PKCE (RFC 7636) is sent as well: the OAuth 2.0 Security BCP (RFC 9700) recommends PKCE for every client, confidential ones included, because it binds the authorization code to the party that started the flow and so defeats code injection even when a client secret is in play. Treating PKCE as a public-client-only measure is out of date.",
     http: [
@@ -44,8 +44,9 @@ const STEPS: Step[] = [
           "  &nonce=random-nonce",
           "  &code_challenge=E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM",
           "  &code_challenge_method=S256",
+          "Set-Cookie: _oauth2_proxy_csrf=encrypted-transaction-data; HttpOnly; Secure; SameSite=Lax; Path=/",
         ],
-        note: "Not authenticated \u2192 redirect to Logto with state, nonce, and the S256 PKCE challenge. The code_verifier stays on the proxy.",
+        note: "Not authenticated \u2192 redirect to Logto with state, nonce, and the S256 PKCE challenge. oauth2-proxy recovers the code_verifier from its protected CSRF cookie on callback.",
       },
     ],
     actors: {
@@ -445,8 +446,7 @@ const STEPS: Step[] = [
   "access_token": "at_xyz...",
   "id_token": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9...",
   "token_type": "Bearer",
-  "expires_in": 3600,
-  "refresh_token": "rt_abc..."
+  "expires_in": 3600
 }`,
         expandedPayload: {
           label: "Decoded id_token (JWT)",
@@ -469,7 +469,7 @@ const STEPS: Step[] = [
   }
 }`,
         },
-        note: "Auth layer now has user identity. Logto maps SAML attributes (emailaddress, givenname, groups) to OIDC claims (email, name, identities).",
+        note: "Auth layer now has user identity. Logto maps SAML attributes (emailaddress, givenname, groups) to OIDC claims (email, name, identities). No refresh token is shown because this login-only flow did not request offline access; requesting one would add storage, rotation, revocation, and compromise-handling obligations.",
       },
       {
         type: "response",
@@ -532,7 +532,7 @@ const STEPS: Step[] = [
         note: "Reconstructed example, not a capture; header names follow oauth2-proxy defaults. Caddy deleted any client-supplied copy of these headers before setting them. OTS accepts them only because the connection came from the proxy and is authenticated as such. Note what is not here: the access token. oauth2-proxy can forward it (--pass-access-token sets X-Auth-Request-Access-Token), but a backend that only needs to know who the user is has no use for a bearer token, and forwarding it widens the token\u2019s exposure to the app\u2019s logs, error reports, and any onward request it makes. Forward it only when the app actually calls an API with it.",
       },
       {
-        type: "server-response",
+        type: "response",
         from: "OTS",
         to: "Browser (via Caddy)",
         status: "200 OK",
@@ -586,7 +586,7 @@ const STEPS: Step[] = [
         note: "Same sanitize-then-set rule as step 10, on every request",
       },
       {
-        type: "server-response",
+        type: "response",
         from: "OTS",
         to: "Browser",
         status: "200 OK",

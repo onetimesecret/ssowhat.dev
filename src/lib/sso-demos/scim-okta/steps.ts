@@ -73,10 +73,7 @@ export const STEPS: Step[] = [
 				to: 'OTS',
 				method: 'GET',
 				url: 'https://secrets.example.com/scim/v2/Users?filter=userName%20eq%20%22alice%40contoso.com%22&startIndex=1&count=100',
-				headers: [
-					'Authorization: Bearer ots_scim_tk_9f3a...redacted',
-					'Accept: application/scim+json',
-				],
+				headers: ['Authorization: Bearer ots_scim_tk_9f3a...redacted', 'Accept: application/scim+json'],
 				note: 'Decoded filter: userName eq "alice@contoso.com". SCIM filter grammar is defined in RFC 7644 §3.4.2.2; eq on userName is the only filter Okta requires a SCIM server to support. The token value and query shape here are a reconstructed example, not a capture.',
 			},
 			{
@@ -255,7 +252,7 @@ export const STEPS: Step[] = [
 				note: 'An OTS admin (separate person, separate session) views the team page',
 			},
 			{
-				type: 'server-response',
+				type: 'response',
 				from: 'OTS',
 				to: 'Admin Browser',
 				status: '200 OK',
@@ -565,7 +562,7 @@ export const STEPS: Step[] = [
 		description:
 			'The OTS team page shows the completed lifecycle: Alice’s account exists but is deactivated -- greyed out, sign-in blocked, her data and audit trail intact. If she attempted the SAML flow now, Okta would refuse first (she is unassigned from the app), and OTS would refuse second (active is false). That layering is the point: deprovisioning enforced independently at both the IdP and the application, so a mistake or compromise at either layer does not by itself re-open access. If Alice is rehired, reassignment in Okta replays this same machinery -- the step-2 filter finds her existing account, and a PATCH flips active back to true.',
 		securityNote:
-			'Operational realities to carry out of this demo: (1) the static Bearer token is the weakest link -- it is long-lived, rarely rotated, and grants full lifecycle control over every account, so store it in a secret manager, scope the endpoint to it alone, and rotate on a schedule; (2) the /scim/v2 endpoint must reject unauthenticated requests outright, rate-limit aggressively, and treat the filter parameter as untrusted input -- parse it with a real RFC 7644 grammar parser, never by interpolating it into a query, or "filter injection" becomes SQL injection with an enterprise price tag; (3) delivery is asynchronous and retried -- a property of Okta’s push scheduling, not of SCIM, which is plain synchronous HTTP with no consistency model. PUT and DELETE are idempotent; POST /Users is not. A replayed POST for an existing userName must return 409 with scimType "uniqueness" (RFC 7644 §3.3), and the client should read that as "already created". Design for retries converging, not for every operation being replay-safe.',
+			'Operational realities to carry out of this demo: (1) the static Bearer token is the weakest link -- it is long-lived, rarely rotated, and grants full lifecycle control over every account, so store it in a secret manager, scope the endpoint to it alone, and rotate on a schedule; (2) the /scim/v2 endpoint must reject unauthenticated requests outright, rate-limit aggressively, and treat the filter parameter as untrusted input -- parse it with a real RFC 7644 grammar parser, never by interpolating it into a query, or "filter injection" becomes SQL injection with an enterprise price tag; (3) delivery is asynchronous and retried -- a property of Okta’s push scheduling, not of SCIM, which is plain synchronous HTTP with no consistency model. PUT and DELETE are idempotent; POST /Users is not. A replayed POST for an existing userName must return 409 with scimType "uniqueness" (RFC 7644 §3.3), but 409 alone does not prove the earlier request succeeded: the client must query and correlate the existing resource, using externalId and expected attributes, before treating the retry as converged.',
 		http: [
 			{
 				type: 'request',
@@ -576,7 +573,7 @@ export const STEPS: Step[] = [
 				headers: ['Cookie: _ots_session=ots_admin_session'],
 			},
 			{
-				type: 'server-response',
+				type: 'response',
 				from: 'OTS',
 				to: 'Admin Browser',
 				status: '200 OK',
