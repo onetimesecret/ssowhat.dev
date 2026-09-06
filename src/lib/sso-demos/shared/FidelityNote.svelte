@@ -11,7 +11,7 @@
 	let { fidelity, class: className = '' }: FidelityNoteProps = $props();
 
 	const DEFAULT_STATEMENT =
-		'The traces are reconstructed educational examples, not packet captures or implementation recipes. They were reviewed against published specifications and vendor documentation, not live interoperability-tested. Endpoints, cookie names, headers, and response bodies vary by vendor configuration and product version.';
+		'These traces are illustrative reconstructions, not packet captures or implementation instructions. They are based on published specifications and vendor documentation, rather than live interoperability testing. Details such as endpoints, cookie names, headers, and response bodies vary by vendor setup and version.';
 
 	let statement = $derived(
 		fidelity?.level === 'live-verified'

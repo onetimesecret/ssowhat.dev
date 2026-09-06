@@ -673,9 +673,7 @@
 							id={aboutPanelId}
 							class="absolute right-0 bottom-[calc(100%+10px)] w-[min(27.5rem,calc(100vw-2rem))] rounded-lg border border-edge-emphasis bg-surface p-3.5 text-left text-xs leading-relaxed text-ink-tertiary shadow-xl text-pretty"
 						>
-							<p>
-								This is an educational demo, not a reference implementation. Any live mode uses a mock service, not a vendor system.
-							</p>
+							<p>Live mode uses a mock service, not a vendor system.</p>
 							<FidelityNote fidelity={config.fidelity} class="mt-2" />
 							<span
 								class="absolute -bottom-[6px] right-1.5 h-2.5 w-2.5 rotate-45 border-r border-b border-edge-emphasis bg-surface"
