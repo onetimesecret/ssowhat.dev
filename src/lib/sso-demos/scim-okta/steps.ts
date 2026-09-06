@@ -377,7 +377,7 @@ export const STEPS: Step[] = [
 		description:
 			'The admin enables Group Push for the "Onetime Secret Admins" Okta group. Group lifecycle is a separate resource type with its own endpoints: Okta first creates the group with POST /Groups, then maintains membership with PATCH /Groups/{id} using the PatchOp message format -- op "add" on the members path, referencing users by their app-side id. On the app end, the group maps to an application role: membership in the pushed group grants admin capability in the app. This is how role-based access ends up centrally administered in the IdP instead of hand-managed per app.',
 		securityNote:
-			'Group membership changes are authorization changes delivered over the same Bearer-token channel as everything else -- whoever holds the SCIM token can add themselves to the admins group with one PATCH. Also note the double bookkeeping hazard: groups can arrive via SCIM (persistent membership) and via SAML attributes (per-login claims), and the two can disagree. Pick one source of truth per role; The app treating the SCIM-pushed group as authoritative and ignoring the SAML groups attribute for this role is the coherent choice.',
+			'Group membership changes are authorization changes delivered over the same Bearer-token channel as everything else -- whoever holds the SCIM token can add themselves to the admins group with one PATCH. Also note the double bookkeeping hazard: groups can arrive via SCIM (persistent membership) and via SAML attributes (per-login claims), and the two can disagree. Pick one source of truth per role. The coherent choice here is for the app to treat the SCIM-pushed group as authoritative and ignore the SAML groups attribute for this role.',
 		http: [
 			{
 				type: 'request',
