@@ -85,25 +85,26 @@
   --color-actor-wiki-600: var(--color-amber-600);
   --color-actor-wiki-700: var(--color-amber-700);
 
-  /* Dimmed variants for backgrounds (40% opacity approximation) */
+  /* Dimmed variants for card backgrounds. 10% keeps the wash quiet so the
+   * type color reads from the left rule and label, not the whole card. */
   --color-http-request-dim: color-mix(
     in srgb,
-    var(--color-blue-500) 40%,
+    var(--color-blue-500) 10%,
     transparent
   );
   --color-http-response-dim: color-mix(
     in srgb,
-    var(--color-emerald-500) 40%,
+    var(--color-emerald-500) 10%,
     transparent
   );
   --color-http-internal-dim: color-mix(
     in srgb,
-    var(--color-gray-500) 40%,
+    var(--color-gray-500) 10%,
     transparent
   );
   --color-http-server-dim: color-mix(
     in srgb,
-    var(--color-purple-500) 40%,
+    var(--color-purple-500) 10%,
     transparent
   );
 }
