@@ -1,7 +1,7 @@
 // src/lib/sso-demos/oauth2-google/config.ts
 
 import type { DemoConfig, ActorConfig, ProtocolStackConfig } from '$lib/sso-demos';
-import { DEMOS_INDEX_PATH } from '$lib/sso-demos';
+import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 
 /**
  * Actor configuration for the OAuth2/OIDC Google demo.
@@ -60,7 +60,7 @@ export const protocolStack: ProtocolStackConfig = {
 export const demoConfig: DemoConfig = {
 	title: 'OAuth2 Social Login with Google',
 	subtitle: 'OTS authenticates with Google via OAuth 2.0 and OpenID Connect',
-	version: '0.1.0',
+	version: DEMO_VERSION,
 	fidelity: {
 		level: 'reconstructed',
 		reviewed: '2026-09-05',

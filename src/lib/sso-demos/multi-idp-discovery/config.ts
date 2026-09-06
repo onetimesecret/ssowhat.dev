@@ -1,7 +1,7 @@
 // src/lib/sso-demos/multi-idp-discovery/config.ts
 
 import type { DemoConfig, ActorConfig, ProtocolStackConfig } from '$lib/sso-demos';
-import { DEMOS_INDEX_PATH } from '$lib/sso-demos';
+import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 
 /**
  * Actor configuration for the multi-IdP home-realm discovery demo.
@@ -81,7 +81,7 @@ export const protocolStack: ProtocolStackConfig = {
 export const demoConfig: DemoConfig = {
 	title: 'Multi-IdP Home-Realm Discovery',
 	subtitle: 'One email-first sign-in page routes each organization to its own IdP',
-	version: '0.1.0',
+	version: DEMO_VERSION,
 	fidelity: {
 		level: 'reconstructed',
 		note: 'The Okta login trace uses the Classic Engine Authentication API (/api/v1/authn); Identity Engine hosted login differs.',

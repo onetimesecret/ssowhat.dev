@@ -1,7 +1,7 @@
 // src/lib/sso-demos/oidc-entra/config.ts
 
 import type { DemoConfig, ActorConfig, ProtocolStackConfig } from '$lib/sso-demos';
-import { DEMOS_INDEX_PATH } from '$lib/sso-demos';
+import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 
 /**
  * Actor configuration for the direct Entra ID OIDC demo.
@@ -61,7 +61,7 @@ export const protocolStack: ProtocolStackConfig = {
 export const demoConfig: DemoConfig = {
 	title: 'Enterprise OIDC with Entra ID',
 	subtitle: 'OTS authenticates directly with Microsoft Entra ID via OpenID Connect',
-	version: '0.1.0',
+	version: DEMO_VERSION,
 	fidelity: {
 		level: 'reconstructed',
 		reviewed: '2026-09-05',

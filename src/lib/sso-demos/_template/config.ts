@@ -4,7 +4,7 @@
 // The import path below is already correct for the copied location.
 
 import type { DemoConfig, ActorConfig, ProtocolStackConfig } from '$lib/sso-demos';
-import { DEMOS_INDEX_PATH } from '$lib/sso-demos';
+import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 
 /**
  * Actor configuration for the demo.
@@ -62,7 +62,7 @@ export const protocolStack: ProtocolStackConfig = {
 export const demoConfig: DemoConfig = {
   title: 'Your Demo Title',
   subtitle: 'Brief description of the auth flow',
-  version: '0.1.0',
+  version: DEMO_VERSION,
   // Update `reviewed` whenever the traces in steps.ts change; it is a manual date
   // with no test enforcing it, and it renders in the demo footer and transcript header.
   fidelity: {

@@ -1,7 +1,7 @@
 // src/lib/sso-demos/oidc-saml-bridge/config.ts
 
 import type { DemoConfig, ActorConfig, ProtocolStackConfig } from '$lib/sso-demos';
-import { DEMOS_INDEX_PATH } from '$lib/sso-demos';
+import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 
 /**
  * Actor configuration for the OIDC->SAML Bridge demo.
@@ -96,7 +96,7 @@ export const protocolStack: ProtocolStackConfig = {
 export const demoConfig: DemoConfig = {
   title: "Enterprise SAML for Modern Apps",
   subtitle: "Caddy + Logto bridge OIDC\u2194SAML to Entra",
-  version: "0.3.0",
+  version: DEMO_VERSION,
   fidelity: {
     level: "reconstructed",
     reviewed: "2026-09-05",

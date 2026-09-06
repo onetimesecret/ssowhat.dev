@@ -1,7 +1,7 @@
 // src/lib/sso-demos/slo-saml-okta/config.ts
 
 import type { ActorConfig, DemoConfig, ProtocolStackConfig } from '$lib/sso-demos';
-import { DEMOS_INDEX_PATH } from '$lib/sso-demos';
+import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 
 /**
  * Actor configuration for the SAML Single Logout demo.
@@ -79,7 +79,7 @@ export const protocolStack: ProtocolStackConfig = {
 export const demoConfig: DemoConfig = {
 	title: 'SAML Single Logout with Okta',
 	subtitle: 'One logout click, three sessions, and no guarantee all of them die',
-	version: '0.1.0',
+	version: DEMO_VERSION,
 	fidelity: {
 		level: 'reconstructed',
 		note: 'Okta iframe fan-out reflects the Identity Engine Early Access Front-channel Single Logout feature and requires downstream participateSlo configuration.',

@@ -1,7 +1,7 @@
 // src/lib/sso-demos/sp-saml-okta/config.ts
 
 import type { DemoConfig, ActorConfig, ProtocolStackConfig } from '$lib/sso-demos';
-import { DEMOS_INDEX_PATH } from '$lib/sso-demos';
+import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 
 /**
  * Actor configuration for the SP-initiated SAML demo.
@@ -59,7 +59,7 @@ export const protocolStack: ProtocolStackConfig = {
 export const demoConfig: DemoConfig = {
 	title: 'SP-Initiated SAML with Okta',
 	subtitle: 'OTS authenticates directly with Okta via SAML 2.0',
-	version: '0.1.0',
+	version: DEMO_VERSION,
 	fidelity: {
 		level: 'reconstructed',
 		note: 'The Okta login trace uses the Classic Engine Authentication API (/api/v1/authn); Identity Engine hosted login differs.',
