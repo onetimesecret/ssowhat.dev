@@ -1,7 +1,7 @@
 // src/lib/sso-demos/scim-okta/config.ts
 
 import type { DemoConfig, ActorConfig, ProtocolStackConfig } from '$lib/sso-demos';
-import { DEMOS_INDEX_PATH } from '$lib/sso-demos';
+import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 
 /**
  * Actor configuration for the SCIM provisioning demo.
@@ -66,7 +66,7 @@ export const protocolStack: ProtocolStackConfig = {
 export const demoConfig: DemoConfig = {
 	title: 'SCIM Provisioning with Okta',
 	subtitle: "Okta pushes user lifecycle changes (create, update, deactivate) to the app's SCIM API",
-	version: '0.1.0',
+	version: DEMO_VERSION,
 	fidelity: {
 		level: 'reconstructed',
 		note: 'Live mode replays against a mock SCIM server, not against Okta.',

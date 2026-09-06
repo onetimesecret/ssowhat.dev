@@ -11,9 +11,19 @@
 	const TYPE_STYLES: Record<HttpMessage['type'], string> = {
 		request: 'border-l-4 border-http-request bg-http-request-dim',
 		response: 'border-l-4 border-http-response bg-http-response-dim',
-		internal: 'border-l-4 border-http-internal bg-surface',
+		internal: 'border-l-4 border-http-internal bg-white/[0.03]',
 		server: 'border-l-4 border-http-server bg-http-server-dim',
 		'server-response': 'border-l-4 border-http-server bg-http-server-dim',
+	};
+
+	// Message-type color lives on the left rule and the type label only; the
+	// card wash stays at 10% so the method/URL line reads first.
+	const TYPE_LABEL_COLORS: Record<HttpMessage['type'], string> = {
+		request: 'text-blue-300',
+		response: 'text-emerald-300',
+		internal: 'text-ink-tertiary',
+		server: 'text-purple-300',
+		'server-response': 'text-purple-300',
 	};
 
 	const TYPE_LABELS: Record<HttpMessage['type'], string> = {
@@ -48,6 +58,7 @@
 	<div class="flex items-start justify-between gap-2">
 		<div class="min-w-0 flex-1">
 			<div class="mb-1 flex items-center gap-2 text-xs text-ink-tertiary">
+				<span class="flex items-center gap-2 {TYPE_LABEL_COLORS[entry.type]}">
 				<!-- Type icon -->
 				{#if entry.type === 'request'}
 					<svg
@@ -112,6 +123,7 @@
 				{/if}
 
 				<span class="font-mono font-semibold">{TYPE_LABELS[entry.type]}</span>
+				</span>
 
 				{#if entry.from && entry.to}
 					{@const fromBg = resolveActorBg(entry.from, actorConfig)}
@@ -167,8 +179,11 @@
 			{/if}
 
 			{#if entry.note}
-				<div class="mt-2 text-xs text-amber-300/90 italic">
-					&#x1F4A1; {entry.note}
+				<div class="mt-2 flex items-start gap-1.5 text-xs text-amber-300/90 italic">
+					<svg class="mt-0.5 h-3 w-3 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z" />
+					</svg>
+					<span>{entry.note}</span>
 				</div>
 			{/if}
 		</div>

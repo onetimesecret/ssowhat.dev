@@ -59,9 +59,9 @@ All colors flow through semantic tokens defined in `@theme`. Never use raw `gray
 
 Borders-only. No drop shadows on containers. The `border-edge` token at 8% white opacity creates whisper-quiet separation. `shadow-*` is reserved for:
 - The browser mockup (`shadow-2xl`)
-- Active actor pills in the protocol stack (gradient backgrounds get `shadow-md`/`shadow-lg`)
+- Active actor chips in the actor row (`shadow-md` in the actor's shadow color)
 - The "Next" button (`shadow-md shadow-blue-500/20`)
-- The step badge (`shadow-lg shadow-blue-500/20`)
+- The footer's about popover (`shadow-xl`)
 
 ## Spacing
 
@@ -186,20 +186,31 @@ rounded border border-edge bg-surface-raised px-2 py-0.5 font-mono text-xs text-
 rounded bg-surface-raised px-1.5 py-0.5 font-mono
 ```
 
-### Actor pills
+### Actor chips (ActorDiagram)
+
+The actor row doubles as the protocol stack: chips sit on a connector line, with the protocol label from `config.protocolStack.connections` under each configured link.
 
 ```
-rounded-full border-2 px-3 py-1 text-xs font-semibold
-Active: ${colorInfo.bgClass} ${colorInfo.borderClass} ${colorInfo.textClass} scale-105 shadow-lg
+rounded px-3 py-1 text-xs font-medium
+Active:   ${activeColor}-700 border-2 border-white/40 text-white shadow-md
+Inactive: border-2 border-dashed border-edge-emphasis bg-surface-raised text-ink-tertiary
+Link:     h-0.5 ${connection.activeColor} (active) | border-t-2 border-dashed border-edge-emphasis (inactive)
 ```
 
-### Step indicators
+### Chapter list (step masthead)
+
+All step titles, one row each, with Previous/Next beneath. The current step's title carries its number as a prefix (`1. User clicks...`).
 
 ```
-Completed: h-5 w-5 bg-emerald-500 rounded-full (checkmark SVG)
-Current:   h-5 w-6 bg-blue-500 ring-2 ring-blue-300 ring-offset-2 ring-offset-surface
-Pending:   h-5 w-5 border-2 border-dashed border-edge-emphasis bg-surface-raised
+Row:       rounded-md px-2 py-[3px] text-xs; current gets bg-accent-dim + font-semibold text-ink
+Completed: h-4 w-4 bg-emerald-500 rounded-full (checkmark SVG)
+Current:   h-4 w-4 bg-blue-500 ring-2 ring-blue-300 ring-offset-2 ring-offset-surface
+Pending:   h-4 w-4 border-[1.5px] border-dashed border-edge-emphasis bg-surface-raised text-ink-muted
 ```
+
+### Disclosures
+
+Optional depth stays behind a text button, never omnipresent: the step's security note (`text-xs font-medium text-amber-500` with shield + chevron) and the footer's about popover (info icon button, `w-[min(27.5rem,...)] rounded-lg border-edge-emphasis bg-surface shadow-xl`).
 
 ### Links
 
@@ -226,6 +237,4 @@ Warning:   rounded-md border border-amber-500/30 bg-amber-900/20 p-4
 
 - **`print:` variants**: Literal grays for paper output (light backgrounds, dark text)
 - **BrowserMockup chrome**: `from-gray-300 to-gray-400` gradient simulates real macOS browser chrome
-- **ProtocolStack connector fallbacks**: `bg-gray-600` / `border-l-gray-600` / `border-r-gray-600` are dynamically constructed in JS and safelisted in theme CSS
-- **Protocol stack sublabels**: `text-gray-200/80` used against colored gradient backgrounds where semantic tokens don't apply
 - **Semantic protocol colors**: `text-emerald-400`, `text-blue-300`, `text-yellow-400` etc. in HTTP entries are domain-specific syntax highlighting, not generic text

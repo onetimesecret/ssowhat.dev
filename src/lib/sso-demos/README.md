@@ -48,10 +48,9 @@ Reusable Svelte 5 components for building step-by-step authentication flow demos
 
 | Component | Description |
 |-----------|-------------|
-| `SSODemoShell` | Main orchestrator with navigation, keyboard controls, autoplay |
+| `SSODemoShell` | Main orchestrator with step navigation, keyboard controls, layout |
 | `HttpEntry` | HTTP message display with expandable payloads |
-| `ActorDiagram` | Horizontal actor indicator strip |
-| `ProtocolStack` | Protocol stack visualization |
+| `ActorDiagram` | Actor chips on a connector line; carries the protocol labels from `config.protocolStack.connections` |
 | `BrowserMockup` | Browser chrome wrapper |
 
 ### OTS Screens (Constant Across Demos)
@@ -131,7 +130,7 @@ interface HttpMessage {
 interface DemoConfig {
   title: string;                 // Demo title
   subtitle: string;              // Description
-  version: string;               // Semantic version
+  version: string;               // Use DEMO_VERSION (read from package.json)
   backLink: { href: string; label: string };
   actorConfig: ActorConfig[];    // Actor definitions
   protocolStack: ProtocolStackConfig;
@@ -291,7 +290,7 @@ Opting in takes two things:
 1. **`config.ts`** — add `live: {}` to the `DemoConfig`. Presence of the `live` key enables the Static/Live toggle in the shell; `{}` means the runtime defaults apply (see `LiveDemoConfig`).
 2. **`steps.ts`** — add a `live: LiveStepSpec` to each step that has replayable exchanges. Each `LiveExchangeSpec` points at the static request/response pair (by index into `Step.http`) that it replays; steps without a `live` spec simply stay static-only.
 
-The static trace remains authoritative: SSR and the default view always render the static fixtures, navigation and autoplay never fire network requests, and live runs are explicit per-step user actions. The SCIM demo (`scim-okta/`) is the pilot.
+The static trace remains authoritative: SSR and the default view always render the static fixtures, navigation never fires network requests, and live runs are explicit per-step user actions. The SCIM demo (`scim-okta/`) is the pilot.
 
 The mock server's endpoint, session, and rate-limit contract is documented in [`packages/mock-server/README.md`](../../../packages/mock-server/README.md). The server origin resolves in this order: the `ssowhat:mock-server-url` localStorage key (runtime override), then `config.live.baseUrl`, then the build-time `VITE_MOCK_SERVER_URL` env value, then `http://localhost:8787`. Whatever wins must also be in the site's CSP `connect-src` allowlist (`src/app.html`) — the deployed build ships with `http://localhost:8787` and the hosted mock origin allowlisted, so the override switches between those without a rebuild; any other origin needs a CSP entry and a rebuild.
 
@@ -301,11 +300,8 @@ The mock server's endpoint, session, and rate-limit contract is documented in [`
 |-----|--------|
 | `ArrowLeft` | Previous step |
 | `ArrowRight` | Next step |
-| `Space` | Toggle autoplay |
 | `T` | Toggle transcript view |
 | `L` | Toggle Static/Live transport (live-capable demos only) |
-| `R` | Restart demo |
-| `1` / `2` / `3` | Playback speed (slow / normal / fast) |
 
 ## Adding New IdP Screens
 
