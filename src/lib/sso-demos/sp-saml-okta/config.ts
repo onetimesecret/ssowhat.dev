@@ -5,14 +5,14 @@ import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 
 /**
  * Actor configuration for the SP-initiated SAML demo.
- * Direct SAML integration: OTS (SP) communicates with Okta (IdP) via SAML 2.0.
+ * Direct SAML integration: The app (SP) communicates with Okta (IdP) via SAML 2.0.
  *
  * Colors use semantic classes from sso-demo-theme.css (bg-actor-*).
  * To customize actor colors, modify the theme file.
  */
 export const actorConfig: ActorConfig[] = [
 	{ key: 'browser', label: 'Browser', activeColor: 'bg-actor-browser' },
-	{ key: 'ots', label: 'OTS', activeColor: 'bg-actor-ots' },
+	{ key: 'ots', label: 'App', activeColor: 'bg-actor-ots' },
 	{ key: 'okta', label: 'Okta', activeColor: 'bg-actor-okta' },
 ];
 
@@ -24,7 +24,7 @@ export const protocolStack: ProtocolStackConfig = {
 	components: [
 		{
 			key: 'ots',
-			label: 'OTS',
+			label: 'App',
 			subLabel: 'Service Provider',
 			emoji: '\u{1F510}',
 			activeGradient: 'bg-gradient-to-br from-actor-ots-600 to-actor-ots-700',
@@ -58,7 +58,7 @@ export const protocolStack: ProtocolStackConfig = {
  */
 export const demoConfig: DemoConfig = {
 	title: 'SP-Initiated SAML with Okta',
-	subtitle: 'OTS authenticates directly with Okta via SAML 2.0',
+	subtitle: 'The app authenticates directly with Okta via SAML 2.0',
 	version: DEMO_VERSION,
 	fidelity: {
 		level: 'reconstructed',

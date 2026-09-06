@@ -1,6 +1,6 @@
 <!--
   Okta Admin Console mockup.
-  Shows the OTS application's Assignments tab where an administrator
+  Shows the Onetime Secret application's Assignments tab where an administrator
   assigns users to the app -- the click that kicks off SCIM provisioning.
 -->
 <div class="flex h-full flex-col bg-slate-50">

@@ -1,6 +1,6 @@
 <script lang="ts">
   /**
-   * OTS Dashboard screen - the authenticated state of the application.
+   * App dashboard screen (Onetime Secret) - the authenticated state of the application.
    * This is the "constant" across all SSO demos - the SaaS app being protected.
    * Includes interactive elements to show the app is functional post-authentication.
    */
@@ -42,7 +42,7 @@
 <div class="h-full bg-surface">
   <nav class="flex items-center justify-between bg-surface-raised px-4 py-3 text-white">
     <div class="flex items-center gap-4">
-      <span class="text-lg font-bold">&#x1F510; OTS</span>
+      <span class="text-lg font-bold">&#x1F510; Onetime Secret</span>
       <span class="text-sm text-ink-tertiary">Dashboard</span>
     </div>
     <div class="flex items-center gap-3">

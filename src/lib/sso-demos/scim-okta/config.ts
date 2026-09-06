@@ -8,7 +8,7 @@ import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
  * Unlike the auth demos, the browser here belongs to the Okta ADMIN, not the
  * end user. Alice never touches a browser in this flow -- her account is
  * created, updated, and deactivated entirely by server-to-server REST calls
- * from Okta (the provisioning client) to OTS (the SCIM server).
+ * from Okta (the provisioning client) to the app (the SCIM server).
  *
  * Colors use semantic classes from sso-demo-theme.css (bg-actor-*).
  * To customize actor colors, modify the theme file.
@@ -16,12 +16,12 @@ import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 export const actorConfig: ActorConfig[] = [
 	{ key: 'browser', label: 'Admin Browser', activeColor: 'bg-actor-browser' },
 	{ key: 'okta', label: 'Okta', activeColor: 'bg-actor-okta' },
-	{ key: 'ots', label: 'OTS', activeColor: 'bg-actor-ots' },
+	{ key: 'ots', label: 'App', activeColor: 'bg-actor-ots' },
 ];
 
 /**
  * Protocol stack configuration showing the architecture.
- * Okta is the SCIM client (it initiates every call); OTS is the SCIM server
+ * Okta is the SCIM client (it initiates every call); the app is the SCIM server
  * (it exposes /scim/v2 and owns the resources). This inverts the intuition
  * from the SAML demos, where Okta is the authority: in SCIM, Okta is just an
  * HTTP client hitting the application's API.
@@ -39,7 +39,7 @@ export const protocolStack: ProtocolStackConfig = {
 		},
 		{
 			key: 'ots',
-			label: 'OTS',
+			label: 'App',
 			subLabel: 'SCIM Server',
 			emoji: '\u{1F510}',
 			activeGradient: 'bg-gradient-to-br from-actor-ots-600 to-actor-ots-700',

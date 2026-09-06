@@ -1,9 +1,9 @@
 <script lang="ts">
 	/**
 	 * SCIM Provisioning with Okta
-	 * Okta (provisioning client) drives the user lifecycle in OTS (SCIM server)
+	 * Okta (provisioning client) drives the user lifecycle in the app (SCIM server)
 	 *
-	 * The admin assigns Alice to the OTS app in the Okta Admin Console;
+	 * The admin assigns Alice to the app in the Okta Admin Console;
 	 * everything after that is server-to-server REST -- lookup by filter,
 	 * POST /Users to create, PUT full-replace on profile change, group
 	 * push, and a PatchOp flipping active to false at offboarding.

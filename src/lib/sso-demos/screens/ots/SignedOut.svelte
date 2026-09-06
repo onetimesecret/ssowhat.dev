@@ -1,6 +1,6 @@
 <script lang="ts">
   /**
-   * OTS signed-out screen - shown after the local session is destroyed
+   * App signed-out screen (Onetime Secret) - shown after the local session is destroyed
    * and (optionally) after the SAML SLO round-trip completes.
    */
 </script>

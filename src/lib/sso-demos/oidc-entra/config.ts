@@ -5,7 +5,7 @@ import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 
 /**
  * Actor configuration for the direct Entra ID OIDC demo.
- * Direct enterprise OIDC integration: OTS communicates with Microsoft
+ * Direct enterprise OIDC integration: The app communicates with Microsoft
  * Entra ID via OAuth 2.0 + OIDC against a workforce tenant.
  *
  * Colors use semantic classes from sso-demo-theme.css (bg-actor-*).
@@ -13,7 +13,7 @@ import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
  */
 export const actorConfig: ActorConfig[] = [
 	{ key: 'browser', label: 'Browser', activeColor: 'bg-actor-browser' },
-	{ key: 'ots', label: 'OTS', activeColor: 'bg-actor-ots' },
+	{ key: 'ots', label: 'App', activeColor: 'bg-actor-ots' },
 	{ key: 'entra', label: 'Entra', activeColor: 'bg-actor-entra' },
 ];
 
@@ -25,7 +25,7 @@ export const protocolStack: ProtocolStackConfig = {
 	components: [
 		{
 			key: 'ots',
-			label: 'OTS',
+			label: 'App',
 			subLabel: 'Application',
 			emoji: '\u{1F510}',
 			activeGradient: 'bg-gradient-to-br from-actor-ots-600 to-actor-ots-700',
@@ -60,7 +60,7 @@ export const protocolStack: ProtocolStackConfig = {
  */
 export const demoConfig: DemoConfig = {
 	title: 'Enterprise OIDC with Entra ID',
-	subtitle: 'OTS authenticates directly with Microsoft Entra ID via OpenID Connect',
+	subtitle: 'The app authenticates directly with Microsoft Entra ID via OpenID Connect',
 	version: DEMO_VERSION,
 	fidelity: {
 		level: 'reconstructed',

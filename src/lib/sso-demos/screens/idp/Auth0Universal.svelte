@@ -11,7 +11,7 @@
 			>
 				a0
 			</div>
-			<h2 class="text-lg font-semibold text-white">Sign in to OTS</h2>
+			<h2 class="text-lg font-semibold text-white">Sign in to Onetime Secret</h2>
 		</div>
 
 		<div class="p-8">

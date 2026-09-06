@@ -13,7 +13,7 @@
 
   import type { Component } from 'svelte';
   import SSODemoShell from '$lib/sso-demos/shared/SSODemoShell.svelte';
-  // OTS screens (constant across demos)
+  // App screens (constant across demos)
   import { Blank, Loading, Dashboard } from '$lib/sso-demos/screens/ots';
   // IdP screens (pick what you need)
   // import { LogtoSignIn } from '$lib/sso-demos/screens/idp';
@@ -32,10 +32,10 @@
    *
    * Available screens from screens/:
    *
-   * OTS (always available):
+   * App screens (always available):
    * - Blank: Initial redirect state
    * - Loading: Processing/redirecting state
-   * - Dashboard: Authenticated OTS dashboard
+   * - Dashboard: Authenticated app dashboard
    *
    * IdP screens (import as needed):
    * - LogtoSignIn: Logto OIDC provider login

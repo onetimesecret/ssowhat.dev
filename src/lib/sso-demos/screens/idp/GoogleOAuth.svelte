@@ -34,7 +34,7 @@
 		<div class="text-center">
 			<h1 class="mb-2 text-xl text-gray-800">Choose an account</h1>
 			<p class="mb-6 text-sm text-gray-600">
-				to continue to <span class="font-medium">OTS</span>
+				to continue to <span class="font-medium">Onetime Secret</span>
 			</p>
 		</div>
 
@@ -78,7 +78,7 @@
 
 		<div class="mt-8 text-center text-xs text-gray-500">
 			<p>
-				To continue, Google will share your name, email address, and profile picture with OTS.
+				To continue, Google will share your name, email address, and profile picture with Onetime Secret.
 			</p>
 		</div>
 	</div>

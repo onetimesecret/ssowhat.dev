@@ -1,11 +1,11 @@
 <script lang="ts">
 	/**
 	 * OAuth2 Social Login with Google
-	 * OTS + Google via OAuth 2.0 / OIDC
+	 * App + Google via OAuth 2.0 / OIDC
 	 *
-	 * Standard Authorization Code Flow: OTS redirects unauthenticated users
+	 * Standard Authorization Code Flow: The app redirects unauthenticated users
 	 * to Google's authorization endpoint. After authentication and consent,
-	 * Google redirects back with an authorization code. OTS exchanges the
+	 * Google redirects back with an authorization code. The app exchanges the
 	 * code server-to-server for an ID token (JWT) containing the user's identity.
 	 *
 	 * This is the most common pattern for "Sign in with Google" integrations.

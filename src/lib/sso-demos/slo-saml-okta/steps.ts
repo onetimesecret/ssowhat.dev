@@ -5,11 +5,11 @@ import type { Step } from '$lib/sso-demos';
 /**
  * SP-initiated SAML Single Logout (SLO) with Okta as the IdP.
  *
- * Starting state: Alice logged into OTS via SAML earlier today, then
+ * Starting state: Alice logged into the app via SAML earlier today, then
  * launched the Team Wiki from her Okta dashboard. Three sessions exist:
- * OTS local session, Okta IdP session, and Wiki local session.
+ * the app's local session, Okta IdP session, and Wiki local session.
  *
- * Alice clicks "Log out" in OTS. OTS sends a LogoutRequest to Okta,
+ * Alice clicks "Log out" in the app. The app sends a LogoutRequest to Okta,
  * Okta terminates its own session and attempts to propagate logout to
  * the Wiki via front-channel iframes. The Wiki receives the request but
  * revokes nothing, because it only ever keyed sessions on its browser
@@ -30,18 +30,18 @@ import type { Step } from '$lib/sso-demos';
 export const STEPS: Step[] = [
 	{
 		id: 1,
-		title: 'User clicks "Log out" in OTS',
+		title: 'User clicks "Log out" in the app',
 		userSees: 'dashboard',
 		urlBar: 'https://secrets.example.com/dashboard',
 		description:
-			'Alice clicks "Log out". OTS destroys its local session immediately, then generates a signed SAML LogoutRequest carrying the NameID, plus the SessionIndex it saved from the original login assertion, and redirects the browser to Okta’s SLO endpoint.',
+			'Alice clicks "Log out". The app destroys its local session immediately, then generates a signed SAML LogoutRequest carrying the NameID, plus the SessionIndex it saved from the original login assertion, and redirects the browser to Okta’s SLO endpoint.',
 		securityNote:
 			'Destroy the local session BEFORE redirecting to the IdP. The SLO round-trip can fail at any point (user closes the tab, IdP times out, response never arrives) -- if the SP waits for the LogoutResponse to kill its session, a failed SLO leaves the user logged in after they believe they logged out. SAML Core 2.0 section 3.7.1 requires exactly one identifier (BaseID, NameID or EncryptedID) and allows zero or more SessionIndex elements, so SessionIndex is optional. Store it at login anyway: with it you target the one session the user is ending, and without it section 3.7.3.1 says the recipient must invalidate every session for that principal.',
 		http: [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'POST',
 				url: 'https://secrets.example.com/logout',
 				headers: ['Cookie: _ots_session=encrypted-session-data', 'Content-Type: application/x-www-form-urlencoded'],
@@ -50,14 +50,14 @@ export const STEPS: Step[] = [
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Destroy local session + build LogoutRequest',
 				note: 'Delete server-side session, expire _ots_session cookie. Generate LogoutRequest ID _logout_req_111, store it for InResponseTo validation. Include NameID (alice@contoso.com), which is mandatory, and the optional SessionIndex (_session_okta_ghi789) saved from the login assertion so only this session is targeted.',
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '302 Found',
 				headers: [
@@ -117,7 +117,7 @@ export const STEPS: Step[] = [
 				from: 'Okta',
 				to: 'Okta',
 				label: 'Validate LogoutRequest + enumerate session participants',
-				note: 'Verify SP signature, match NameID + SessionIndex to the IdP session for this browser. Session participants: OTS (requester, already logged out locally) and Team Wiki (launched via IdP-initiated SSO at 09:12). Wiki must be notified before this session can fully close.',
+				note: 'Verify SP signature, match NameID + SessionIndex to the IdP session for this browser. Session participants: the app (requester, already logged out locally) and Team Wiki (launched via IdP-initiated SSO at 09:12). Wiki must be notified before this session can fully close.',
 			},
 		],
 		actors: {
@@ -133,9 +133,9 @@ export const STEPS: Step[] = [
 		userSees: 'okta-signout',
 		urlBar: 'https://contoso.okta.com/app/ots-saml/exk1234/slo/saml',
 		description:
-			'Okta renders a page with a hidden iframe per session participant, each loading that SP’s SLO endpoint with a signed LogoutRequest. This is front-channel logout: the user’s own browser is the messenger. The Wiki’s iframe loads, and the LogoutRequest inside it names Alice by NameID and SessionIndex, which is enough to identify the session server-side. The Wiki’s own cookie is SameSite=Lax and is not sent in a third-party iframe, but that does not prevent server-side revocation or, by itself, prevent the response from expiring a known cookie name. The Wiki fails because it never stored a mapping from NameID and SessionIndex to its local sessions, so it has nothing to look the session up by. It returns 200 and revokes nothing.',
+			'Okta renders a page with a hidden iframe per session participant, each loading that SP’s SLO endpoint with a signed LogoutRequest. This is front-channel logout: the user’s own browser is the messenger. The Wiki’s iframe loads, and the LogoutRequest inside it names Alice by NameID and SessionIndex, which is enough to identify the session server-side. The Wiki’s own cookie is SameSite=Lax, so the browser neither sends it in the third-party iframe nor lets the iframe response expire it: Chrome rejects Set-Cookie for SameSite=Lax cookies in cross-site responses. The only way to clear it from here is to reissue the deletion as SameSite=None; Secure, which Chrome honours by default but Safari blocks and Firefox partitions away from the first-party cookie. Across browsers the cookie is best assumed to survive, which is why revocation has to happen server-side. The Wiki fails because it never stored a mapping from NameID and SessionIndex to its local sessions, so it has nothing to look the session up by. It returns 200 and revokes nothing.',
 		securityNote:
-			'The LogoutRequest is self-describing. Per SAML Core 2.0 section 3.7.3.1 the recipient must invalidate the sessions named by the identifier and any SessionIndex elements, and all sessions for that principal if no SessionIndex is supplied. An SP that persists NameID and SessionIndex at login can revoke the server-side session from the LogoutRequest alone, with no cookie on the request. The Wiki does not, and that is the real defect in this step. Third-party cookie or storage policies can still block a Set-Cookie deletion response, leaving a stale browser cookie, so treat that cookie as a lookup key into server-side state you revoked, not as the session itself. Other failure modes include participants that are down or time out, stale session mappings, and partial completion with no retry. Back-channel SLO (SOAP, IdP-to-SP server-to-server) avoids the browser entirely but is rarely implemented on either side: Okta does not support it for SAML apps, and most SPs never expose a back-channel endpoint.',
+			'The LogoutRequest is self-describing. Per SAML Core 2.0 section 3.7.3.1 the recipient must invalidate the sessions named by the identifier and any SessionIndex elements, and all sessions for that principal if no SessionIndex is supplied. An SP that persists NameID and SessionIndex at login can revoke the server-side session from the LogoutRequest alone, with no cookie on the request. The Wiki does not, and that is the real defect in this step. A Set-Cookie deletion in the iframe response is blocked by the same SameSite rule that withheld the cookie on the request, so a stale browser cookie is the expected outcome, not an edge case: treat that cookie as a lookup key into server-side state you revoked, not as the session itself. Other failure modes include participants that are down or time out, stale session mappings, and partial completion with no retry. Back-channel SLO (SOAP, IdP-to-SP server-to-server) avoids the browser entirely but is rarely implemented on either side: Okta does not support it for SAML apps, and most SPs never expose a back-channel endpoint.',
 		http: [
 			{
 				type: 'response',
@@ -161,7 +161,7 @@ export const STEPS: Step[] = [
 				method: 'GET',
 				url: 'https://wiki.contoso.com/saml/slo?SAMLRequest=...&Signature=...',
 				headers: ['Cookie: (none -- wiki_session is SameSite=Lax, not sent in cross-site iframe)'],
-				note: 'The signed LogoutRequest names alice@contoso.com and SessionIndex _session_okta_ghi789. An SP that saved that mapping at login can revoke the session from this alone; receiving no cookie does not prevent server-side revocation or deletion of a known cookie name.',
+				note: 'The signed LogoutRequest names alice@contoso.com and SessionIndex _session_okta_ghi789. An SP that saved that mapping at login can revoke the session from this alone. Receiving no cookie does not prevent server-side revocation, but the response cannot expire the SameSite=Lax cookie either: the browser blocks cross-site Set-Cookie for it.',
 			},
 			{
 				type: 'response',
@@ -202,7 +202,7 @@ export const STEPS: Step[] = [
 				to: 'Browser',
 				status: '200 OK',
 				headers: ['Set-Cookie: sid=; Max-Age=0; HttpOnly; Secure', 'Content-Type: text/html'],
-				note: 'Okta session cookie cleared. Next: return the LogoutResponse to the SP that started this (OTS).',
+				note: 'Okta session cookie cleared. Next: return the LogoutResponse to the SP that started this (the app).',
 			},
 		],
 		actors: {
@@ -218,7 +218,7 @@ export const STEPS: Step[] = [
 		userSees: 'loading',
 		urlBar: 'https://contoso.okta.com/app/ots-saml/exk1234/slo/saml',
 		description:
-			'Okta sends the browser back to OTS’s SLO endpoint with a signed LogoutResponse via HTTP-POST auto-submit form. The status is not Success -- it is PartialLogout, the spec’s built-in admission that not every session participant could be logged out.',
+			'Okta sends the browser back to the app’s SLO endpoint with a signed LogoutResponse via HTTP-POST auto-submit form. The status is not Success -- it is PartialLogout, the spec’s built-in admission that not every session participant could be logged out.',
 		securityNote:
 			'urn:oasis:names:tc:SAML:2.0:status:PartialLogout exists in the SAML 2.0 core spec (section 3.7.3.2) precisely because the protocol’s authors knew propagation would fail in practice. Many IdPs return Success regardless of propagation outcome, and most SPs never inspect the status code at all -- treat the LogoutResponse as informational, never as proof that other sessions are gone.',
 		http: [
@@ -269,18 +269,18 @@ export const STEPS: Step[] = [
 	},
 	{
 		id: 6,
-		title: 'OTS confirms sign-out to the user',
+		title: 'The app confirms sign-out to the user',
 		userSees: 'signed-out',
 		urlBar: 'https://secrets.example.com/saml/slo',
 		description:
-			'Browser POSTs the LogoutResponse to OTS. OTS validates the signature and InResponseTo, logs the PartialLogout status, and renders the signed-out page. Nothing depends on this response arriving -- the OTS session died back in step 1.',
+			'Browser POSTs the LogoutResponse to the app. The app validates the signature and InResponseTo, logs the PartialLogout status, and renders the signed-out page. Nothing depends on this response arriving -- the app session died back in step 1.',
 		securityNote:
-			'Validate the LogoutResponse like any SAML message: signature against the IdP certificate, InResponseTo against the stored request ID, Destination against this endpoint. But design so its absence changes nothing. The honest UX here is also worth stating: "You are signed out of OTS" is provable; "You are signed out of everything" is not, and the page should not claim it.',
+			'Validate the LogoutResponse like any SAML message: signature against the IdP certificate, InResponseTo against the stored request ID, Destination against this endpoint. But design so its absence changes nothing. The honest UX here is also worth stating: "You are signed out of the app" is provable; "You are signed out of everything" is not, and the page should not claim it.',
 		http: [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'POST',
 				url: 'https://secrets.example.com/saml/slo',
 				headers: ['Content-Type: application/x-www-form-urlencoded', 'Origin: https://contoso.okta.com'],
@@ -288,18 +288,18 @@ export const STEPS: Step[] = [
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Validate LogoutResponse',
 				note: 'Verify signature against Okta certificate, InResponseTo matches _logout_req_111, Destination matches this endpoint. Status: PartialLogout -- log it for the audit trail. Local session was already destroyed in step 1; nothing else to do.',
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '200 OK',
 				headers: ['Content-Type: text/html', 'Cache-Control: no-store'],
-				note: 'Signed-out page rendered. It says "signed out of OTS" -- not "signed out of everything."',
+				note: 'Signed-out page rendered. It says "signed out of the app" -- not "signed out of everything."',
 			},
 		],
 		actors: {
@@ -315,7 +315,7 @@ export const STEPS: Step[] = [
 		userSees: 'signed-out',
 		urlBar: 'https://secrets.example.com/saml/slo',
 		description:
-			'Final score: OTS session dead (step 1), Okta session dead (step 4), Wiki session alive. If Alice opens the Wiki in another tab right now, she is still logged in. The LogoutRequest reached the Wiki and named her session, but the Wiki had no way to resolve that name to a local session, so nothing was revoked. The session survives until its own idle timeout.',
+			'Final score: the app session dead (step 1), Okta session dead (step 4), Wiki session alive. If Alice opens the Wiki in another tab right now, she is still logged in. The LogoutRequest reached the Wiki and named her session, but the Wiki had no way to resolve that name to a local session, so nothing was revoked. The session survives until its own idle timeout.',
 		securityNote:
 			'SLO is unreliable because coordinating sessions across independent systems is unreliable, not because a cookie went missing. Build the SP side so the LogoutRequest is sufficient on its own: (1) persist NameID and SessionIndex at login and index local sessions by them, so an SLO request revokes server-side state even with no cookie attached; (2) short SP session lifetimes with idle timeout, so orphaned sessions die on their own; (3) SCIM deactivation with session revocation for offboarding, which is the reliable kill switch SLO is not; (4) if your stack is OIDC rather than SAML, back-channel logout (OpenID Connect Back-Channel Logout 1.0) is the modern server-to-server answer -- but only if both sides actually implement it. The one thing NOT to do is skip local session destruction while waiting for SLO to work.',
 		http: [

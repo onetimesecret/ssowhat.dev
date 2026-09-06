@@ -493,13 +493,13 @@ const STEPS: Step[] = [
   },
   {
     id: 10,
-    title: "Authenticated request reaches OTS",
+    title: "Authenticated request reaches the app",
     userSees: "dashboard",
     urlBar: "https://secrets.example.com/dashboard",
     description:
-      "The user reaches their dashboard. OTS never validates a token; it reads identity out of HTTP headers that Caddy sets. That makes the headers the credential, and everything below is about not letting anyone else write them.",
+      "The user reaches their dashboard. The app never validates a token; it reads identity out of HTTP headers that Caddy sets. That makes the headers the credential, and everything below is about not letting anyone else write them.",
     securityNote:
-      "\"Internal network\" is not a trust boundary. RFC 9700 \u00a74.13 is directly about this pattern, and three points are load-bearing. (1) The proxy MUST strip or overwrite every identity header on each inbound request before forwarding, so a client that sends its own X-Auth-Request-Email or X-Forwarded-User cannot inject one; delete-then-set, never append. (2) The proxy and the app must authenticate each other, and any path that reaches OTS without passing the proxy is a full authentication bypass, because the attacker simply supplies the headers. RFC 9700 \u00a74.13 calls ensuring the authenticity of the communicating entities essential; in practice that is a network policy that does not route to the backend, mTLS between proxy and app, or at minimum a high-entropy shared secret header the proxy sets and the app verifies on every request. (3) The proxy-to-app channel MUST be protected against eavesdropping, injection, and replay to the same standard as the external TLS connection. OTS still owns its own response security headers (Content-Security-Policy, CORS); gateway authentication does not supply those. Separately: the access token is absent from the forwarded headers on purpose. oauth2-proxy can forward it (--pass-access-token sets X-Auth-Request-Access-Token), but a backend that only needs to know who the user is has no use for a bearer token, and forwarding it widens the token\u2019s exposure to the app\u2019s logs, error reports, and any onward request it makes. Forward it only when the app actually calls an API with it.",
+      "\"Internal network\" is not a trust boundary. RFC 9700 \u00a74.13 is directly about this pattern, and three points are load-bearing. (1) The proxy MUST strip or overwrite every identity header on each inbound request before forwarding, so a client that sends its own X-Auth-Request-Email or X-Forwarded-User cannot inject one; delete-then-set, never append. (2) The proxy and the app must authenticate each other, and any path that reaches the app without passing the proxy is a full authentication bypass, because the attacker simply supplies the headers. RFC 9700 \u00a74.13 calls ensuring the authenticity of the communicating entities essential; in practice that is a network policy that does not route to the backend, mTLS between proxy and app, or at minimum a high-entropy shared secret header the proxy sets and the app verifies on every request. (3) The proxy-to-app channel MUST be protected against eavesdropping, injection, and replay to the same standard as the external TLS connection. The app still owns its own response security headers (Content-Security-Policy, CORS); gateway authentication does not supply those. Separately: the access token is absent from the forwarded headers on purpose. oauth2-proxy can forward it (--pass-access-token sets X-Auth-Request-Access-Token), but a backend that only needs to know who the user is has no use for a bearer token, and forwarding it widens the token\u2019s exposure to the app\u2019s logs, error reports, and any onward request it makes. Forward it only when the app actually calls an API with it.",
     http: [
       {
         type: "request",
@@ -514,12 +514,12 @@ const STEPS: Step[] = [
         from: "Caddy",
         to: "oauth2-proxy",
         label: "forward_auth validation + header sanitization",
-        note: "Decrypt session cookie, validate not expired, then rewrite the identity headers from the session. Caddy\u2019s forward_auth copies back only an explicit allowlist of headers from the auth response (copy_headers), and the identity headers on the request to OTS are set, not merged, so a client-supplied X-Auth-Request-Email never survives the hop. RFC 9700 \u00a74.13.",
+        note: "Decrypt session cookie, validate not expired, then rewrite the identity headers from the session. Caddy\u2019s forward_auth copies back only an explicit allowlist of headers from the auth response (copy_headers), and the identity headers on the request to the app are set, not merged, so a client-supplied X-Auth-Request-Email never survives the hop. RFC 9700 \u00a74.13.",
       },
       {
         type: "server",
         from: "Caddy",
-        to: "OTS",
+        to: "App",
         method: "GET",
         url: "/dashboard",
         headers: [
@@ -529,11 +529,11 @@ const STEPS: Step[] = [
           "X-Auth-Request-Email: alice@contoso.com",
           "X-Auth-Request-Groups: group-id-123",
         ],
-        note: "Reconstructed example, not a capture; header names follow oauth2-proxy defaults. Caddy deleted any client-supplied copy of these headers before setting them. OTS accepts them only because the connection came from the proxy and is authenticated as such. Note what is not here: the access token. The security note explains why it stays out.",
+        note: "Reconstructed example, not a capture; header names follow oauth2-proxy defaults. Caddy deleted any client-supplied copy of these headers before setting them. The app accepts them only because the connection came from the proxy and is authenticated as such. Note what is not here: the access token. The security note explains why it stays out.",
       },
       {
         type: "response",
-        from: "OTS",
+        from: "App",
         to: "Browser (via Caddy)",
         status: "200 OK",
         headers: ["Content-Type: text/html"],
@@ -554,7 +554,7 @@ const STEPS: Step[] = [
     userSees: "dashboard",
     urlBar: "https://secrets.example.com/dashboard",
     description:
-      "All future requests follow the same pattern: session cookie \u2192 forward_auth \u2192 identity headers \u2192 OTS.",
+      "All future requests follow the same pattern: session cookie \u2192 forward_auth \u2192 identity headers \u2192 the app.",
     securityNote:
       "Session timeouts must be configured consistently across browser cookies, oauth2-proxy sessions, and application sessions to prevent security gaps. The header sanitization and the proxy-only reachability from step 10 apply to every request on this path, not just the first one: there is no fast path that skips them.",
     http: [
@@ -576,7 +576,7 @@ const STEPS: Step[] = [
       {
         type: "server",
         from: "Caddy",
-        to: "OTS",
+        to: "App",
         method: "GET",
         url: "/dashboard",
         headers: [
@@ -587,7 +587,7 @@ const STEPS: Step[] = [
       },
       {
         type: "response",
-        from: "OTS",
+        from: "App",
         to: "Browser",
         status: "200 OK",
         body: '{"secrets": [...]}',

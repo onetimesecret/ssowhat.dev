@@ -1,6 +1,6 @@
 <script lang="ts">
 	/**
-	 * OTS team-members admin page (secrets.example.com/account/team).
+	 * App team-members admin page (Onetime Secret) (secrets.example.com/account/team).
 	 * Shows the application-side result of SCIM provisioning: Alice's account
 	 * exists (or is deactivated) without her ever having signed in.
 	 *
@@ -22,7 +22,7 @@
 <div class="h-full bg-surface">
 	<nav class="flex items-center justify-between bg-surface-raised px-4 py-3 text-white">
 		<div class="flex items-center gap-4">
-			<span class="text-lg font-bold">&#x1F510; OTS</span>
+			<span class="text-lg font-bold">&#x1F510; Onetime Secret</span>
 			<span class="text-sm text-ink-tertiary">Team</span>
 		</div>
 		<div class="flex items-center gap-3">
@@ -39,7 +39,7 @@
 				<span class="text-xs text-ink-muted">2 members</span>
 			</div>
 			<div class="space-y-2">
-				<!-- OTS admin (local account) -->
+				<!-- App admin (local account) -->
 				<div class="flex items-center justify-between rounded-lg border border-edge bg-code-surface p-3 text-sm">
 					<div class="flex items-center gap-3">
 						<div class="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-xs font-medium text-white">

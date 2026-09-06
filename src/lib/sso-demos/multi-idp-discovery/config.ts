@@ -5,7 +5,7 @@ import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 
 /**
  * Actor configuration for the multi-IdP home-realm discovery demo.
- * OTS serves multiple customer organizations, each with its own IdP:
+ * The app serves multiple customer organizations, each with its own IdP:
  * Contoso authenticates via Entra ID (OIDC), Acme via Okta (SAML 2.0).
  *
  * Colors use semantic classes from sso-demo-theme.css (bg-actor-*).
@@ -13,14 +13,14 @@ import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
  */
 export const actorConfig: ActorConfig[] = [
 	{ key: 'browser', label: 'Browser', activeColor: 'bg-actor-browser' },
-	{ key: 'ots', label: 'OTS', activeColor: 'bg-actor-ots' },
+	{ key: 'ots', label: 'App', activeColor: 'bg-actor-ots' },
 	{ key: 'entra', label: 'Entra', activeColor: 'bg-actor-entra' },
 	{ key: 'okta', label: 'Okta', activeColor: 'bg-actor-okta' },
 ];
 
 /**
  * Protocol stack configuration showing the architecture.
- * OTS sits in the middle as the hub, with one connection per realm:
+ * The app sits in the middle as the hub, with one connection per realm:
  * OIDC to Contoso's Entra tenant, SAML to Acme's Okta org.
  */
 export const protocolStack: ProtocolStackConfig = {
@@ -36,7 +36,7 @@ export const protocolStack: ProtocolStackConfig = {
 		},
 		{
 			key: 'ots',
-			label: 'OTS',
+			label: 'App',
 			subLabel: 'Application',
 			emoji: '\u{1F510}',
 			activeGradient: 'bg-gradient-to-br from-actor-ots-600 to-actor-ots-700',

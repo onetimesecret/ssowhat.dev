@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * Enterprise OIDC with Entra ID
-	 * OTS + Microsoft Entra ID via OAuth 2.0 / OIDC
+	 * App + Microsoft Entra ID via OAuth 2.0 / OIDC
 	 *
 	 * The same Authorization Code + PKCE flow as the Google demo, pointed at
 	 * a workforce tenant: tenant-scoped endpoints, admin consent instead of a

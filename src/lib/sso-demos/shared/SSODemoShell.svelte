@@ -306,14 +306,24 @@
 				onclick={toggleViewMode}
 				aria-pressed={viewMode === 'transcript'}
 				aria-label={viewMode === 'interactive' ? 'Switch to transcript view' : 'Switch to interactive view'}
-				class="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors motion-reduce:transition-none {viewMode === 'transcript'
+				class="inline-flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-xs font-medium transition-colors motion-reduce:transition-none {viewMode ===
+				'transcript'
 					? 'border-amber-500/50 bg-amber-900/30 text-amber-400 hover:bg-amber-900/50'
 					: 'border-edge bg-transparent text-ink-tertiary hover:border-edge-emphasis hover:text-ink-secondary'}"
 			>
 				{#if viewMode === 'transcript'}
 					<span aria-hidden="true">&#x25C0;</span> Interactive
 				{:else}
-					<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+					<svg
+						class="h-3.5 w-3.5"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
 						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
 						<path d="M14 2v6h6M8 13h8M8 17h8" />
 					</svg>
@@ -379,7 +389,16 @@
 								? 'border-edge-emphasis bg-surface-raised text-ink-secondary'
 								: 'border-edge bg-transparent text-ink-tertiary hover:border-edge-emphasis hover:text-ink-secondary'}"
 						>
-							<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+							<svg
+								class="h-3.5 w-3.5"
+								fill="none"
+								viewBox="0 0 24 24"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								aria-hidden="true"
+							>
 								<rect x="2" y="5" width="20" height="14" rx="2" />
 								<path d="M6 9h.01M10 9h.01M14 9h.01M18 9h.01M8 13h.01M12 13h.01M16 13h.01M7 16h10" />
 							</svg>
@@ -391,7 +410,11 @@
 					<div id={kbdHelpId} class="mt-2.5 hidden border-t border-edge pt-2.5 text-xs text-ink-tertiary sm:block">
 						<span class="font-semibold text-ink-secondary">Keyboard: </span>
 						<span class="inline-flex flex-wrap gap-x-4 gap-y-2">
-							<span><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono">&larr;</kbd><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono ml-0.5">&rarr;</kbd> Navigate</span>
+							<span
+								><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono">&larr;</kbd><kbd
+									class="rounded bg-surface-raised px-1.5 py-0.5 font-mono ml-0.5">&rarr;</kbd
+								> Navigate</span
+							>
 							<span><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono">T</kbd> Transcript</span>
 							{#if liveSession}
 								<span><kbd class="rounded bg-surface-raised px-1.5 py-0.5 font-mono">L</kbd> Live transport</span>
@@ -411,10 +434,7 @@
 			</header>
 
 			<!-- Step masthead: the dominant element on the page -->
-			<section
-				aria-labelledby={stepHeadingId}
-				class="rounded-lg border border-edge bg-surface px-6 pt-5 pb-[18px]"
-			>
+			<section aria-labelledby={stepHeadingId} class="rounded-lg border border-edge bg-surface px-6 pt-5 pb-[18px]">
 				<div class="grid grid-cols-1 gap-6 lg:grid-cols-[minmax(0,1fr)_300px] lg:items-start lg:gap-10">
 					<!-- Left: current step -->
 					<div class="min-w-0">
@@ -434,12 +454,25 @@
 								aria-controls={securityNoteId}
 								class="mt-3 inline-flex items-center gap-1.5 text-xs font-medium text-amber-500 transition-colors motion-reduce:transition-none hover:text-amber-400 focus-visible:ring-2 focus-visible:ring-blue-400 focus-visible:ring-offset-2 focus-visible:ring-offset-surface rounded"
 							>
-								<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-									<path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+								<svg
+									class="h-3.5 w-3.5"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<path
+										d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+									/>
 								</svg>
 								<span>Security note</span>
 								<svg
-									class="h-3 w-3 transition-transform motion-reduce:transition-none {securityNoteOpen ? 'rotate-90' : ''}"
+									class="h-3 w-3 transition-transform motion-reduce:transition-none {securityNoteOpen
+										? 'rotate-90'
+										: ''}"
 									fill="none"
 									viewBox="0 0 24 24"
 									stroke="currentColor"
@@ -452,7 +485,10 @@
 								</svg>
 							</button>
 							{#if securityNoteOpen}
-								<p id={securityNoteId} class="mt-2.5 max-w-[66ch] text-xs leading-relaxed text-ink-tertiary text-pretty">
+								<p
+									id={securityNoteId}
+									class="mt-2.5 max-w-[66ch] text-xs leading-relaxed text-ink-tertiary text-pretty"
+								>
 									{step.securityNote}
 								</p>
 							{/if}
@@ -490,7 +526,13 @@
 											aria-hidden="true"
 										>
 											{#if isCompleted}
-												<svg class="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+												<svg
+													class="h-2.5 w-2.5"
+													fill="none"
+													viewBox="0 0 24 24"
+													stroke="currentColor"
+													aria-hidden="true"
+												>
 													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
 												</svg>
 											{:else}
@@ -500,7 +542,8 @@
 										<span class="truncate {isCurrent ? 'font-semibold text-ink' : 'text-ink-tertiary'}">{s.title}</span>
 										{#if showLiveUi && s.live}
 											<!-- Live-capable marker -->
-											<span class="ml-auto h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-400" aria-hidden="true"></span>
+											<span class="ml-auto h-1.5 w-1.5 flex-shrink-0 rounded-full bg-emerald-400" aria-hidden="true"
+											></span>
 										{/if}
 									</button>
 								</li>
@@ -534,34 +577,8 @@
 						<LiveComparePanel {step} result={liveResult} actorConfig={config.actorConfig} onclose={closeCompare} />
 					</div>
 				{:else}
-				<!-- Left: User view -->
-				<div class="flex flex-col gap-2.5">
-					<h3 class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-ink-muted">
-						<svg
-							class="h-3.5 w-3.5"
-							fill="none"
-							viewBox="0 0 24 24"
-							stroke="currentColor"
-							stroke-width="2"
-							stroke-linecap="round"
-							stroke-linejoin="round"
-							aria-hidden="true"
-						>
-							<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-							<path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-						</svg>
-						What the user sees
-					</h3>
-					<BrowserMockup urlBar={step.urlBar} loadingProgress={demoProgress} loadingDuration={300}>
-						{#if ScreenComponent}
-							<ScreenComponent />
-						{/if}
-					</BrowserMockup>
-				</div>
-
-				<!-- Right: Technical view -->
-				<div class="flex flex-col gap-2.5">
-					<div class="flex flex-wrap items-start justify-between gap-2">
+					<!-- Left: User view -->
+					<div class="flex flex-col gap-2.5">
 						<h3 class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-ink-muted">
 							<svg
 								class="h-3.5 w-3.5"
@@ -573,73 +590,103 @@
 								stroke-linejoin="round"
 								aria-hidden="true"
 							>
-								<path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+								<path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+								<path
+									d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+								/>
 							</svg>
-							What's happening (HTTP)
+							What the user sees
 						</h3>
-						{#if showLiveUi && liveSession}
-							<LiveRunControls
-								{step}
-								{steps}
-								session={liveSession}
-								onrun={() => void runLiveStep()}
-								onretry={() => void probeBackend()}
-								onopencompare={openCompare}
-								{compareButtonId}
-							/>
-						{/if}
+						<BrowserMockup urlBar={step.urlBar} loadingProgress={demoProgress} loadingDuration={300}>
+							{#if ScreenComponent}
+								<ScreenComponent />
+							{/if}
+						</BrowserMockup>
 					</div>
-					<div class="flex flex-1 flex-col rounded-lg border border-edge bg-surface p-4">
-						{#if showLiveUi && liveSession && liveSession.backend === 'offline'}
-							<div
-								role="note"
-								aria-label="Live backend unreachable"
-								class="mb-3 rounded border border-amber-500/30 bg-amber-900/20 px-3 py-2 text-xs text-amber-200"
-							>
-								Live backend unreachable &mdash; showing static traces. The demo is fully functional without it.
-							</div>
-						{/if}
-						<!-- scrollbar-gutter:stable on both this wrapper and the entries list
+
+					<!-- Right: Technical view -->
+					<div class="flex flex-col gap-2.5">
+						<div class="flex flex-wrap items-start justify-between gap-2">
+							<h3 class="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-ink-muted">
+								<svg
+									class="h-3.5 w-3.5"
+									fill="none"
+									viewBox="0 0 24 24"
+									stroke="currentColor"
+									stroke-width="2"
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									aria-hidden="true"
+								>
+									<path d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+								</svg>
+								What's happening (HTTP)
+							</h3>
+							{#if showLiveUi && liveSession}
+								<LiveRunControls
+									{step}
+									{steps}
+									session={liveSession}
+									onrun={() => void runLiveStep()}
+									onretry={() => void probeBackend()}
+									onopencompare={openCompare}
+									{compareButtonId}
+								/>
+							{/if}
+						</div>
+						<div class="flex flex-1 flex-col rounded-lg border border-edge bg-surface p-4">
+							{#if showLiveUi && liveSession && liveSession.backend === 'offline'}
+								<div
+									role="note"
+									aria-label="Live backend unreachable"
+									class="mb-3 rounded border border-amber-500/30 bg-amber-900/20 px-3 py-2 text-xs text-amber-200"
+								>
+									Live backend unreachable &mdash; showing static traces. The demo is fully functional without it.
+								</div>
+							{/if}
+							<!-- scrollbar-gutter:stable on both this wrapper and the entries list
 						     keeps the actor columns and FlowTrack rungs horizontally aligned
 						     when the list grows a scrollbar -->
-						<div class="overflow-hidden [scrollbar-gutter:stable]">
-							<ActorDiagram
-								actors={step.actors}
-								actorConfig={config.actorConfig}
-								connections={config.protocolStack.connections}
-							/>
-						</div>
-						<!-- role="list" restores list semantics stripped by WebKit/VoiceOver for list-style:none -->
-						<ol role="list" class="mb-4 flex-1 list-none space-y-3 overflow-y-auto [scrollbar-gutter:stable]">
-							{#each step.http as entry}
-								<li>
-									<FlowTrack from={entry.from} to={entry.to} type={entry.type} actorConfig={config.actorConfig} />
-									<HttpEntry {entry} actorConfig={config.actorConfig} />
-								</li>
-							{/each}
-						</ol>
-						<!-- Legend - one quiet row; colors from sso-demo-theme.css -->
-						<div class="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-edge pt-3 text-xs text-ink-muted">
-							<h4 class="mr-1 text-xs font-semibold uppercase tracking-wider text-ink-muted">Legend</h4>
-							<div class="flex items-center gap-1.5">
-								<div class="h-2.5 w-2.5 rounded-sm border-l-[3px] border-http-request bg-http-request/25"></div>
-								<span>Browser request</span>
+							<div class="overflow-hidden [scrollbar-gutter:stable]">
+								<ActorDiagram
+									actors={step.actors}
+									actorConfig={config.actorConfig}
+									connections={config.protocolStack.connections}
+								/>
 							</div>
-							<div class="flex items-center gap-1.5">
-								<div class="h-2.5 w-2.5 rounded-sm border-l-[3px] border-http-response bg-http-response/25"></div>
-								<span>Server response</span>
-							</div>
-							<div class="flex items-center gap-1.5">
-								<div class="h-2.5 w-2.5 rounded-sm border-l-[3px] border-http-server bg-http-server/25"></div>
-								<span>Server-to-server</span>
-							</div>
-							<div class="flex items-center gap-1.5">
-								<div class="h-2.5 w-2.5 rounded-sm border-l-[3px] border-http-internal bg-white/[0.06]"></div>
-								<span>Internal</span>
+							<!-- role="list" restores list semantics stripped by WebKit/VoiceOver for list-style:none -->
+							<ol role="list" class="mb-4 flex-1 list-none space-y-3 overflow-y-auto [scrollbar-gutter:stable]">
+								{#each step.http as entry}
+									<li>
+										<FlowTrack from={entry.from} to={entry.to} type={entry.type} actorConfig={config.actorConfig} />
+										<HttpEntry {entry} actorConfig={config.actorConfig} />
+									</li>
+								{/each}
+							</ol>
+							<!-- Legend - one quiet row; colors from sso-demo-theme.css -->
+							<div
+								class="mt-auto flex flex-wrap items-center gap-x-4 gap-y-2 border-t border-edge pt-3 text-xs text-ink-muted"
+							>
+								<h4 class="mr-1 text-xs font-semibold uppercase tracking-wider text-ink-muted">Legend</h4>
+								<div class="flex items-center gap-1.5">
+									<div class="h-2.5 w-2.5 rounded-sm border-l-[3px] border-http-request bg-http-request/25"></div>
+									<span>Browser request</span>
+								</div>
+								<div class="flex items-center gap-1.5">
+									<div class="h-2.5 w-2.5 rounded-sm border-l-[3px] border-http-response bg-http-response/25"></div>
+									<span>Server response</span>
+								</div>
+								<div class="flex items-center gap-1.5">
+									<div class="h-2.5 w-2.5 rounded-sm border-l-[3px] border-http-server bg-http-server/25"></div>
+									<span>Server-to-server</span>
+								</div>
+								<div class="flex items-center gap-1.5">
+									<div class="h-2.5 w-2.5 rounded-sm border-l-[3px] border-http-internal bg-white/[0.06]"></div>
+									<span>Internal</span>
+								</div>
 							</div>
 						</div>
 					</div>
-				</div>
 				{/if}
 			</main>
 
@@ -663,7 +710,16 @@
 							? 'bg-surface-raised text-ink-secondary'
 							: 'text-ink-muted hover:bg-surface-raised hover:text-ink-secondary'}"
 					>
-						<svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+						<svg
+							class="h-3.5 w-3.5"
+							fill="none"
+							viewBox="0 0 24 24"
+							stroke="currentColor"
+							stroke-width="2"
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							aria-hidden="true"
+						>
 							<circle cx="12" cy="12" r="9" />
 							<path d="M12 16v-4M12 8h.01" />
 						</svg>
@@ -673,9 +729,7 @@
 							id={aboutPanelId}
 							class="absolute right-0 bottom-[calc(100%+10px)] w-[min(27.5rem,calc(100vw-2rem))] rounded-lg border border-edge-emphasis bg-surface p-3.5 text-left text-xs leading-relaxed text-ink-tertiary shadow-xl text-pretty"
 						>
-							<p>
-								This is an educational demo, not a reference implementation. Any live mode uses a mock service, not a vendor system.
-							</p>
+							<p>Live mode uses a mock service, not a vendor system.</p>
 							<FidelityNote fidelity={config.fidelity} class="mt-2" />
 							<span
 								class="absolute -bottom-[6px] right-1.5 h-2.5 w-2.5 rotate-45 border-r border-b border-edge-emphasis bg-surface"
