@@ -315,7 +315,7 @@ export const STEPS: Step[] = [
 		userSees: 'signed-out',
 		urlBar: 'https://secrets.example.com/saml/slo',
 		description:
-			'Final score: app session dead (step 1), Okta session dead (step 4), Wiki session alive. If Alice opens the Wiki in another tab right now, she is still logged in. The LogoutRequest reached the Wiki and named her session, but the Wiki had no way to resolve that name to a local session, so nothing was revoked. The session survives until its own idle timeout.',
+			'Final score: the app session dead (step 1), Okta session dead (step 4), Wiki session alive. If Alice opens the Wiki in another tab right now, she is still logged in. The LogoutRequest reached the Wiki and named her session, but the Wiki had no way to resolve that name to a local session, so nothing was revoked. The session survives until its own idle timeout.',
 		securityNote:
 			'SLO is unreliable because coordinating sessions across independent systems is unreliable, not because a cookie went missing. Build the SP side so the LogoutRequest is sufficient on its own: (1) persist NameID and SessionIndex at login and index local sessions by them, so an SLO request revokes server-side state even with no cookie attached; (2) short SP session lifetimes with idle timeout, so orphaned sessions die on their own; (3) SCIM deactivation with session revocation for offboarding, which is the reliable kill switch SLO is not; (4) if your stack is OIDC rather than SAML, back-channel logout (OpenID Connect Back-Channel Logout 1.0) is the modern server-to-server answer -- but only if both sides actually implement it. The one thing NOT to do is skip local session destruction while waiting for SLO to work.',
 		http: [

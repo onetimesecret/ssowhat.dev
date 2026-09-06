@@ -138,7 +138,7 @@ export const STEPS: Step[] = [
 				method: 'GET',
 				url: 'https://contoso.okta.com/app/ots-saml/exk1234/sso/saml',
 				headers: ['Cookie: sid=okta_session_abc'],
-				note: 'App tile link. Same endpoint the SP-initiated flow redirects to -- but with no SAMLRequest query parameter.',
+				note: 'The app tile link. Same endpoint the SP-initiated flow redirects to -- but with no SAMLRequest query parameter.',
 			},
 			{
 				type: 'internal',
