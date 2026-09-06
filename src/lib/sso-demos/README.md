@@ -53,13 +53,13 @@ Reusable Svelte 5 components for building step-by-step authentication flow demos
 | `ActorDiagram` | Actor chips on a connector line; carries the protocol labels from `config.protocolStack.connections` |
 | `BrowserMockup` | Browser chrome wrapper |
 
-### OTS Screens (Constant Across Demos)
+### App Screens (Onetime Secret, Constant Across Demos)
 
 | Screen | Key | Description |
 |--------|-----|-------------|
 | `Blank` | `blank` | Initial redirect state ("Redirecting to login...") |
 | `Loading` | `loading` | Processing state (spinner) |
-| `Dashboard` | `dashboard` | Authenticated OTS dashboard |
+| `Dashboard` | `dashboard` | Authenticated app dashboard |
 | `TeamMembers` | `ots-team` | Team-members admin page; Alice SCIM-provisioned, active, never logged in |
 | `TeamMembersDeactivated` | `ots-team-deactivated` | Team-members page after offboarding; Alice deactivated via SCIM |
 | `SignedOut` | `signed-out` | Post-logout confirmation page ("You've been signed out") |
@@ -332,7 +332,7 @@ sso-demos/
 │   ├── demo.svelte
 │   └── steps.ts
 ├── screens/
-│   ├── ots/                # OTS app screens (constant)
+│   ├── ots/                # App screens, Onetime Secret (constant)
 │   │   ├── Blank.svelte
 │   │   ├── Dashboard.svelte
 │   │   └── Loading.svelte

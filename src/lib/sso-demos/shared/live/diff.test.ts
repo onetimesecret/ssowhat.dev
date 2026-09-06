@@ -34,7 +34,7 @@ function staticCreatePair(): { req: HttpMessage; res: HttpMessage } {
 		req: {
 			type: 'server',
 			from: 'Okta',
-			to: 'OTS',
+			to: 'App',
 			method: 'POST',
 			url: 'https://secrets.example.com/scim/v2/Users',
 			headers: [AUTH_LINE, 'Content-Type: application/scim+json', 'Accept: application/scim+json'],
@@ -46,7 +46,7 @@ function staticCreatePair(): { req: HttpMessage; res: HttpMessage } {
 		},
 		res: {
 			type: 'server-response',
-			from: 'OTS',
+			from: 'App',
 			to: 'Okta',
 			status: '201 Created',
 			headers: [
@@ -67,7 +67,7 @@ function liveCreatePair(): { req: HttpMessage; res: HttpMessage } {
 		req: {
 			type: 'server',
 			from: 'Okta',
-			to: 'OTS',
+			to: 'App',
 			method: 'POST',
 			url: 'http://localhost:8787/scim/v2/Users',
 			headers: [
@@ -80,7 +80,7 @@ function liveCreatePair(): { req: HttpMessage; res: HttpMessage } {
 		},
 		res: {
 			type: 'server-response',
-			from: 'OTS',
+			from: 'App',
 			to: 'Okta',
 			status: '201 Created',
 			headers: ['Content-Type: application/scim+json', `Location: http://localhost:8787/scim/v2/Users/${LIVE_ID}`],
@@ -130,14 +130,14 @@ describe('diffExchange', () => {
 		const staticReq: HttpMessage = {
 			type: 'server',
 			from: 'Okta',
-			to: 'OTS',
+			to: 'App',
 			method: 'GET',
 			url: 'https://secrets.example.com/scim/v2/Users?filter=userName%20eq%20%22alice%40contoso.com%22&startIndex=1&count=100',
 			headers: [AUTH_LINE, 'Accept: application/scim+json'],
 		};
 		const staticRes: HttpMessage = {
 			type: 'server-response',
-			from: 'OTS',
+			from: 'App',
 			to: 'Okta',
 			status: '200 OK',
 			headers: ['Content-Type: application/scim+json'],
@@ -194,14 +194,14 @@ describe('diffExchange', () => {
 		const staticReq: HttpMessage = {
 			type: 'server',
 			from: 'Okta',
-			to: 'OTS',
+			to: 'App',
 			method: 'GET',
 			url: 'https://secrets.example.com/scim/v2/Users?filter=userName%20eq%20%22alice%40contoso.com%22',
 			headers: [AUTH_LINE, 'Accept: application/scim+json'],
 		};
 		const staticRes: HttpMessage = {
 			type: 'server-response',
-			from: 'OTS',
+			from: 'App',
 			to: 'Okta',
 			status: '200 OK',
 			headers: ['Content-Type: application/scim+json'],

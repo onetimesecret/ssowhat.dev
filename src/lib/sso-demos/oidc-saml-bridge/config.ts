@@ -15,7 +15,7 @@ export const actorConfig: ActorConfig[] = [
   { key: "caddy", label: "Caddy", activeColor: "bg-actor-caddy" },
   { key: "logto", label: "Logto", activeColor: "bg-actor-logto" },
   { key: "entra", label: "Entra", activeColor: "bg-actor-entra" },
-  { key: "ots", label: "OTS", activeColor: "bg-actor-ots" },
+  { key: "ots", label: "App", activeColor: "bg-actor-ots" },
 ];
 
 /**
@@ -26,7 +26,7 @@ export const protocolStack: ProtocolStackConfig = {
   components: [
     {
       key: "ots",
-      label: "OTS",
+      label: "App",
       subLabel: "Application",
       emoji: "\u{1F510}",
       activeGradient: "bg-gradient-to-br from-actor-ots-600 to-actor-ots-700",

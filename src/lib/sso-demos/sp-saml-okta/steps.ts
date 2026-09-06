@@ -5,9 +5,9 @@ import type { Step } from '$lib/sso-demos';
 /**
  * SP-initiated SAML flow with Okta as the IdP.
  *
- * The user visits OTS (the Service Provider), which redirects to Okta
+ * The user visits the app (the Service Provider), which redirects to Okta
  * (the Identity Provider) via a SAML AuthnRequest. After authentication,
- * Okta posts a signed SAML assertion back to OTS's ACS endpoint.
+ * Okta posts a signed SAML assertion back to the app's ACS endpoint.
  *
  * This is the most common enterprise SSO pattern: direct SAML between
  * application and IdP, no intermediate broker or protocol bridge.
@@ -28,14 +28,14 @@ export const STEPS: Step[] = [
 		userSees: 'blank',
 		urlBar: 'https://secrets.example.com/dashboard',
 		description:
-			'User navigates to the OTS dashboard. OTS checks for a valid session and finds none, so it generates a SAML AuthnRequest with a unique ID and redirects the browser to Okta.',
+			'User navigates to the app dashboard. The app checks for a valid session and finds none, so it generates a SAML AuthnRequest with a unique ID and redirects the browser to Okta.',
 		securityNote:
 			'SP-initiated SAML requires the SP to generate a fresh AuthnRequest with a unique ID for each login attempt. The ID must be stored server-side and later matched against InResponseTo in the SAML Response, preventing unsolicited response injection. The RelayState parameter preserves the deep link so the user lands on the correct page after authentication.',
 		http: [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'GET',
 				url: 'https://secrets.example.com/dashboard',
 				headers: ['Cookie: (none)'],
@@ -43,14 +43,14 @@ export const STEPS: Step[] = [
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Session check + AuthnRequest generation',
 				note: 'No valid session found. Generate AuthnRequest with unique ID (_request_abc123), store ID for InResponseTo validation, set RelayState to /dashboard.',
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '302 Found',
 				headers: [
@@ -253,18 +253,18 @@ export const STEPS: Step[] = [
 	},
 	{
 		id: 6,
-		title: 'Browser POSTs assertion to OTS ACS endpoint',
+		title: 'Browser POSTs assertion to the app’s ACS endpoint',
 		userSees: 'loading',
 		urlBar: 'https://secrets.example.com/saml/acs',
 		description:
-			"Browser auto-submits the SAML Response to OTS's Assertion Consumer Service (ACS) endpoint. OTS validates the assertion thoroughly and creates a local session from the SAML attributes.",
+			"Browser auto-submits the SAML Response to the app's Assertion Consumer Service (ACS) endpoint. The app validates the assertion thoroughly and creates a local session from the SAML attributes.",
 		securityNote:
 			"The ACS endpoint must perform all of these validations: (1) verify Response and Assertion XML signatures against Okta's certificate, (2) check InResponseTo matches the stored AuthnRequest ID, (3) validate NotBefore/NotOnOrAfter timestamps with clock skew tolerance (typically 2-5 minutes), (4) confirm AudienceRestriction matches the SP's entity ID, (5) verify Recipient URL matches this ACS endpoint, (6) store the Assertion ID and reject any ID seen before to prevent replay attacks. Separately from validation, the choice of local account key matters. The account key should be (IdP entityID, an immutable NameID). This demo requests the emailAddress NameID format because it is what most Okta SAML apps are configured with, but that is the common default, not the recommended one: an email address is a mutable, reassignable attribute, so keying accounts on it means a rename silently orphans an account and a reissued address silently inherits one. Configure a persistent or Okta-user-ID NameID and treat email as a profile attribute to refresh; if the email NameID cannot be changed, resolve it only through an explicitly provisioned mapping table (see the account-resolution step below).",
 		http: [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'POST',
 				url: 'https://secrets.example.com/saml/acs',
 				headers: ['Content-Type: application/x-www-form-urlencoded', 'Origin: https://contoso.okta.com'],
@@ -358,21 +358,21 @@ export const STEPS: Step[] = [
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Validate SAML assertion',
 				note: "Verify Response + Assertion XML signatures against Okta's X.509 certificate, check InResponseTo matches _request_abc123, validate NotBefore/NotOnOrAfter timestamps, confirm AudienceRestriction, verify Recipient URL, store assertion ID _assertion_def456 for replay prevention.",
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Resolve the local account',
 				note: 'The NameID in this assertion is alice@contoso.com, so a lookup keyed on (entityID, NameID) here is an email-keyed lookup with every problem an email key has: a rename orphans the account and a reissued address inherits it. Two safe options. Recommended: configure the Okta app to send an immutable NameID (the Okta user ID, or the persistent format) and key the account on (http://www.okta.com/exk1234, that NameID). Otherwise: keep the email NameID but resolve it through an explicit mapping table that links (entityID, NameID) to a local account id, is populated by provisioning (SCIM) or an administrator rather than auto-created on first sight, and is re-linked by an administrator when the address changes. Either way the email attribute is profile data to refresh on the account, not the key it is stored under.',
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '302 Found',
 				headers: [
@@ -394,28 +394,28 @@ export const STEPS: Step[] = [
 		userSees: 'dashboard',
 		urlBar: 'https://secrets.example.com/dashboard',
 		description:
-			'Browser follows the redirect and loads the dashboard with the new session cookie. OTS reads the session to identify the user and render their content.',
+			'Browser follows the redirect and loads the dashboard with the new session cookie. The app reads the session to identify the user and render their content.',
 		securityNote:
-			"The session cookie stores identity derived from the SAML assertion. OTS should enforce session timeouts shorter than the assertion's SessionNotOnOrAfter value. RelayState must be validated against an allowlist to prevent open redirect attacks.",
+			"The session cookie stores identity derived from the SAML assertion. The app should enforce session timeouts shorter than the assertion's SessionNotOnOrAfter value. RelayState must be validated against an allowlist to prevent open redirect attacks.",
 		http: [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'GET',
 				url: 'https://secrets.example.com/dashboard',
 				headers: ['Cookie: _ots_session=encrypted-session-data'],
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Decrypt session cookie',
 				note: 'Extract user identity: alice@contoso.com, groups: [engineering, secrets-admins]',
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '200 OK',
 				headers: [
@@ -440,26 +440,26 @@ export const STEPS: Step[] = [
 		description:
 			'All future requests use the session cookie. No further interaction with Okta until the session expires or the user logs out. Logout can trigger SAML Single Logout (SLO) to terminate the Okta session as well.',
 		securityNote:
-			'SP session lifetime is independent of the IdP session. If the SP session expires, the user may be silently re-authenticated if their Okta session is still active (no password prompt). Implement session rotation on sensitive operations and absolute timeouts to limit exposure. Without SAML SLO, logging out of OTS leaves the Okta session active.',
+			'SP session lifetime is independent of the IdP session. If the SP session expires, the user may be silently re-authenticated if their Okta session is still active (no password prompt). Implement session rotation on sensitive operations and absolute timeouts to limit exposure. Without SAML SLO, logging out of the app leaves the Okta session active.',
 		http: [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'GET',
 				url: 'https://secrets.example.com/api/secrets',
 				headers: ['Cookie: _ots_session=encrypted-session-data', 'Accept: application/json'],
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Validate session (fast path)',
 				note: 'Session valid, no SAML roundtrip needed. User: alice@contoso.com',
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '200 OK',
 				headers: ['Content-Type: application/json'],

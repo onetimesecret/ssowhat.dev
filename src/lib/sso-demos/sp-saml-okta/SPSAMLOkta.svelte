@@ -1,11 +1,11 @@
 <script lang="ts">
 	/**
 	 * SP-Initiated SAML with Okta
-	 * OTS (SP) + Okta (IdP) via SAML 2.0
+	 * App (SP) + Okta (IdP) via SAML 2.0
 	 *
-	 * Direct SP-initiated flow: OTS redirects unauthenticated users to Okta
+	 * Direct SP-initiated flow: The app redirects unauthenticated users to Okta
 	 * via SAML AuthnRequest, Okta authenticates and posts a signed SAML
-	 * assertion back to OTS's ACS endpoint.
+	 * assertion back to the app's ACS endpoint.
 	 *
 	 * This is the simplest enterprise SSO pattern: direct SAML between
 	 * application and IdP with no intermediate proxy or protocol bridge.

@@ -20,14 +20,14 @@ export const STEPS: Step[] = [
 		userSees: 'blank',
 		urlBar: 'https://secrets.example.com/dashboard',
 		description:
-			"User navigates to the OTS dashboard or clicks 'Sign in with Microsoft'. OTS finds no session, generates PKCE parameters, state, and nonce, then redirects to the authorization endpoint of Contoso's tenant -- not a global Microsoft endpoint. The tenant is part of the URL.",
+			"User navigates to the app dashboard or clicks 'Sign in with Microsoft'. The app finds no session, generates PKCE parameters, state, and nonce, then redirects to the authorization endpoint of Contoso's tenant -- not a global Microsoft endpoint. The tenant is part of the URL.",
 		securityNote:
 			'Entra endpoints are tenant-scoped: /contoso.onmicrosoft.com/ (or the tenant GUID) accepts only Contoso accounts, /organizations/ accepts any work account, and /common/ additionally accepts personal Microsoft accounts. A single-tenant app should hardcode its tenant in the authorize URL and later verify the tid claim -- accepting tokens from /common/ without issuer validation is a classic multi-tenant vulnerability. Scope choice is a security decision too: offline_access is omitted here because a login-only app has nothing to call later, and a refresh token it does not need is a long-lived credential it would have to store, rotate, revoke, and account for after a compromise.',
 		http: [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'GET',
 				url: 'https://secrets.example.com/dashboard',
 				headers: ['Cookie: (none)'],
@@ -35,14 +35,14 @@ export const STEPS: Step[] = [
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Generate OAuth2 parameters',
 				note: 'Generate code_verifier, compute code_challenge = BASE64URL(SHA256(code_verifier)), generate random state and nonce. Store all three server-side keyed by session.',
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '302 Found',
 				headers: [
@@ -72,7 +72,7 @@ export const STEPS: Step[] = [
 		userSees: 'entra-login',
 		urlBar: 'https://login.microsoftonline.com/contoso.onmicrosoft.com/oauth2/v2.0/authorize?client_id=...',
 		description:
-			'Browser follows the redirect to Entra. Because a Contoso admin registered OTS as an enterprise application and granted admin consent for the requested scopes, Alice never sees a consent screen -- just the familiar Microsoft sign-in page for her organization.',
+			'Browser follows the redirect to Entra. Because a Contoso admin registered the app as an enterprise application and granted admin consent for the requested scopes, Alice never sees a consent screen -- just the familiar Microsoft sign-in page for her organization.',
 		securityNote:
 			"This is the biggest UX difference from consumer OAuth: Google asks each user to approve scopes; Entra tenants typically pre-authorize them via admin consent, and many tenants block user consent entirely. Entra still validates that redirect_uri exactly matches a URI registered on the app registration -- same rule as Google, same reason: preventing authorization code theft.",
 		http: [
@@ -112,9 +112,9 @@ export const STEPS: Step[] = [
 		userSees: 'entra-login',
 		urlBar: 'https://login.microsoftonline.com/contoso.onmicrosoft.com/oauth2/v2.0/authorize?client_id=...',
 		description:
-			"Alice enters her Contoso credentials. Entra validates them and evaluates Conditional Access policies -- MFA, device compliance, network location -- before issuing anything. On success, it redirects the browser back to OTS's callback with a single-use authorization code and the original state.",
+			"Alice enters her Contoso credentials. Entra validates them and evaluates Conditional Access policies -- MFA, device compliance, network location -- before issuing anything. On success, it redirects the browser back to the app's callback with a single-use authorization code and the original state.",
 		securityNote:
-			'Conditional Access runs at token issuance, invisible to the application. OTS cannot tell whether Alice used a password + Authenticator prompt, a passkey, or certificate auth -- and usually should not care. If it does care (step-up auth), it can request specific authentication context via the claims parameter and verify the acrs claim in the resulting token.',
+			'Conditional Access runs at token issuance, invisible to the application. The app cannot tell whether Alice used a password + Authenticator prompt, a passkey, or certificate auth -- and usually should not care. If it does care (step-up auth), it can request specific authentication context via the claims parameter and verify the acrs claim in the resulting token.',
 		http: [
 			{
 				type: 'request',
@@ -139,7 +139,7 @@ export const STEPS: Step[] = [
 				to: 'Browser',
 				status: '302 Found',
 				headers: ['Location: https://secrets.example.com/auth/callback?code=0.AR8AnSqjO3vZ...&state=xYz9Kp2mN7qR4sT1'],
-				note: 'Authorization code issued, redirect back to OTS with state for CSRF validation',
+				note: 'Authorization code issued, redirect back to the app with state for CSRF validation',
 			},
 		],
 		actors: {
@@ -150,32 +150,32 @@ export const STEPS: Step[] = [
 	},
 	{
 		id: 4,
-		title: 'OTS exchanges code for tokens (back-channel)',
+		title: 'The app exchanges code for tokens (back-channel)',
 		userSees: 'loading',
 		urlBar: 'https://secrets.example.com/auth/callback?code=0.AR8AnSqjO3vZ...&state=xYz9Kp2mN7qR4sT1',
 		description:
-			"Browser follows the redirect back to OTS. OTS validates the state parameter, then exchanges the authorization code at the tenant's token endpoint via a server-to-server POST, presenting both its client credential and the PKCE code_verifier.",
+			"Browser follows the redirect back to the app. The app validates the state parameter, then exchanges the authorization code at the tenant's token endpoint via a server-to-server POST, presenting both its client credential and the PKCE code_verifier.",
 		securityNote:
 			'Entra confidential clients can authenticate with a client_secret, a certificate, or -- best practice for workloads running in Azure, GitHub Actions, or Kubernetes -- federated credentials (workload identity), which eliminate stored secrets entirely. The PKCE verifier is checked in addition to client authentication, exactly as in the Google flow.',
 		http: [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'GET',
 				url: 'https://secrets.example.com/auth/callback?code=0.AR8AnSqjO3vZ...&state=xYz9Kp2mN7qR4sT1',
 				headers: [],
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Validate state parameter',
 				note: 'Confirm state=xYz9Kp2mN7qR4sT1 matches the value stored in step 1. Retrieve code_verifier from server-side session.',
 			},
 			{
 				type: 'server',
-				from: 'OTS',
+				from: 'App',
 				to: 'Entra',
 				label: 'Server-to-server token exchange',
 				method: 'POST',
@@ -187,7 +187,7 @@ export const STEPS: Step[] = [
 			{
 				type: 'server-response',
 				from: 'Entra',
-				to: 'OTS',
+				to: 'App',
 				status: '200 OK',
 				body: `{
   "token_type": "Bearer",
@@ -237,24 +237,24 @@ export const STEPS: Step[] = [
 	},
 	{
 		id: 5,
-		title: 'OTS validates ID token and maps identity',
+		title: 'The app validates ID token and maps identity',
 		userSees: 'loading',
 		urlBar: 'https://secrets.example.com/auth/callback?code=0.AR8AnSqjO3vZ...&state=xYz9Kp2mN7qR4sT1',
 		description:
-			"OTS validates the ID token (signature, issuer, audience, nonce, expiry) against the tenant's JWKS, then maps the user to a local account keyed on tid + oid -- not email. Optionally it calls the Microsoft Graph userinfo endpoint for extra profile data.",
+			"The app validates the ID token (signature, issuer, audience, nonce, expiry) against the tenant's JWKS, then maps the user to a local account keyed on tid + oid -- not email. Optionally it calls the Microsoft Graph userinfo endpoint for extra profile data.",
 		securityNote:
 			"Key the account on tid + oid, never on the email claim. In Entra, sub is pairwise (different per application, useless across apps), and email/preferred_username are admin-editable and not guaranteed verified -- the root cause of the 'nOAuth' account-takeover pattern, where a rogue tenant admin sets a victim's email on their own user. tid + oid is the only cross-app-stable, tenant-anchored identifier, so it is the key the local account row is created and looked up on. And when userinfo is called, its sub must exactly match the ID token sub (OIDC Core 5.3.2) before any of its claims are used.",
 		http: [
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Validate ID token JWT',
 				note: 'Verify RS256 signature via tenant JWKS, check iss contains expected tid 3b2a1c9d..., aud matches client_id, exp in future, nonce=aB3cD5eF7gH9iJ1k. The account is looked up or created on the tenant-qualified key (tid, oid) = (3b2a1c9d..., 5d1e8f3a...), never on email or preferred_username.',
 			},
 			{
 				type: 'server',
-				from: 'OTS',
+				from: 'App',
 				to: 'Entra',
 				label: 'Fetch additional profile data',
 				method: 'GET',
@@ -265,7 +265,7 @@ export const STEPS: Step[] = [
 			{
 				type: 'server-response',
 				from: 'Entra',
-				to: 'OTS',
+				to: 'App',
 				status: '200 OK',
 				body: `{
   "sub": "AAAAAAAAAAAAAAAAAAAAAIkzqFVrSaSaFHy782bbtaQ",
@@ -279,14 +279,14 @@ export const STEPS: Step[] = [
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Compare userinfo sub to ID token sub',
 				note: 'OIDC Core 5.3.2: the sub in the userinfo response MUST exactly match the sub in the ID token. If it does not, discard the userinfo values. This is what stops a substituted or mixed-up access token from attaching another user profile to this session. The userinfo response carries sub, not oid, so it confirms the response belongs to the same subject; the account key stays (tid, oid) from the ID token.',
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '302 Found',
 				headers: [
@@ -308,28 +308,28 @@ export const STEPS: Step[] = [
 		userSees: 'dashboard',
 		urlBar: 'https://secrets.example.com/dashboard',
 		description:
-			'Alice is authenticated and reaches her dashboard. OTS reads the session to render content personalized with the Entra profile data (name, email, avatar via Graph).',
+			'Alice is authenticated and reaches her dashboard. The app reads the session to render content personalized with the Entra profile data (name, email, avatar via Graph).',
 		securityNote:
 			'The access_token stays server-side and can be discarded once sign-in is finished. If a later feature does need offline_access, know what you are taking on: Entra refresh tokens are long-lived but revocable, and disabling the user, a password reset, or a Conditional Access change invalidates them. Handle AADSTS50173 (token revoked) by re-running the authorization flow, not by retrying.',
 		http: [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'GET',
 				url: 'https://secrets.example.com/dashboard',
 				headers: ['Cookie: _ots_session=encrypted-session-data'],
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Decrypt session cookie',
 				note: 'Extract user identity: alice@contoso.com (tid 3b2a1c9d..., oid 5d1e8f3a...)',
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '200 OK',
 				headers: [
@@ -352,28 +352,28 @@ export const STEPS: Step[] = [
 		userSees: 'dashboard',
 		urlBar: 'https://secrets.example.com/dashboard',
 		description:
-			'All future requests use the session cookie; no Entra interaction until the session expires or Alice signs out. When Contoso offboards Alice, disabling her Entra account blocks new sign-ins -- but the OTS session lives until OTS itself ends it, which is why enterprises pair SSO with SCIM deprovisioning.',
+			'All future requests use the session cookie; no Entra interaction until the session expires or Alice signs out. When Contoso offboards Alice, disabling her Entra account blocks new sign-ins -- but the app session lives until the app itself ends it, which is why enterprises pair SSO with SCIM deprovisioning.',
 		securityNote:
-			'Session lifetime is a local decision, decoupled from Entra token expiry. Continuous Access Evaluation (CAE) is often misread here: it lets a CAE-enabled resource such as Microsoft Graph reject an already-issued access token with a 401 and a claims challenge, which a CAE-aware client answers by acquiring a fresh token. It does not reach into OTS and end the OTS session. Ending the local session stays the application\'s job: keep sessions short, re-check with Entra on a schedule or on sensitive actions, and consume deprovisioning events. See the SCIM demo for the deprovisioning half of the lifecycle.',
+			'Session lifetime is a local decision, decoupled from Entra token expiry. Continuous Access Evaluation (CAE) is often misread here: it lets a CAE-enabled resource such as Microsoft Graph reject an already-issued access token with a 401 and a claims challenge, which a CAE-aware client answers by acquiring a fresh token. It does not reach into the app and end the app session. Ending the local session stays the application\'s job: keep sessions short, re-check with Entra on a schedule or on sensitive actions, and consume deprovisioning events. See the SCIM demo for the deprovisioning half of the lifecycle.',
 		http: [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'GET',
 				url: 'https://secrets.example.com/api/secrets',
 				headers: ['Cookie: _ots_session=encrypted-session-data', 'Accept: application/json'],
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Validate session (fast path)',
 				note: 'Session valid, no Entra interaction needed. User: alice@contoso.com',
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '200 OK',
 				headers: ['Content-Type: application/json'],

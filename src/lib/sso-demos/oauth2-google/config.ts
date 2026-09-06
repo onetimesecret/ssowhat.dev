@@ -5,14 +5,14 @@ import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 
 /**
  * Actor configuration for the OAuth2/OIDC Google demo.
- * Direct OAuth2 integration: OTS communicates with Google via OAuth 2.0 + OIDC.
+ * Direct OAuth2 integration: The app communicates with Google via OAuth 2.0 + OIDC.
  *
  * Colors use semantic classes from sso-demo-theme.css (bg-actor-*).
  * To customize actor colors, modify the theme file.
  */
 export const actorConfig: ActorConfig[] = [
 	{ key: 'browser', label: 'Browser', activeColor: 'bg-actor-browser' },
-	{ key: 'ots', label: 'OTS', activeColor: 'bg-actor-ots' },
+	{ key: 'ots', label: 'App', activeColor: 'bg-actor-ots' },
 	{ key: 'google', label: 'Google', activeColor: 'bg-actor-google' },
 ];
 
@@ -24,7 +24,7 @@ export const protocolStack: ProtocolStackConfig = {
 	components: [
 		{
 			key: 'ots',
-			label: 'OTS',
+			label: 'App',
 			subLabel: 'Application',
 			emoji: '\u{1F510}',
 			activeGradient: 'bg-gradient-to-br from-actor-ots-600 to-actor-ots-700',
@@ -59,7 +59,7 @@ export const protocolStack: ProtocolStackConfig = {
  */
 export const demoConfig: DemoConfig = {
 	title: 'OAuth2 Social Login with Google',
-	subtitle: 'OTS authenticates with Google via OAuth 2.0 and OpenID Connect',
+	subtitle: 'The app authenticates with Google via OAuth 2.0 and OpenID Connect',
 	version: DEMO_VERSION,
 	fidelity: {
 		level: 'reconstructed',

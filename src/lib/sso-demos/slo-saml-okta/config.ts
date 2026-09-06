@@ -13,21 +13,21 @@ import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
  */
 export const actorConfig: ActorConfig[] = [
 	{ key: 'browser', label: 'Browser', activeColor: 'bg-actor-browser' },
-	{ key: 'ots', label: 'OTS', activeColor: 'bg-actor-ots' },
+	{ key: 'ots', label: 'App', activeColor: 'bg-actor-ots' },
 	{ key: 'okta', label: 'Okta', activeColor: 'bg-actor-okta' },
 	{ key: 'wiki', label: 'Wiki', activeColor: 'bg-actor-wiki' },
 ];
 
 /**
  * Protocol stack configuration showing the architecture.
- * Okta sits between two SAML SPs: OTS (initiates logout) and the
+ * Okta sits between two SAML SPs: The app (initiates logout) and the
  * Team Wiki (a session participant that Okta must notify).
  */
 export const protocolStack: ProtocolStackConfig = {
 	components: [
 		{
 			key: 'ots',
-			label: 'OTS',
+			label: 'App',
 			subLabel: 'SP (initiates SLO)',
 			emoji: '\u{1F510}',
 			activeGradient: 'bg-gradient-to-br from-actor-ots-600 to-actor-ots-700',

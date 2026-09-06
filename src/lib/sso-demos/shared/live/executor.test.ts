@@ -19,7 +19,7 @@ const STATIC_HTTP: HttpMessage[] = [
 	{
 		type: 'server',
 		from: 'Okta',
-		to: 'OTS',
+		to: 'App',
 		method: 'POST',
 		url: 'https://secrets.example.com/scim/v2/Users',
 		headers: [`Authorization: Bearer ${TOKEN}`, 'Content-Type: application/scim+json'],
@@ -27,7 +27,7 @@ const STATIC_HTTP: HttpMessage[] = [
 	},
 	{
 		type: 'server-response',
-		from: 'OTS',
+		from: 'App',
 		to: 'Okta',
 		status: '201 Created',
 		headers: ['Content-Type: application/scim+json'],
@@ -120,7 +120,7 @@ describe('runExchange', () => {
 		const result = await runExchange(SPEC, {}, OPTS);
 		expect(result.request.type).toBe('server');
 		expect(result.request.from).toBe('Okta');
-		expect(result.request.to).toBe('OTS');
+		expect(result.request.to).toBe('App');
 		expect(result.request.note).toBe('static request note');
 		expect(result.request.url).toBe('http://localhost:8787/scim/v2/Users');
 	});
@@ -207,12 +207,12 @@ describe('runStep', () => {
 			{
 				type: 'server',
 				from: 'Okta',
-				to: 'OTS',
+				to: 'App',
 				method: 'GET',
 				url: 'https://secrets.example.com/scim/v2/Users/8c1f9a2e-4b7d-4e3a-9c0d-2f5e8a716b43',
 				headers: ['Accept: application/scim+json'],
 			},
-			{ type: 'server-response', from: 'OTS', to: 'Okta', status: '200 OK', headers: [] },
+			{ type: 'server-response', from: 'App', to: 'Okta', status: '200 OK', headers: [] },
 		];
 		const live = requires === undefined ? { exchanges } : { exchanges, requires };
 		return {

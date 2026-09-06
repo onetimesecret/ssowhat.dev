@@ -6,9 +6,9 @@ import type { Step } from '$lib/sso-demos';
  * IdP-initiated SAML flow with Okta as the IdP.
  *
  * The user starts at Okta (the Identity Provider), not at the application.
- * They sign in to the Okta dashboard and click the OTS tile. Okta generates
+ * They sign in to the Okta dashboard and click the tile. Okta generates
  * an unsolicited SAML Response -- no AuthnRequest was ever made -- and posts
- * it to OTS's ACS endpoint.
+ * it to the app's ACS endpoint.
  *
  * This is the mirror image of the SP-initiated flow, and it is how a large
  * share of real enterprise logins actually happen: employees live in the
@@ -34,7 +34,7 @@ export const STEPS: Step[] = [
 		userSees: 'okta-login',
 		urlBar: 'https://contoso.okta.com/',
 		description:
-			'The flow starts at the IdP, not the application. The user opens their company Okta dashboard directly (bookmark, browser homepage, or IT portal link). No Okta session exists yet, so Okta presents its login page. OTS is not involved at all in this step.',
+			'The flow starts at the IdP, not the application. The user opens their company Okta dashboard directly (bookmark, browser homepage, or IT portal link). No Okta session exists yet, so Okta presents its login page. The app is not involved at all in this step.',
 		securityNote:
 			'Compare with SP-initiated SAML, where the first request hits the application. Here the application has no idea a login is coming: no AuthnRequest is generated, no request ID is stored, and there is nothing for the SP to later correlate the response against.',
 		http: [
@@ -71,7 +71,7 @@ export const STEPS: Step[] = [
 		userSees: 'okta-dashboard',
 		urlBar: 'https://contoso.okta.com/app/UserHome',
 		description:
-			"User enters credentials (and completes MFA if the org-wide sign-on policy requires it), and Okta establishes an IdP session before rendering the end-user dashboard: a grid of tiles for every application assigned to this user. The OTS tile is among them. The trace below uses the Classic Engine Authentication API (/api/v1/authn) because it shows credentials in, session out in two exchanges. Identity Engine hosted login reaches the same end state through an Interaction Code (IDX) sequence over /oauth2/v1/interact and /idp/idx/*, which is longer and does not change anything about the SAML behaviour this demo is actually about.",
+			"User enters credentials (and completes MFA if the org-wide sign-on policy requires it), and Okta establishes an IdP session before rendering the end-user dashboard: a grid of tiles for every application assigned to this user. The app tile is among them. The trace below uses the Classic Engine Authentication API (/api/v1/authn) because it shows credentials in, session out in two exchanges. Identity Engine hosted login reaches the same end state through an Interaction Code (IDX) sequence over /oauth2/v1/interact and /idp/idx/*, which is longer and does not change anything about the SAML behaviour this demo is actually about.",
 		securityNote:
 			'Authentication and session establishment are two things, and the API separates them: /api/v1/authn returns a single-use sessionToken, which only becomes the sid browser cookie once it is redeemed. The Okta session created that way is the keys-to-the-kingdom credential: from this dashboard the user can silently SSO into every assigned app without re-entering a password. This is why IdP session protection (MFA, device trust, session lifetime limits) matters more than any individual SP session.',
 		http: [
@@ -123,11 +123,11 @@ export const STEPS: Step[] = [
 	},
 	{
 		id: 3,
-		title: 'User clicks the OTS app tile',
+		title: 'User clicks the app tile',
 		userSees: 'okta-dashboard',
 		urlBar: 'https://contoso.okta.com/app/ots-saml/exk1234/sso/saml',
 		description:
-			"User clicks the Onetime Secret tile. The tile is simply a link to Okta's own SSO endpoint for the OTS app. Because the user already has an Okta session, Okta immediately generates a signed SAML Response -- unsolicited, since no AuthnRequest exists -- and returns an auto-submitting HTML form targeting OTS's ACS endpoint.",
+			"User clicks the Onetime Secret tile. The tile is simply a link to Okta's own SSO endpoint for the app. Because the user already has an Okta session, Okta immediately generates a signed SAML Response -- unsolicited, since no AuthnRequest exists -- and returns an auto-submitting HTML form targeting the app's ACS endpoint.",
 		securityNote:
 			"This is the step SP-initiated flows don't have: the IdP mints an assertion nobody asked for. The generated Response has no InResponseTo attribute. RelayState is not a deep-link echo here either -- it's the static Default RelayState value configured on the Okta app (often empty), because there was no original SP request to preserve.",
 		http: [
@@ -145,7 +145,7 @@ export const STEPS: Step[] = [
 				from: 'Okta',
 				to: 'Okta',
 				label: 'Generate unsolicited SAML Response',
-				note: 'Valid IdP session found and user is assigned to the OTS app. Build assertion from directory attributes, sign Response and Assertion, set RelayState to the app’s configured Default RelayState. No AuthnRequest to reference, so no InResponseTo.',
+				note: 'Valid IdP session found and user is assigned to the app. Build assertion from directory attributes, sign Response and Assertion, set RelayState to the app’s configured Default RelayState. No AuthnRequest to reference, so no InResponseTo.',
 			},
 			{
 				type: 'response',
@@ -172,18 +172,18 @@ export const STEPS: Step[] = [
 	},
 	{
 		id: 4,
-		title: 'Browser POSTs unsolicited assertion to OTS',
+		title: 'Browser POSTs unsolicited assertion to the app',
 		userSees: 'loading',
 		urlBar: 'https://secrets.example.com/saml/acs',
 		description:
-			"Browser auto-submits the SAML Response to OTS's ACS endpoint. This is the first time OTS hears anything about this login. The Response is missing InResponseTo, so OTS must decide: accept unsolicited responses (IdP-initiated enabled) or reject them. Everything else -- signatures, timestamps, audience -- validates exactly as in the SP-initiated flow.",
+			"Browser auto-submits the SAML Response to the app's ACS endpoint. This is the first time the app hears anything about this login. The Response is missing InResponseTo, so the app must decide: accept unsolicited responses (IdP-initiated enabled) or reject them. Everything else -- signatures, timestamps, audience -- validates exactly as in the SP-initiated flow.",
 		securityNote:
 			"InResponseTo is the SP's only tie between a response and a request it made; without it, two defenses are lost. (1) Replay: a captured assertion can be replayed within its validity window against an SP that doesn't track seen assertion IDs -- the assertion ID cache stops being a nice-to-have and becomes the primary defense. (2) Login CSRF / session injection: an attacker can POST their own valid assertion to a victim's browser session, logging the victim into the attacker's account. This is why many SPs disable IdP-initiated SAML entirely, and why others convert it: receive the unsolicited response, discard it, and start a fresh SP-initiated flow.",
 		http: [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'POST',
 				url: 'https://secrets.example.com/saml/acs',
 				headers: ['Content-Type: application/x-www-form-urlencoded', 'Origin: https://contoso.okta.com'],
@@ -277,28 +277,28 @@ export const STEPS: Step[] = [
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Validate unsolicited SAML assertion',
 				note: "Verify Response + Assertion XML signatures against Okta's X.509 certificate, validate NotBefore/NotOnOrAfter timestamps, confirm AudienceRestriction and Recipient URL. InResponseTo check is skipped -- there is no stored request ID. Store assertion ID _assertion_jkl012 and reject any repeat: with no request correlation, the replay cache is the primary anti-replay defense.",
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Resolve the local account',
-				note: 'The NameID in this assertion is alice@contoso.com, so a lookup keyed on (entityID, NameID) here is an email-keyed lookup with every problem an email key has: a rename orphans the account and a reissued address inherits it. Two safe options. Recommended: configure the Okta app to send an immutable NameID (the Okta user ID, or the persistent format) and key the account on (http://www.okta.com/exk1234, that NameID). Otherwise: keep the email NameID but resolve it through an explicit mapping table that links (entityID, NameID) to a local account id, is populated by provisioning (SCIM) or an administrator rather than auto-created on first sight, and is re-linked by an administrator when the address changes. Either way the email attribute is profile data to refresh on the account, not the key it is stored under. This matters more here than in the SP-initiated flow: an unsolicited assertion is the only thing telling OTS who this is, so if the key is an email address, whoever controls that address at the IdP controls the local account it resolves to.',
+				note: 'The NameID in this assertion is alice@contoso.com, so a lookup keyed on (entityID, NameID) here is an email-keyed lookup with every problem an email key has: a rename orphans the account and a reissued address inherits it. Two safe options. Recommended: configure the Okta app to send an immutable NameID (the Okta user ID, or the persistent format) and key the account on (http://www.okta.com/exk1234, that NameID). Otherwise: keep the email NameID but resolve it through an explicit mapping table that links (entityID, NameID) to a local account id, is populated by provisioning (SCIM) or an administrator rather than auto-created on first sight, and is re-linked by an administrator when the address changes. Either way the email attribute is profile data to refresh on the account, not the key it is stored under. This matters more here than in the SP-initiated flow: an unsolicited assertion is the only thing telling the app who this is, so if the key is an email address, whoever controls that address at the IdP controls the local account it resolves to.',
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '302 Found',
 				headers: [
 					'Location: https://secrets.example.com/dashboard',
 					'Set-Cookie: _ots_session=encrypted-session-data; HttpOnly; Secure; SameSite=Lax; Path=/',
 				],
-				note: 'Session created from SAML attributes. RelayState was empty, so OTS falls back to its default post-login landing page.',
+				note: 'Session created from SAML attributes. RelayState was empty, so the app falls back to its default post-login landing page.',
 			},
 		],
 		actors: {
@@ -313,28 +313,28 @@ export const STEPS: Step[] = [
 		userSees: 'dashboard',
 		urlBar: 'https://secrets.example.com/dashboard',
 		description:
-			'Browser follows the redirect and loads the OTS dashboard with the new session cookie. From here on, the two flows converge: the session is identical to one created by SP-initiated login. The user never saw an OTS login page at any point.',
+			'Browser follows the redirect and loads the app dashboard with the new session cookie. From here on, the two flows converge: the session is identical to one created by SP-initiated login. The user never saw an app login page at any point.',
 		securityNote:
 			'Because the user never expresses intent to the SP before the assertion arrives, the SP cannot use RelayState for deep links safely -- an attacker-crafted unsolicited response could carry a malicious RelayState. Treat RelayState from unsolicited responses as untrusted: validate against an allowlist or ignore it entirely.',
 		http: [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'GET',
 				url: 'https://secrets.example.com/dashboard',
 				headers: ['Cookie: _ots_session=encrypted-session-data'],
 			},
 			{
 				type: 'internal',
-				from: 'OTS',
-				to: 'OTS',
+				from: 'App',
+				to: 'App',
 				label: 'Decrypt session cookie',
 				note: 'Extract user identity: alice@contoso.com, groups: [engineering, secrets-admins]',
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '200 OK',
 				headers: [
@@ -364,7 +364,7 @@ export const STEPS: Step[] = [
 			{
 				type: 'request',
 				from: 'Browser',
-				to: 'OTS',
+				to: 'App',
 				method: 'GET',
 				url: 'https://secrets.example.com/auth/sso?idp=okta',
 				headers: ['Cookie: (none)'],
@@ -372,7 +372,7 @@ export const STEPS: Step[] = [
 			},
 			{
 				type: 'response',
-				from: 'OTS',
+				from: 'App',
 				to: 'Browser',
 				status: '302 Found',
 				headers: [

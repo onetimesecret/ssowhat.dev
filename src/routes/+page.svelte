@@ -5,7 +5,7 @@
 		{
 			id: 'oauth2-google',
 			title: 'OAuth2 Social Login with Google',
-			subtitle: 'OTS authenticates with Google via OAuth 2.0 and OpenID Connect',
+			subtitle: 'The app authenticates with Google via OAuth 2.0 and OpenID Connect',
 			description:
 				'The simplest common SSO pattern: "Sign in with Google" using the Authorization Code Flow with PKCE. Walk through the redirect to Google, user consent, server-to-server token exchange, and JWT validation.',
 			tags: ['OAuth2', 'OIDC', 'Social Login', 'PKCE'],
@@ -14,7 +14,7 @@
 		{
 			id: 'oidc-entra',
 			title: 'Enterprise OIDC with Entra ID',
-			subtitle: 'OTS authenticates directly with Microsoft Entra ID via OpenID Connect',
+			subtitle: 'The app authenticates directly with Microsoft Entra ID via OpenID Connect',
 			description:
 				'The same authorization code + PKCE dance as the Google demo, pointed at a workforce tenant: tenant-scoped endpoints, admin consent instead of a consent screen, Conditional Access at sign-in, and the tid/oid claims that actually identify an enterprise user.',
 			tags: ['OIDC', 'OAuth2', 'Entra ID', 'Enterprise SSO'],
@@ -23,7 +23,7 @@
 		{
 			id: 'sp-saml-okta',
 			title: 'SP-Initiated SAML with Okta',
-			subtitle: 'OTS authenticates directly with Okta via SAML 2.0',
+			subtitle: 'The app authenticates directly with Okta via SAML 2.0',
 			description:
 				'Direct SAML integration between application and identity provider. Follow the AuthnRequest, Okta login, signed assertion, and ACS validation in a classic enterprise SSO pattern.',
 			tags: ['SAML', 'SP-Initiated', 'Enterprise SSO'],
@@ -32,7 +32,7 @@
 		{
 			id: 'idp-saml-okta',
 			title: 'IdP-Initiated SAML with Okta',
-			subtitle: 'User launches OTS from the Okta dashboard tile',
+			subtitle: 'User launches the app from the Okta dashboard tile',
 			description:
 				'The mirror image of SP-initiated login: Okta pushes an unsolicited signed assertion with no AuthnRequest and no InResponseTo. See what the SP loses, why it matters, and the safer conversion pattern.',
 			tags: ['SAML', 'IdP-Initiated', 'Enterprise SSO'],
@@ -43,7 +43,7 @@
 			title: 'SAML Single Logout with Okta',
 			subtitle: 'One logout click, three sessions, and no guarantee all of them die',
 			description:
-				'The most misunderstood corner of SAML: OTS sends a LogoutRequest, Okta kills its own session, and front-channel propagation to a second app silently fails. Ends with the spec’s own admission -- StatusCode: PartialLogout -- and what to rely on instead.',
+				'The most misunderstood corner of SAML: the app sends a LogoutRequest, Okta kills its own session, and front-channel propagation to a second app silently fails. Ends with the spec’s own admission -- StatusCode: PartialLogout -- and what to rely on instead.',
 			tags: ['SAML', 'Single Logout', 'Front-Channel', 'Sessions'],
 			path: '/slo-saml-okta/',
 		},
@@ -52,7 +52,7 @@
 			title: 'SCIM Provisioning with Okta',
 			subtitle: "Okta pushes user lifecycle changes to the app's SCIM API",
 			description:
-				'Provisioning is not authentication: Okta creates, updates, group-pushes, and deactivates accounts in OTS via server-to-server REST -- no end-user browser in the protocol. See the full lifecycle, and why deactivation without session revocation leaves the door open.',
+				'Provisioning is not authentication: Okta creates, updates, group-pushes, and deactivates accounts in the app via server-to-server REST -- no end-user browser in the protocol. See the full lifecycle, and why deactivation without session revocation leaves the door open.',
 			tags: ['SCIM 2.0', 'Provisioning', 'Lifecycle', 'REST'],
 			path: '/scim-okta/',
 		},
@@ -209,10 +209,10 @@
 		<!-- Coming Soon -->
 		<div class="mt-8 rounded-lg border border-edge bg-surface px-6 py-5">
 			<p class="px-4 py-3 text-sm leading-relaxed text-ink-tertiary">
-				The example application is <a href="https://onetimesecret.com" class="text-accent hover:underline"
+				In every demo the actor labeled <strong>App</strong> is <a href="https://onetimesecret.com" class="text-accent hover:underline"
 					>Onetime Secret</a
 				>
-				(OTS) &mdash; an open-source tool for sharing sensitive information via self-destructing links. It serves as a realistic
+				&mdash; an open-source tool for sharing sensitive information via self-destructing links. It serves as a realistic
 				stand-in for any web application adding SSO support.
 			</p>
 		</div>

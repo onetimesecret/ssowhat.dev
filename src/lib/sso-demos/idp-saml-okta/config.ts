@@ -6,7 +6,7 @@ import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 /**
  * Actor configuration for the IdP-initiated SAML demo.
  * Same actors as SP-initiated, but the flow starts at Okta (IdP):
- * the user launches OTS from the Okta dashboard tile.
+ * the user launches the app from the Okta dashboard tile.
  *
  * Colors use semantic classes from sso-demo-theme.css (bg-actor-*).
  * To customize actor colors, modify the theme file.
@@ -14,7 +14,7 @@ import { DEMOS_INDEX_PATH, DEMO_VERSION } from '$lib/sso-demos';
 export const actorConfig: ActorConfig[] = [
 	{ key: 'browser', label: 'Browser', activeColor: 'bg-actor-browser' },
 	{ key: 'okta', label: 'Okta', activeColor: 'bg-actor-okta' },
-	{ key: 'ots', label: 'OTS', activeColor: 'bg-actor-ots' },
+	{ key: 'ots', label: 'App', activeColor: 'bg-actor-ots' },
 ];
 
 /**
@@ -34,7 +34,7 @@ export const protocolStack: ProtocolStackConfig = {
 		},
 		{
 			key: 'ots',
-			label: 'OTS',
+			label: 'App',
 			subLabel: 'Service Provider',
 			emoji: '\u{1F510}',
 			activeGradient: 'bg-gradient-to-br from-actor-ots-600 to-actor-ots-700',
@@ -59,7 +59,7 @@ export const protocolStack: ProtocolStackConfig = {
  */
 export const demoConfig: DemoConfig = {
 	title: 'IdP-Initiated SAML with Okta',
-	subtitle: 'User launches OTS from the Okta dashboard; Okta pushes an unsolicited SAML assertion',
+	subtitle: 'User launches the app from the Okta dashboard; Okta pushes an unsolicited SAML assertion',
 	version: DEMO_VERSION,
 	fidelity: {
 		level: 'reconstructed',

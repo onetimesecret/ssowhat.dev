@@ -1,9 +1,9 @@
 <script lang="ts">
 	/**
 	 * SAML Single Logout with Okta
-	 * OTS (SP) + Okta (IdP) + Team Wiki (second SP) via SAML 2.0 SLO
+	 * App (SP) + Okta (IdP) + Team Wiki (second SP) via SAML 2.0 SLO
 	 *
-	 * SP-initiated Single Logout: OTS destroys its local session, sends a
+	 * SP-initiated Single Logout: The app destroys its local session, sends a
 	 * LogoutRequest to Okta, and Okta attempts front-channel propagation to
 	 * other session participants. The Wiki's session survives -- the demo
 	 * shows why SLO is best-effort, ending with the spec's own PartialLogout

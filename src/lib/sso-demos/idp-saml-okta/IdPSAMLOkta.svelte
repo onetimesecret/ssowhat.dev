@@ -1,12 +1,12 @@
 <script lang="ts">
 	/**
 	 * IdP-Initiated SAML with Okta
-	 * Okta (IdP) pushes an unsolicited assertion to OTS (SP)
+	 * Okta (IdP) pushes an unsolicited assertion to the app (SP)
 	 *
-	 * The user starts at the Okta dashboard and clicks the OTS app tile.
+	 * The user starts at the Okta dashboard and clicks the app tile.
 	 * Okta generates a signed SAML Response with no corresponding
 	 * AuthnRequest -- and therefore no InResponseTo -- and posts it to
-	 * OTS's ACS endpoint.
+	 * the app's ACS endpoint.
 	 *
 	 * Mirror image of the SP-initiated demo: same actors, same bindings
 	 * on the response leg, but the SP loses request correlation and all

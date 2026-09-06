@@ -25,7 +25,7 @@
 	<div class="flex-1 p-4">
 		<h2 class="mb-3 text-sm font-semibold text-gray-700">Work Apps</h2>
 		<div class="grid grid-cols-3 gap-3">
-			<!-- OTS tile (highlighted target) -->
+			<!-- App tile (highlighted target) -->
 			<div
 				class="flex flex-col items-center gap-2 rounded-lg border-2 border-blue-500 bg-white p-3 shadow-md ring-2 ring-blue-200"
 			>

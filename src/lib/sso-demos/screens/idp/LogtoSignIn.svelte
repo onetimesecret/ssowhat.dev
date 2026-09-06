@@ -11,7 +11,7 @@
 			>
 				L
 			</div>
-			<h2 class="text-xl font-semibold text-ink">Sign in to OTS</h2>
+			<h2 class="text-xl font-semibold text-ink">Sign in to Onetime Secret</h2>
 		</div>
 		<div class="space-y-3">
 			<button

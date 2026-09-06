@@ -8,7 +8,7 @@ Interactive visualizations of enterprise SSO authentication flows. Step through 
 
 Each demo walks through a complete authentication flow step by step, showing what the user sees in the browser alongside the HTTP exchanges happening behind the scenes. Decoded SAML assertions, JWT tokens, and protocol details are shown at each stage.
 
-The example application is [Onetime Secret](https://onetimesecret.com) (OTS) — an open-source tool for sharing sensitive information via self-destructing links. It serves as a realistic stand-in for any web application adding SSO support.
+In every demo the actor labeled **App** is [Onetime Secret](https://onetimesecret.com) — an open-source tool for sharing sensitive information via self-destructing links. It serves as a realistic stand-in for any web application adding SSO support.
 
 ## Fidelity
 
@@ -19,11 +19,11 @@ The traces are reconstructed educational examples, not packet captures or implem
 | Demo | Protocols | Architecture |
 |------|-----------|--------------|
 | [Enterprise SAML for Modern Apps](https://ssowhat.dev/oidc-saml-bridge/) | OIDC, SAML | Caddy + Logto bridge OIDC to SAML with Entra ID |
-| [SP-Initiated SAML with Okta](https://ssowhat.dev/sp-saml-okta/) | SAML 2.0 | OTS redirects to Okta, assertion posted back |
-| [IdP-Initiated SAML with Okta](https://ssowhat.dev/idp-saml-okta/) | SAML 2.0 | User clicks Okta dashboard tile, unsolicited assertion pushed to OTS |
+| [SP-Initiated SAML with Okta](https://ssowhat.dev/sp-saml-okta/) | SAML 2.0 | The app redirects to Okta, assertion posted back |
+| [IdP-Initiated SAML with Okta](https://ssowhat.dev/idp-saml-okta/) | SAML 2.0 | User clicks Okta dashboard tile, unsolicited assertion pushed to the app |
 | [OAuth2 Social Login with Google](https://ssowhat.dev/oauth2-google/) | OAuth 2.0, OIDC | Authorization Code Flow with PKCE via Google |
-| [SCIM Provisioning with Okta](https://ssowhat.dev/scim-okta/) | SCIM 2.0 | Okta pushes user lifecycle changes (create, update, deactivate) to the OTS SCIM API — live-mode pilot |
-| [Enterprise OIDC with Entra ID](https://ssowhat.dev/oidc-entra/) | OIDC, OAuth 2.0 | OTS authenticates directly with Microsoft Entra ID via OpenID Connect |
+| [SCIM Provisioning with Okta](https://ssowhat.dev/scim-okta/) | SCIM 2.0 | Okta pushes user lifecycle changes (create, update, deactivate) to the app's SCIM API — live-mode pilot |
+| [Enterprise OIDC with Entra ID](https://ssowhat.dev/oidc-entra/) | OIDC, OAuth 2.0 | The app authenticates directly with Microsoft Entra ID via OpenID Connect |
 | [SAML Single Logout with Okta](https://ssowhat.dev/slo-saml-okta/) | SAML 2.0 | One logout click, three sessions, and no guarantee all of them die |
 | [Multi-IdP Home-Realm Discovery](https://ssowhat.dev/multi-idp-discovery/) | SAML 2.0, OIDC | One email-first sign-in page routes each organization to its own IdP |
 

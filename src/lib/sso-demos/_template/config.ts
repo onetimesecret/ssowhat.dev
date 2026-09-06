@@ -22,7 +22,7 @@ export const actorConfig: ActorConfig[] = [
   // Add your actors here:
   // { key: "proxy", label: "Proxy", activeColor: "bg-orange-500" },
   // { key: "idp", label: "IdP", activeColor: "bg-purple-500" },
-  { key: 'ots', label: 'OTS', activeColor: 'bg-emerald-500' },
+  { key: 'ots', label: 'App', activeColor: 'bg-emerald-500' },
 ];
 
 /**
@@ -36,7 +36,7 @@ export const protocolStack: ProtocolStackConfig = {
   components: [
     {
       key: 'ots',
-      label: 'OTS',
+      label: 'App',
       subLabel: 'Application',
       emoji: '\u{1F510}',
       activeGradient: 'bg-gradient-to-br from-emerald-600 to-emerald-700',

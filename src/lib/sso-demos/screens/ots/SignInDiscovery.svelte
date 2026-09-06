@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
-	 * OTS email-first sign-in screen for home-realm discovery.
-	 * The user enters a work email; OTS resolves the domain to an IdP.
+	 * App email-first sign-in screen (Onetime Secret) for home-realm discovery.
+	 * The user enters a work email; the app resolves the domain to an IdP.
 	 * The email value is configurable so demos can show different users
 	 * mid-flow via thin wrapper variants (empty, Alice, Bob).
 	 */
